@@ -1,0 +1,198 @@
+.trm-publication {
+    --highlight-background     : #F6F8FA;
+    --highlight-foreground     : #4d5a60;
+    // 行号
+    --highlight-gutter-color   : #90A4AE;
+    --highlight-gutter-bg-color: #f1f1f1;
+    // 工具栏
+    --highlight-tools-color    : #646464;
+    --highlight-tools-bg-color : #e6ebf1;
+    //
+    --highlight-scrollbar      : #d7d7d7;
+
+    // 代码
+    --highlight-addition: #e32323;
+    --highlight-deletion: #BF42BF;
+    --highlight-comment : rgba(149, 165, 166, .8);
+
+    --highlight-yellow: #FFB62C;
+    --highlight-purple: #7C4DFF;
+    --highlight-aqua  : #39ADB5;
+    --highlight-red   : #E53935;
+    --highlight-orange: #F76D47;
+    --highlight-green : #91B859;
+    --highlight-blue  : #6182B8;
+
+
+    &.dark {
+        --highlight-background     : #303030;
+        --highlight-foreground     : #eeeeee;
+        // 行号
+        --highlight-gutter-color   : #b9b9b9;
+        --highlight-gutter-bg-color: #2a2a2a;
+        // 工具栏
+        --highlight-tools-color    : #adadad;
+        --highlight-tools-bg-color : #444444;
+        //
+        --highlight-scrollbar      : #646464;
+
+        // 代码
+        --highlight-addition: #30de10;
+        --highlight-deletion: #d62744;
+        --highlight-comment : #969896;
+
+        --highlight-yellow: #FFCB6B;
+        --highlight-purple: #C792EA;
+        --highlight-aqua  : #89DDFF;
+        --highlight-red   : #FF5370;
+        --highlight-orange: #F78C6C;
+        --highlight-green : #C3E88D;
+        --highlight-blue  : #82AAFF;
+    }
+}
+
+figure.highlight {
+    position     : relative;
+    overflow-x   : auto;
+    padding      : 30px 10px 10px;
+    margin-left  : 0;
+    margin-right : 0;
+    border-radius: 4px;
+    font-size    : 14px !important;
+    line-height  : 1.5;
+    font-family  : Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
+    color        : var(--highlight-foreground);
+    background   : var(--highlight-background);
+
+    figcaption,
+    .caption {
+        position      : absolute;
+        top           : 0;
+        right         : 0;
+        left          : 0;
+        margin        : 0 auto;
+        line-height   : 30px;
+        width         : fit-content;
+        font-weight   : bold;
+        user-select   : none;
+        letter-spacing: 0;
+        color         : var(--highlight-tools-color);
+
+        a {
+            background : transparent !important;
+            margin-left: 4px;
+
+            &::before {
+                content: '[';
+            }
+
+            &::after {
+                content: ']';
+            }
+        }
+    }
+
+    &::after {
+        content           : " ";
+        position          : absolute;
+        border-radius     : 50%;
+        background        : #ff5f56;
+        width             : 12px;
+        height            : 12px;
+        top               : 9px;
+        left              : 12px;
+        -webkit-box-shadow: 20px 0 #ffbd2e, 40px 0 #27c93f;
+        box-shadow        : 20px 0 #ffbd2e, 40px 0 #27c93f;
+    }
+
+    pre {
+        margin     : 0;
+        padding    : 0;
+        border     : none;
+        overflow   : initial;
+        font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
+
+        code {
+            font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
+            background : none;
+            text-shadow: none;
+            padding    : 0;
+        }
+
+        .addition {
+            color: var(--highlight-addition) !important;
+        }
+
+        .deletion {
+            color: var(--highlight-deletion) !important;
+        }
+
+        .comment {
+            color: var(--highlight-comment);
+        }
+
+        .attr,
+        .property,
+        .tag .attr,
+        .javascript .function {
+            color: var(--highlight-purple) !important;
+        }
+
+        .tag,
+        .title,
+        .keyword,
+        .css .hexcolor {
+            color: var(--highlight-aqua) !important;
+        }
+
+        .variable,
+        .attribute,
+        .regexp,
+        .ruby .constant,
+        .xml .tag .title,
+        .xml .pi,
+        .xml .doctype,
+        .html .doctype,
+        .css .id,
+        .tag .name,
+        .css .class,
+        .css .pseudo {
+            color: var(--highlight-red) !important;
+        }
+
+        .number,
+        .preprocessor,
+        .literal,
+        .params,
+        .constant {
+            color: var(--highlight-orange) !important;
+        }
+
+        .built_in {
+            color: var(--highlight-yellow) !important;
+        }
+
+        .class,
+        .ruby .class .title,
+        .css .rules .attribute,
+        .string,
+        .value,
+        .inheritance,
+        .header,
+        .ruby .symbol,
+        .xml .cdata {
+            color: var(--highlight-green) !important;
+        }
+
+        .function,
+        .python .decorator,
+        .python .title,
+        .ruby .function .title,
+        .ruby .title .keyword,
+        .perl .sub,
+        .javascript .title,
+        .coffeescript .title {
+            color: var(--highlight-blue) !important;
+        }
+    }
+}
