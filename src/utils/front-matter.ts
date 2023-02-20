@@ -30,7 +30,6 @@ function split(string: string) {
     }
 }
 
-
 function parse(str: string, options?: yaml.LoadOptions) {
     if (typeof str !== 'string') throw new TypeError('str is required!');
 

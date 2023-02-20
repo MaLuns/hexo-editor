@@ -172,16 +172,11 @@ export default class LocalFileSystem extends AbstractFileSystem {
             } else {
                 let config = await this._root?.getFileHandle('_config.yml', { create: false }).catch(_ => null)
                 if (!config) {
-                    config = await this._root?.getFileHandle('_config.yaml', { create: false }).catch(_ => null)
-                    if (!config) {
-                        window.$message.warning(`未找到 _config.yml 或 _config.yaml 文件`)
-                        return;
-                    }
+                    window.$message.warning(`未找到 _config.yml 文件`)
+                    return;
                 }
                 const hexoConfigText = await config.getFile().then(res => res.text())
                 this._hexo_config = yaml.load(hexoConfigText) as YamlConfig;
-                console.log(this);
-
                 return this._hexo_config
             }
         } catch (error) {
@@ -283,30 +278,38 @@ export default class LocalFileSystem extends AbstractFileSystem {
         return file ? URL.createObjectURL(await file.getFile()) : ''
     }
 
-    async addPostOrPage(info: PostOrPageModel): Promise<boolean> {
+    async addPostOrPage(info: PostOrPageModel): Promise<PostModel | undefined> {
         try {
-            /* const config = await this.getHexoConfig()
-            if (!config) return false */
-
+            const config = await this.getHexoConfig()
+            if (!config) return
             const { name, type, ...res } = info
-            /* const bool: boolean = config.post_asset_folder */
+            const bool: boolean = config.post_asset_folder
 
-            /*  const path = await this.getFullPathByAdd(name, type)
-             let handle = await createFileOrDir(this._root!, path)
-             if (type === HexoFileType.page) {
-                 handle = await (<FileSystemDirectoryHandle>handle).getFileHandle('index.md', { create: true }).catch(_ => null)
-             }
-             const writer = await (<FileSystemFileHandle>handle).createWritable({ keepExistingData: false })
-  */
+            const path = await this.getFullPathByAdd(name, type)
+            let handle = await createFileOrDir(this._root!, path)
+            if (type === HexoFileType.page) {
+                handle = await (<FileSystemDirectoryHandle>handle).getFileHandle('index.md', { create: true }).catch(_ => null)
+            }
+
             const frontmatter = fm.stringify(res, yamlDumpOpt)
-            const postText = `---\r\n${frontmatter}---`
-            console.log(frontmatter, res);
 
-            /*  await writer.write(postText)
-             await writer.close() */
-            return true
+            const writer = await (<FileSystemFileHandle>handle).createWritable({ keepExistingData: false })
+            await writer.write(frontmatter)
+            await writer.close()
+
+            return {
+                path,
+                name,
+                ...res,
+                raw: '',
+                md: '',
+                frontmatter: {
+                    ...res,
+                    _content: ''
+                }
+            }
         } catch (error) {
-            return false
+            return
         }
     }
 
@@ -314,23 +317,19 @@ export default class LocalFileSystem extends AbstractFileSystem {
         try {
             const fileHandle = await this._getHandle(post.path, true)
             if (fileHandle) {
-                const frontmatter = fm.stringify({
+                const postText = fm.stringify({
                     ...post.frontmatter,
                     title: post.title,
                     _content: post.md,
                 }, yamlDumpOpt)
 
-                console.log(frontmatter);
-
-                /* const writer = await fileHandle.createWritable({ keepExistingData: false })
+                const writer = await fileHandle.createWritable({ keepExistingData: false })
                 await writer.write(postText)
-                await writer.close() */
+                await writer.close()
                 return true
             }
             return false
         } catch (error) {
-            console.log(error);
-
             return false
         }
     }

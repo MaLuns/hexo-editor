@@ -2,6 +2,7 @@
 import { useWindowResize } from "@/composables";
 import { fileStore } from "@/store";
 
+const dialog = useDialog()
 const emit = defineEmits(['select'])
 const maxHeight = useWindowResize(40)
 
@@ -12,11 +13,35 @@ const data = reactive({
 
 const closeTabs = (name: string) => {
     const index = data.tabs.findIndex(item => item.path === name)
-    data.tabs.splice(index, 1)
-    if (data.tabName === name) {
-        let tab = data.tabs[Math.max(0, index - 1)]
-        data.tabName = tab ? tab.path : ''
-        emit('select', data.tabName)
+    const closeTab = data.tabs[index]
+    const clostFn = () => {
+        data.tabs.splice(index, 1)
+        if (data.tabName === name) {
+            let tab = data.tabs[Math.max(0, index - 1)]
+            data.tabName = tab ? tab.path : ''
+            emit('select', data.tabName)
+        }
+    }
+    if (closeTab.md !== closeTab.frontmatter._content) {
+        dialog.warning({
+            title: '提示',
+            transformOrigin: 'center',
+            content: '当前文章未保存，确定关闭吗？',
+            positiveText: '确定',
+            negativeText: '取消',
+            style: {
+                width: '400px',
+                position: 'fixed',
+                top: '100px',
+                left: 0,
+                right: 0
+            },
+            onPositiveClick: () => {
+                clostFn()
+            }
+        })
+    } else {
+        clostFn()
     }
 }
 
@@ -28,7 +53,7 @@ const changeTabs = (path: string) => {
 const handleSave = async (post: PostModel) => {
     let res = await fileStore.fs?.savePost(post)
     if (res) {
-        post._md = post.md
+        post.frontmatter._content = post.md
     } else {
         window.$message.warning('文章保存失败')
     }
@@ -53,7 +78,7 @@ defineExpose({
             display-directive="show:lazy">
             <template #tab>
                 {{ panel.name }}
-                <span class="save-tag" v-if="panel.md !== panel._md"></span>
+                <span class="save-tag" v-if="panel.md !== panel.frontmatter._content" title="未保存"></span>
             </template>
             <EditorMarkdown @save="handleSave(panel)" v-model="panel.md" theme="vs"> </EditorMarkdown>
         </n-tab-pane>

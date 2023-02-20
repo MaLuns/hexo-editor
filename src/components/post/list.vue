@@ -2,7 +2,10 @@
 const emit = defineEmits(['selectPost'])
 
 const props = defineProps({
-    list: Array<PostModel>,
+    list: {
+        type: Array<PostModel>,
+        default: []
+    },
     current: String,
     width: String
 })
@@ -10,8 +13,7 @@ const props = defineProps({
 </script>
 <template>
     <n-list class="post-list__list">
-        <n-list-item :class="{ acitve: item.path === props.current }" v-for="item in props.list" :key="item.path"
-            @click="emit('selectPost', item)">
+        <n-list-item v-for="item in props.list" :key="item.path" @click="emit('selectPost', item)" :class="{ acitve: item.path === props.current }" >
             <n-thing>
                 <template #header>
                     <n-ellipsis :style="{ 'max-width': 'calc(' + props.width + ' - 20px)' }" :tooltip="false"
@@ -23,6 +25,11 @@ const props = defineProps({
                     <n-time :time="item.date" type="relative" style="font-size: 14px;" />
                 </template>
             </n-thing>
+        </n-list-item>
+        <n-list-item v-if="!props.list.length">
+            <n-space justify="center">
+                未找到文件信息...
+            </n-space>
         </n-list-item>
     </n-list>
 </template>

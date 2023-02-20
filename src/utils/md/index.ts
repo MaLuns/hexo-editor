@@ -1,5 +1,6 @@
 import { marked } from 'marked';
 import hljs from 'highlight.js'
+import tags from './tags';
 
 const MarkedRenderer = marked.Renderer;
 hljs.configure({ classPrefix: '' });
@@ -34,27 +35,32 @@ class Renderer extends MarkedRenderer {
     }
 }
 
-marked.setOptions({
+const defaultConfig = {
     renderer: new Renderer(),
     langPrefix: '',
-    /* highlight: function (code) {
-        return hljs.highlightAuto(code).value
-    }, */
-    pedantic: false,
     gfm: true,
-    breaks: false,
-    sanitize: false,
+    pedantic: false,
+    breaks: true,
     smartLists: true,
-    smartypants: false,
-    xhtml: false
-});
+    smartypants: true,
+    modifyAnchors: 0,
+    autolink: true,
+    mangle: true,
+    sanitizeUrl: false,
+    dompurify: false,
+    headerIds: true,
+    anchorAlias: false,
+    lazyload: false,
+    prependRoot: true,
+    postAsset: false,
+    external_link: {
+        enable: false,
+        exclude: [],
+        nofollow: false
+    },
+    descriptionLists: true
+}
 
-
-export const renderer = async (text: string, option?: any) => {
-    const renderer = new Renderer();
-    return await marked(text,
-        Object.assign({
-            renderer
-        }, option)
-    )
+export const renderer = (text: string, option?: any) => {
+    return (marked(tags.render(text), Object.assign(defaultConfig, option)) as unknown as string)
 }

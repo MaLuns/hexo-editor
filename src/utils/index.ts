@@ -67,6 +67,20 @@ export const throttle = <T extends (...args: any[]) => void>(func: T, wait: numb
 }
 
 
+export const htmlTag = (tag: string, attrs: any, text?: string | undefined) => {
+    let result = `<${tag}`;
+    for (const key in attrs) {
+        if (Object.prototype.hasOwnProperty.call(attrs, key)) {
+            const element = attrs[key];
+            result += ` ${key}="${element}"`
+        }
+    }
+
+    if (text == undefined) result += '>';
+    else result += `>${text}</${tag}>`;
+    return result;
+}
+
 export const readDirectory = async (directorys: any) => {
     let dir: Array<any> = []
     for await (const [key, value] of directorys.entries()) {

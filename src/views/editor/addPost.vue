@@ -3,7 +3,7 @@ import { fileStore } from '@/store';
 import { regexRules } from '@/utils';
 import type { FormInst, FormItemRule, FormRules } from 'naive-ui';
 
-defineEmits(['update:show'])
+const emit = defineEmits(['update:show', 'create'])
 const formRef = ref<FormInst | null>(null)
 
 const props = defineProps({
@@ -65,8 +65,8 @@ const handleValidateClick = () => {
     formRef.value?.validate((errors) => {
         if (!errors) {
             const { title, type, name, date } = model
-            fileStore.fs?.addPostOrPage({ title, type, name, date: new Date(date!) }).then(_ => {
-
+            fileStore.fs?.addPostOrPage({ title, type, name, date: new Date(date!) }).then(post => {
+                if (post) emit('create', { type, post })
             })
         }
     })

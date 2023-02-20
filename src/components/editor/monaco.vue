@@ -27,10 +27,9 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
     automaticLayout: true,
     selectOnLineNumbers: true,
     fontSize: 14,
-    minimap: {
+    /* minimap: {
         autohide: true
-    },
-    columnSelection: true,
+    }, */
     fixedOverflowWidgets: true,
     unicodeHighlight: {
         ambiguousCharacters: false
@@ -48,9 +47,10 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
     scrollBeyondLastLine: false,
     overviewRulerBorder: false,
     hideCursorInOverviewRuler: true,
-    /* scrollbar: {
-        vertical: 'hidden'
-    } */
+    scrollbar: {
+        /* vertical: 'hidden' */
+        verticalScrollbarSize: 0
+    }
 }
 
 onMounted(() => {

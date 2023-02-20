@@ -3,7 +3,6 @@ import { fileStore, themmStore } from '@/store';
 import { DocumentTextOutline } from "@vicons/ionicons5";
 import AddPost from "./addPost.vue";
 
-const route = useRouter()
 const postEditorRef = ref()
 const showModal = ref(false)
 
@@ -25,7 +24,6 @@ const init = () => {
         data.drafts = res
     })
     fileStore.fs?.getPostDirectory().then(res => {
-        console.log(res);
         data.posts = res
     })
     fileStore.fs?.getPageFiles().then(res => {
@@ -36,6 +34,20 @@ const init = () => {
 const selectPost = (post: PostModel) => {
     postEditorRef.value.add(post)
     data.current = post.path
+}
+
+const createPost = (newData: { type: HexoFileType, post: PostModel }) => {
+    switch (newData.type) {
+        case 1:
+            data.posts.unshift(newData.post)
+            break;
+        case 2:
+            data.drafts.unshift(newData.post)
+            break;
+        case 3:
+            data.pages.unshift(newData.post)
+            break;
+    }
 }
 
 init()
@@ -70,7 +82,7 @@ init()
             <PostEditor ref="postEditorRef" @select="data.current = $event"></PostEditor>
         </div>
     </main>
-    <AddPost v-model:show="showModal"></AddPost>
+    <AddPost v-model:show="showModal" @create="createPost"></AddPost>
 </template>
 <style lang="less" scoped>
 main {

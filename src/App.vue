@@ -4,8 +4,10 @@ import { themmStore } from '@/store';
 </script>
 <template>
   <n-config-provider :theme="themmStore.mode" :locale="zhCN" :date-locale="dateZhCN">
-    <n-message-provider>
-      <RouterView />
-    </n-message-provider>
+    <n-dialog-provider>
+      <n-message-provider>
+        <RouterView />
+      </n-message-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>

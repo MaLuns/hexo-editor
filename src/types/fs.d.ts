@@ -26,10 +26,10 @@ declare interface PostModel {
     raw: string
     // markdown 内容
     md: string
-    _md?: string
     // 文件属性
     frontmatter: {
         [k: string]: any
+        _content: string
     }
 }
 
