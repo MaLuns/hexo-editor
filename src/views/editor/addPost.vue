@@ -66,7 +66,10 @@ const handleValidateClick = () => {
         if (!errors) {
             const { title, type, name, date } = model
             fileStore.fs?.addPostOrPage({ title, type, name, date: new Date(date!) }).then(post => {
-                if (post) emit('create', { type, post })
+                if (post) {
+                    emit('create', { type, post })
+                    emit('update:show', false)
+                }
             })
         }
     })

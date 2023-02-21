@@ -1,4 +1,5 @@
 import { htmlTag } from "@/utils"
+import { renderer } from "../index";
 
 /**
  * 相册
@@ -8,8 +9,7 @@ import { htmlTag } from "@/utils"
  */
 export const galleryGroup = (args: any[], content: string) => {
     return `<div class="fj-gallery no-fancybox">
-    ${content}
-</div>`
+    ${content.split('\n').map(md => renderer(md)).join('')} </div>`
 }
 
 /**

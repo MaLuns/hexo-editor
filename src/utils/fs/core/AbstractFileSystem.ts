@@ -47,6 +47,12 @@ export default abstract class AbstractFileSystem {
     abstract addPostOrPage(info: PostOrPageModel): Promise<PostModel | undefined>
 
     /**
+     * 删除文件
+     * @param path 
+     */
+    abstract deletePost(path: string): Promise<boolean>
+
+    /**
      *  编辑文章
      */
     abstract savePost(post: PostModel): Promise<boolean>

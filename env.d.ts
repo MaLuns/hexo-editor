@@ -2,4 +2,5 @@
 
 declare interface Window {
     $message: MessageApiInjection
+    fjGallery?: any
 }

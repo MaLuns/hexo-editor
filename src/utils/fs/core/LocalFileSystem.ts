@@ -297,6 +297,10 @@ export default class LocalFileSystem extends AbstractFileSystem {
             await writer.write(frontmatter)
             await writer.close()
 
+            if (bool && type !== HexoFileType.page) {
+                await (<FileSystemDirectoryHandle>handle).getDirectoryHandle(name.replace('.md', ''), { create: true }).catch(() => null)
+            }
+
             return {
                 path,
                 name,
@@ -310,6 +314,19 @@ export default class LocalFileSystem extends AbstractFileSystem {
             }
         } catch (error) {
             return
+        }
+    }
+
+    async deletePost(path: string): Promise<boolean> {
+        try {
+            const paths = path.split('/')
+            const name = paths.pop()
+            path = paths.join('/')
+            const data = await this._getHandle(path)
+            if (data) return await data?.removeEntry(name || '', { recursive: true }).then(() => true).catch(() => false)
+            else return false
+        } catch (error) {
+            return false
         }
     }
 

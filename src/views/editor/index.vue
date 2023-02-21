@@ -3,6 +3,7 @@ import { fileStore, themmStore } from '@/store';
 import { DocumentTextOutline } from "@vicons/ionicons5";
 import AddPost from "./addPost.vue";
 
+const message = useMessage()
 const postEditorRef = ref()
 const showModal = ref(false)
 
@@ -50,6 +51,16 @@ const createPost = (newData: { type: HexoFileType, post: PostModel }) => {
     }
 }
 
+const handleDelete = (post: PostModel) => {
+    fileStore.fs?.deletePost(post.path).then((res) => {
+        if (res) {
+            message.info('删除成功！')
+        } else {
+            message.error('删除失败！')
+        }
+    })
+}
+
 init()
 </script>
 <template>
@@ -71,8 +82,9 @@ init()
                         <template #header>
                             {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}）
                         </template>
-                        <PostList :current="data.current" :width="themmStore.config.editorAsideWidth"
-                            :list="(data[item.key as keyof typeof data] as PostModel[])" @selectPost="selectPost">
+                        <PostList :current="data.current" :width="themmStore.config.editorAsideWidth" :type="item.key"
+                            :list="(data[item.key as keyof typeof data] as PostModel[])" @selectPost="selectPost"
+                            @delete="handleDelete">
                         </PostList>
                     </n-collapse-item>
                 </n-collapse>

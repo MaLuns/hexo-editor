@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { EyeSharp, EyeOffSharp } from "@vicons/ionicons5";
+import { EyeSharp, EyeOffSharp, ListSharp, CodeSlashSharp } from "@vicons/ionicons5";
 import { debounce } from '@/utils';
 import { renderer } from '@/utils/md';
 
@@ -36,15 +36,39 @@ if (props.modelValue) {
 <template>
     <div class="markdown-editor">
         <div class="markdown-editor__header">
-            <div>
-
-            </div>
-            <div>
-                <n-icon size="24" @click="data.preview = !data.preview;">
+            <n-space :item-style="{ alignItems: 'center', display: 'flex' }">
+                <n-icon size="22">
+                    <ListSharp />
+                </n-icon>
+                <n-icon size="22">
+                    <ListSharp />
+                </n-icon>
+                <n-icon size="22">
+                    <ListSharp />
+                </n-icon>
+                <n-icon size="22">
+                    <ListSharp />
+                </n-icon>
+                <n-icon size="22">
+                    <CodeSlashSharp />
+                </n-icon>
+            </n-space>
+            <n-space :item-style="{ alignItems: 'center', display: 'flex' }">
+                <n-icon size="22" @click="data.preview = !data.preview;">
                     <EyeSharp v-if="data.preview" />
                     <EyeOffSharp v-else />
                 </n-icon>
-            </div>
+                <n-popover placement="bottom" trigger="click">
+                    <template #trigger>
+                        <n-icon size="22">
+                            <ListSharp />
+                        </n-icon>
+                    </template>
+                    <div>
+                        目录列表
+                    </div>
+                </n-popover>
+            </n-space>
         </div>
         <div class="markdown-editor__main">
             <div class="markdown-editor__editor">
@@ -72,11 +96,16 @@ if (props.modelValue) {
         justify-content: space-between;
         padding: 0 1rem;
 
-        >div {
-            display: flex;
-            align-items: center;
+
+        .n-icon {
+            transition: color .3s;
             cursor: pointer;
+
+            &:hover {
+                color: #8c63ca;
+            }
         }
+
     }
 
     .markdown-editor__main {

@@ -67,13 +67,18 @@ const add = (post: PostModel) => {
     data.tabName = post.path
 }
 
+const remove = (path: string) => {
+    data.tabs = data.tabs.filter(item => item.path !== path)
+}
+
 defineExpose({
-    add
+    add,
+    remove
 })
 </script>
 <template>
-    <n-tabs v-model:value="data.tabName" type="card" closable @update:value="changeTabs" tab-style="min-width: 120px;"
-        pane-style="height:calc(100vh - 40px);" @close="closeTabs">
+    <n-tabs v-model:value="data.tabName" size="small" type="card" closable @update:value="changeTabs"
+        tab-style="min-width: 120px;" pane-style="height:calc(100vh - 40px);" @close="closeTabs">
         <n-tab-pane class="tab-pane" v-for="panel in data.tabs" :key="panel.path" :tab="panel.path" :name="panel.path"
             display-directive="show:lazy">
             <template #tab>
@@ -82,9 +87,33 @@ defineExpose({
             </template>
             <EditorMarkdown @save="handleSave(panel)" v-model="panel.md" theme="vs"> </EditorMarkdown>
         </n-tab-pane>
+
+        <template #suffix>
+            Suffix
+        </template>
     </n-tabs>
 </template>
 <style lang="less" scoped>
+.n-tabs {
+    :deep(.n-tabs-tab-wrapper) {
+        .n-tabs-tab-pad {
+            display: none;
+        }
+
+        .n-tabs-tab {
+            border-radius: 0;
+            border: 0 !important;
+            border-left: 1px solid var(--n-tab-border-color) !important;
+            background-color: #f1f1fa;
+            color: rgba(51, 51, 51, .7);
+        }
+    }
+
+    :deep(.n-tabs-pad) {
+        background-color: #f9f9f9;
+    }
+}
+
 .tab-pane {
     padding: 0;
 
