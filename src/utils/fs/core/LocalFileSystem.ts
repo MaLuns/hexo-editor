@@ -56,8 +56,8 @@ const isPathExist = async (dir: FileSystemDirectoryHandle, path: string): Promis
 
 /**
  * 创建文件或文件夹
- * @param dir 
- * @param path 
+ * @param dir  根目录的 FileSystemDirectoryHandle
+ * @param path  以为 '/' 结尾，视为创建文件夹
  */
 const createFileOrDir = async (dir: FileSystemDirectoryHandle, path: string) => {
     const paths = path.split('/')
@@ -284,8 +284,13 @@ export default class LocalFileSystem extends AbstractFileSystem {
             if (!config) return
             const { name, type, ...res } = info
             const bool: boolean = config.post_asset_folder
-
             const path = await this.getFullPathByAdd(name, type)
+
+            if (bool && type !== HexoFileType.page) {
+                await createFileOrDir(this._root!, path.replace('.md', '/'))
+            }
+
+            // 创建 .md 文件
             let handle = await createFileOrDir(this._root!, path)
             if (type === HexoFileType.page) {
                 handle = await (<FileSystemDirectoryHandle>handle).getFileHandle('index.md', { create: true }).catch(_ => null)
@@ -297,9 +302,6 @@ export default class LocalFileSystem extends AbstractFileSystem {
             await writer.write(frontmatter)
             await writer.close()
 
-            if (bool && type !== HexoFileType.page) {
-                await (<FileSystemDirectoryHandle>handle).getDirectoryHandle(name.replace('.md', ''), { create: true }).catch(() => null)
-            }
 
             return {
                 path,

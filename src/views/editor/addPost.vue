@@ -5,7 +5,7 @@ import type { FormInst, FormItemRule, FormRules } from 'naive-ui';
 
 const emit = defineEmits(['update:show', 'create'])
 const formRef = ref<FormInst | null>(null)
-
+const message = useMessage()
 const props = defineProps({
     show: Boolean
 })
@@ -69,6 +69,7 @@ const handleValidateClick = () => {
                 if (post) {
                     emit('create', { type, post })
                     emit('update:show', false)
+                    message.success(`创建成功！`)
                 }
             })
         }
