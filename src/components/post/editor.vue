@@ -4,129 +4,128 @@ import { fileStore } from "@/store";
 
 const dialog = useDialog();
 const emit = defineEmits(["select"]);
-const maxHeight = useWindowResize(40);
 
 const data = reactive({
-    tabName: "",
-    tabs: <Array<PostModel>>[],
+	tabName: "",
+	tabs: <Array<PostModel>>[],
 });
 
 const closeTabs = (name: string) => {
-    const index = data.tabs.findIndex((item) => item.path === name);
-    const closeTab = data.tabs[index];
-    const clostFn = () => {
-        data.tabs.splice(index, 1);
-        if (data.tabName === name) {
-            let tab = data.tabs[Math.max(0, index - 1)];
-            data.tabName = tab ? tab.path : "";
-            emit("select", data.tabName);
-        }
-    };
-    if (closeTab.md !== closeTab.frontmatter._content) {
-        dialog.warning({
-            title: "提示",
-            transformOrigin: "center",
-            content: "当前文章未保存，确定关闭吗？",
-            positiveText: "确定",
-            negativeText: "取消",
-            style: {
-                width: "400px",
-                position: "fixed",
-                top: "100px",
-                left: 0,
-                right: 0,
-            },
-            onPositiveClick: () => {
-                clostFn();
-            },
-        });
-    } else {
-        clostFn();
-    }
+	const index = data.tabs.findIndex((item) => item.path === name);
+	const closeTab = data.tabs[index];
+	const clostFn = () => {
+		data.tabs.splice(index, 1);
+		if (data.tabName === name) {
+			let tab = data.tabs[Math.max(0, index - 1)];
+			data.tabName = tab ? tab.path : "";
+			emit("select", data.tabName);
+		}
+	};
+	if (closeTab.md !== closeTab.frontmatter._content) {
+		dialog.warning({
+			title: "提示",
+			transformOrigin: "center",
+			content: "当前文章未保存，确定关闭吗？",
+			positiveText: "确定",
+			negativeText: "取消",
+			style: {
+				width: "400px",
+				position: "fixed",
+				top: "100px",
+				left: 0,
+				right: 0,
+			},
+			onPositiveClick: () => {
+				clostFn();
+			},
+		});
+	} else {
+		clostFn();
+	}
 };
 
 const changeTabs = (path: string) => {
-    const tab = data.tabs.find((item) => item.path === path);
-    emit("select", tab?.path);
+	const tab = data.tabs.find((item) => item.path === path);
+	emit("select", tab?.path);
 };
 
 const handleSave = async (post: PostModel) => {
-    let res = await fileStore.fs?.savePost(post);
-    if (res) {
-        post.frontmatter._content = post.md;
-    } else {
-        window.$message.warning("文章保存失败");
-    }
+	let res = await fileStore.fs?.savePost(post);
+	if (res) {
+		post.frontmatter._content = post.md;
+	} else {
+		window.$message.warning("文章保存失败");
+	}
 };
 
 const add = (post: PostModel) => {
-    let item = data.tabs.find((item) => item.path === post.path);
-    if (!item) {
-        data.tabs.push(post);
-    }
-    data.tabName = post.path;
+	let item = data.tabs.find((item) => item.path === post.path);
+	if (!item) {
+		data.tabs.push(post);
+	}
+	data.tabName = post.path;
 };
 
 const remove = (path: string) => {
-    data.tabs = data.tabs.filter((item) => item.path !== path);
+	data.tabs = data.tabs.filter((item) => item.path !== path);
 };
 
 defineExpose({
-    add,
-    remove,
+	add,
+	remove,
 });
 </script>
 <template>
-    <n-tabs v-model:value="data.tabName" size="small" type="card" closable @update:value="changeTabs" tab-style="min-width: 120px;" pane-style="height:calc(100vh - 40px);" @close="closeTabs">
-        <n-tab-pane class="tab-pane" v-for="panel in data.tabs" :key="panel.path" :tab="panel.path" :name="panel.path" display-directive="show:lazy">
-            <template #tab>
-                {{ panel.name }}
-                <span class="save-tag" v-if="panel.md !== panel.frontmatter._content" title="未保存"></span>
-            </template>
-            <EditorMarkdown @save="handleSave(panel)" v-model="panel.md" theme="vs"> </EditorMarkdown>
-        </n-tab-pane>
+	<n-tabs v-model:value="data.tabName" size="small" type="card" closable @update:value="changeTabs" tab-style="min-width: 120px;" pane-style="height:calc(100vh - 40px);" @close="closeTabs">
+		<n-tab-pane class="tab-pane" v-for="panel in data.tabs" :key="panel.path" :tab="panel.path" :name="panel.path" display-directive="show:lazy">
+			<template #tab>
+				{{ panel.name }}
+				<span class="save-tag" v-if="panel.md !== panel.frontmatter._content" title="未保存"></span>
+			</template>
+			<EditorMarkdown @save="handleSave(panel)" v-model="panel.md" theme="vs"> </EditorMarkdown>
+		</n-tab-pane>
 
-        <template #suffix> Suffix </template>
-    </n-tabs>
+		<template #suffix> Suffix </template>
+	</n-tabs>
 </template>
 <style lang="less" scoped>
 .n-tabs {
-    :deep(.n-tabs-tab-wrapper) {
-        .n-tabs-tab-pad {
-            display: none;
-        }
+	:deep(.n-tabs-tab-wrapper) {
+		.n-tabs-tab-pad {
+			display: none;
+		}
 
-        .n-tabs-tab {
-            border-radius: 0;
-            border: 0 !important;
-            border-left: 1px solid var(--n-tab-border-color) !important;
-            background-color: #f1f1fa;
-            color: rgba(51, 51, 51, 0.7);
-        }
-    }
+		.n-tabs-tab {
+			border-radius: 0;
+			border: 0 !important;
+			border-left: 1px solid var(--n-tab-border-color) !important;
+			background-color: #f1f1fa;
+			color: rgba(51, 51, 51, 0.7);
+		}
+	}
 
-    :deep(.n-tabs-pad) {
-        background-color: #f9f9f9;
-    }
+	:deep(.n-tabs-pad) {
+		background-color: #f9f9f9;
+	}
 }
 
 .tab-pane {
-    padding: 0;
+	padding: 0;
 
-    :deep(.v-md-editor) {
-        box-shadow: none;
-    }
+	:deep(.v-md-editor) {
+		box-shadow: none;
+	}
 }
 
 .save-tag {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #e2bf5d;
-    border-radius: 50%;
-    margin-left: 10px;
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #e2bf5d;
+	border-radius: 50%;
+	margin-left: 10px;
 }
 </style>

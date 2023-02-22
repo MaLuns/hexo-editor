@@ -11,47 +11,47 @@ const escapeSwigTag = (str: string) => str.replace(/{/g, "&#123;").replace(/}/g,
 const unescapeSwigTag = (str: string) => str.replace(/&#123;/g, "{").replace(/&#125;/g, "}");
 
 class Tags {
-    stores: {
-        [k: string]: {
-            ends: boolean;
-            fun: Function;
-        };
-    } = {};
+	stores: {
+		[k: string]: {
+			ends: boolean;
+			fun: Function;
+		};
+	} = {};
 
-    register(name: string, fun: Function, ends?: boolean) {
-        this.stores[name] = {
-            ends: !!ends,
-            fun: fun,
-        };
-    }
+	register(name: string, fun: Function, ends?: boolean) {
+		this.stores[name] = {
+			ends: !!ends,
+			fun: fun,
+		};
+	}
 
-    unregister(name: string) {
-        delete this.stores[name];
-    }
+	unregister(name: string) {
+		delete this.stores[name];
+	}
 
-    render(str: string) {
-        str = str.replace(codeReg, (s) => {
-            return s.match(innerReg) ? escapeSwigTag(s) : s;
-        });
+	render(str: string) {
+		str = str.replace(codeReg, (s) => {
+			return s.match(innerReg) ? escapeSwigTag(s) : s;
+		});
 
-        str = str.replace(innerReg, (substring: string, ...args: any[]) => {
-            const tag = this.stores[args[0]];
-            if (tag && !tag.ends) return tag.fun(args[1].trim().split(" "));
-            return substring;
-        });
+		str = str.replace(innerReg, (substring: string, ...args: any[]) => {
+			const tag = this.stores[args[0]];
+			if (tag && !tag.ends) return tag.fun(args[1].trim().split(" "));
+			return substring;
+		});
 
-        str = str.replace(blockReg, (substring: string, ...args: any[]) => {
-            const tag = this.stores[args[0]];
-            const text = (args[2] || "").replace(/\r\n/g, "\n");
-            if (tag && tag.ends) return tag.fun([args[0], ...args[1].trim().split(" ")], text);
-            return substring;
-        });
+		str = str.replace(blockReg, (substring: string, ...args: any[]) => {
+			const tag = this.stores[args[0]];
+			const text = (args[2] || "").replace(/\r\n/g, "\n");
+			if (tag && tag.ends) return tag.fun([args[0], ...args[1].trim().split(" ")], text);
+			return substring;
+		});
 
-        str = str.replace(codeReg, (s) => {
-            return s.match(unReg) ? unescapeSwigTag(s) : s;
-        });
-        return str;
-    }
+		str = str.replace(codeReg, (s) => {
+			return s.match(unReg) ? unescapeSwigTag(s) : s;
+		});
+		return str;
+	}
 }
 
 const tags = new Tags();

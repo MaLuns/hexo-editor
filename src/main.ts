@@ -12,26 +12,26 @@ import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker"
 
 !customElements.get("editor-preview") && customElements.define("editor-preview", defineCustomElement(EditorPreview));
 self.MonacoEnvironment = {
-    getWorker(_, label) {
-        if (label === "json") {
-            return new jsonWorker();
-        }
-        if (label === "css" || label === "scss" || label === "less") {
-            return new cssWorker();
-        }
-        if (label === "html" || label === "handlebars" || label === "razor") {
-            return new htmlWorker();
-        }
-        if (label === "typescript" || label === "javascript") {
-            return new tsWorker();
-        }
-        return new editorWorker();
-    },
+	getWorker(_, label) {
+		if (label === "json") {
+			return new jsonWorker();
+		}
+		if (label === "css" || label === "scss" || label === "less") {
+			return new cssWorker();
+		}
+		if (label === "html" || label === "handlebars" || label === "razor") {
+			return new htmlWorker();
+		}
+		if (label === "typescript" || label === "javascript") {
+			return new tsWorker();
+		}
+		return new editorWorker();
+	},
 };
 
 const app = createApp(App);
 app.config.compilerOptions.isCustomElement = (tag) => {
-    return ["editor-preview"].includes(tag);
+	return ["editor-preview"].includes(tag);
 };
 app.use(router);
 app.mount("#app");
