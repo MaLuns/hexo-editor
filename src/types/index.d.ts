@@ -1,14 +1,14 @@
 declare interface Post {
-    frontmatter: string
+    frontmatter: string;
     attributes: {
-        [x: string]: any
-    }
-    body: string
-    bodyBegin: number
-    _body: string
-    fileName: string
-    _handle: FileSystemFileHandle
-    _raw: string
+        [x: string]: any;
+    };
+    body: string;
+    bodyBegin: number;
+    _body: string;
+    fileName: string;
+    _handle: FileSystemFileHandle;
+    _raw: string;
 }
 
 declare enum FileStoreTypeEnum {
@@ -18,8 +18,8 @@ declare enum FileStoreTypeEnum {
 }
 
 declare interface FileStoreModel {
-    id?: string
-    name: string
-    type: FileStoreTypeEnum
-    value: FileStoreModel.type extends 'Local' ? FileSystemDirectoryHandle : string
+    id?: string;
+    name: string;
+    type: FileStoreTypeEnum;
+    value: FileStoreModel.type extends "Local" ? FileSystemDirectoryHandle : string;
 }

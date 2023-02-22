@@ -2,85 +2,83 @@
 import { useWindowResize } from "@/composables";
 import { fileStore } from "@/store";
 
-const dialog = useDialog()
-const emit = defineEmits(['select'])
-const maxHeight = useWindowResize(40)
+const dialog = useDialog();
+const emit = defineEmits(["select"]);
+const maxHeight = useWindowResize(40);
 
 const data = reactive({
-    tabName: '',
-    tabs: <Array<PostModel>>[]
-})
+    tabName: "",
+    tabs: <Array<PostModel>>[],
+});
 
 const closeTabs = (name: string) => {
-    const index = data.tabs.findIndex(item => item.path === name)
-    const closeTab = data.tabs[index]
+    const index = data.tabs.findIndex((item) => item.path === name);
+    const closeTab = data.tabs[index];
     const clostFn = () => {
-        data.tabs.splice(index, 1)
+        data.tabs.splice(index, 1);
         if (data.tabName === name) {
-            let tab = data.tabs[Math.max(0, index - 1)]
-            data.tabName = tab ? tab.path : ''
-            emit('select', data.tabName)
+            let tab = data.tabs[Math.max(0, index - 1)];
+            data.tabName = tab ? tab.path : "";
+            emit("select", data.tabName);
         }
-    }
+    };
     if (closeTab.md !== closeTab.frontmatter._content) {
         dialog.warning({
-            title: '提示',
-            transformOrigin: 'center',
-            content: '当前文章未保存，确定关闭吗？',
-            positiveText: '确定',
-            negativeText: '取消',
+            title: "提示",
+            transformOrigin: "center",
+            content: "当前文章未保存，确定关闭吗？",
+            positiveText: "确定",
+            negativeText: "取消",
             style: {
-                width: '400px',
-                position: 'fixed',
-                top: '100px',
+                width: "400px",
+                position: "fixed",
+                top: "100px",
                 left: 0,
-                right: 0
+                right: 0,
             },
             onPositiveClick: () => {
-                clostFn()
-            }
-        })
+                clostFn();
+            },
+        });
     } else {
-        clostFn()
+        clostFn();
     }
-}
+};
 
 const changeTabs = (path: string) => {
-    const tab = data.tabs.find(item => item.path === path)
-    emit('select', tab?.path)
-}
+    const tab = data.tabs.find((item) => item.path === path);
+    emit("select", tab?.path);
+};
 
 const handleSave = async (post: PostModel) => {
-    let res = await fileStore.fs?.savePost(post)
+    let res = await fileStore.fs?.savePost(post);
     if (res) {
-        post.frontmatter._content = post.md
+        post.frontmatter._content = post.md;
     } else {
-        window.$message.warning('文章保存失败')
+        window.$message.warning("文章保存失败");
     }
-}
+};
 
 const add = (post: PostModel) => {
-    let item = data.tabs.find(item => item.path === post.path)
+    let item = data.tabs.find((item) => item.path === post.path);
     if (!item) {
-        data.tabs.push(post)
+        data.tabs.push(post);
     }
-    data.tabName = post.path
-}
+    data.tabName = post.path;
+};
 
 const remove = (path: string) => {
-    data.tabs = data.tabs.filter(item => item.path !== path)
-}
+    data.tabs = data.tabs.filter((item) => item.path !== path);
+};
 
 defineExpose({
     add,
-    remove
-})
+    remove,
+});
 </script>
 <template>
-    <n-tabs v-model:value="data.tabName" size="small" type="card" closable @update:value="changeTabs"
-        tab-style="min-width: 120px;" pane-style="height:calc(100vh - 40px);" @close="closeTabs">
-        <n-tab-pane class="tab-pane" v-for="panel in data.tabs" :key="panel.path" :tab="panel.path" :name="panel.path"
-            display-directive="show:lazy">
+    <n-tabs v-model:value="data.tabName" size="small" type="card" closable @update:value="changeTabs" tab-style="min-width: 120px;" pane-style="height:calc(100vh - 40px);" @close="closeTabs">
+        <n-tab-pane class="tab-pane" v-for="panel in data.tabs" :key="panel.path" :tab="panel.path" :name="panel.path" display-directive="show:lazy">
             <template #tab>
                 {{ panel.name }}
                 <span class="save-tag" v-if="panel.md !== panel.frontmatter._content" title="未保存"></span>
@@ -88,9 +86,7 @@ defineExpose({
             <EditorMarkdown @save="handleSave(panel)" v-model="panel.md" theme="vs"> </EditorMarkdown>
         </n-tab-pane>
 
-        <template #suffix>
-            Suffix
-        </template>
+        <template #suffix> Suffix </template>
     </n-tabs>
 </template>
 <style lang="less" scoped>
@@ -105,7 +101,7 @@ defineExpose({
             border: 0 !important;
             border-left: 1px solid var(--n-tab-border-color) !important;
             background-color: #f1f1fa;
-            color: rgba(51, 51, 51, .7);
+            color: rgba(51, 51, 51, 0.7);
         }
     }
 
@@ -120,7 +116,6 @@ defineExpose({
     :deep(.v-md-editor) {
         box-shadow: none;
     }
-
 }
 
 .save-tag {

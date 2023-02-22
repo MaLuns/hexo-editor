@@ -1,26 +1,26 @@
 <script lang="ts" setup>
-import * as monaco from 'monaco-editor'
-const emit = defineEmits(['change', 'save'])
+import * as monaco from "monaco-editor";
+const emit = defineEmits(["change", "save"]);
 
 const props = defineProps({
     value: String,
     language: {
         type: String,
-        default: 'markdown'
+        default: "markdown",
     },
     theme: {
         type: String,
-        default: 'vs'
+        default: "vs",
     },
     config: Object as PropType<monaco.editor.IStandaloneEditorConstructionOptions>,
     height: {
         type: String,
-        default: '300px'
-    }
-})
+        default: "300px",
+    },
+});
 
-const editContainerRef = ref()
-const containerHeight = ref('0px')
+const editContainerRef = ref();
+const containerHeight = ref("0px");
 let monacoEditor: monaco.editor.IStandaloneCodeEditor | null = null;
 
 const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
@@ -32,16 +32,16 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
     }, */
     fixedOverflowWidgets: true,
     unicodeHighlight: {
-        ambiguousCharacters: false
+        ambiguousCharacters: false,
     },
     glyphMargin: false,
     padding: {
         top: 4,
-        bottom: 4
+        bottom: 4,
     },
     contextmenu: false,
     hover: {
-        enabled: false
+        enabled: false,
     },
     folding: true,
     scrollBeyondLastLine: false,
@@ -49,12 +49,12 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
     hideCursorInOverviewRuler: true,
     scrollbar: {
         /* vertical: 'hidden' */
-        verticalScrollbarSize: 0
-    }
-}
+        verticalScrollbarSize: 0,
+    },
+};
 
 onMounted(() => {
-    containerHeight.value = useAutoParentHeight(props.height)
+    containerHeight.value = useAutoParentHeight(props.height);
     nextTick(() => {
         monacoEditor = monaco.editor.create(editContainerRef.value, {
             ...def_config,
@@ -65,14 +65,14 @@ onMounted(() => {
         });
 
         monacoEditor.onDidChangeModelContent((a) => {
-            emit('change', monacoEditor!.getValue())
+            emit("change", monacoEditor!.getValue());
         });
 
         monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
-            emit('save')
-        })
-    })
-})
+            emit("save");
+        });
+    });
+});
 </script>
 
 <template>

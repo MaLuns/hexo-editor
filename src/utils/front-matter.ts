@@ -1,37 +1,30 @@
 import yaml from "js-yaml";
 
-const optionalByteOrderMark = '\\ufeff?'
-const pattern = '^(' +
-    optionalByteOrderMark +
-    '(= yaml =|---)' +
-    '$([\\s\\S]*?)' +
-    '^(?:\\2|\\.\\.\\.)\\s*' +
-    '$' +
-    '' +
-    '(?:\\n)?)'
+const optionalByteOrderMark = "\\ufeff?";
+const pattern = "^(" + optionalByteOrderMark + "(= yaml =|---)" + "$([\\s\\S]*?)" + "^(?:\\2|\\.\\.\\.)\\s*" + "$" + "" + "(?:\\n)?)";
 
 // NOTE: If this pattern uses the 'g' flag the `regex` variable definition will
 // need to be moved down into the functions that use it.
-const regex = new RegExp(pattern, 'm')
+const regex = new RegExp(pattern, "m");
 
 function split(string: string) {
-    var match = regex.exec(string)
+    var match = regex.exec(string);
     if (!match) {
         return {
             data: undefined,
             content: string,
-        }
+        };
     }
-    const yaml = match[match.length - 1].replace(/^\s+|\s+$/g, '')
+    const yaml = match[match.length - 1].replace(/^\s+|\s+$/g, "");
     return {
         data: yaml,
-        content: string.replace(match[0], ''),
-        separator: match[2] || ''
-    }
+        content: string.replace(match[0], ""),
+        separator: match[2] || "",
+    };
 }
 
 function parse(str: string, options?: yaml.LoadOptions) {
-    if (typeof str !== 'string') throw new TypeError('str is required!');
+    if (typeof str !== "string") throw new TypeError("str is required!");
 
     const splitData = split(str);
     const raw = splitData.data;
@@ -40,7 +33,7 @@ function parse(str: string, options?: yaml.LoadOptions) {
 
     let data: any;
 
-    if (splitData.separator.startsWith(';')) {
+    if (splitData.separator.startsWith(";")) {
         data = parseJSON(raw);
     } else {
         data = parseYAML(raw, options);
@@ -49,11 +42,11 @@ function parse(str: string, options?: yaml.LoadOptions) {
     if (!data) return { _content: str };
 
     // Convert timezone
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
         const item = data[key];
 
         if (item instanceof Date) {
-            data[key] = new Date(item.getTime() + (item.getTimezoneOffset() * 60 * 1000));
+            data[key] = new Date(item.getTime() + item.getTimezoneOffset() * 60 * 1000);
         }
     });
 
@@ -63,7 +56,7 @@ function parse(str: string, options?: yaml.LoadOptions) {
 
 function parseYAML(str: string, options: yaml.LoadOptions | undefined) {
     const result = yaml.load(escapeYAML(str), options);
-    if (typeof result !== 'object') return;
+    if (typeof result !== "object") return;
 
     return result;
 }
@@ -77,13 +70,13 @@ function parseJSON(str: string) {
 }
 
 function escapeYAML(str: string) {
-    if (typeof str !== 'string') throw new TypeError('str is required!');
+    if (typeof str !== "string") throw new TypeError("str is required!");
 
     return str.replace(/\n(\t+)/g, (match, tabs) => {
-        let result = '\n';
+        let result = "\n";
 
         for (let i = 0, len = tabs.length; i < len; i++) {
-            result += '  ';
+            result += "  ";
         }
 
         return result;
@@ -91,27 +84,27 @@ function escapeYAML(str: string) {
 }
 
 function stringify(
-    obj: { [k: string]: any, _content?: string | undefined },
+    obj: { [k: string]: any; _content?: string | undefined },
     options: yaml.DumpOptions & {
-        mode?: string
-        prefixSeparator?: boolean
-        separator?: string
+        mode?: string;
+        prefixSeparator?: boolean;
+        separator?: string;
     } = {}
 ) {
-    if (!obj) throw new TypeError('obj is required!');
+    if (!obj) throw new TypeError("obj is required!");
 
-    const { _content: content = '' } = obj;
+    const { _content: content = "" } = obj;
     delete obj._content;
 
     if (!Object.keys(obj).length) return content;
 
     const { mode, prefixSeparator } = options;
-    const separator = options.separator || (mode === 'json' ? ';;;' : '---');
-    let result = '';
+    const separator = options.separator || (mode === "json" ? ";;;" : "---");
+    let result = "";
 
     if (prefixSeparator) result += `${separator}\n`;
 
-    if (mode === 'json') {
+    if (mode === "json") {
         result += stringifyJSON(obj);
     } else {
         result += stringifyYAML(obj, options);
@@ -161,15 +154,17 @@ function stringifyYAML(obj: any, options?: yaml.DumpOptions | undefined) {
 }
 
 function stringifyJSON(obj: any) {
-    return JSON.stringify(obj, null, '  ')
-        // Remove indention
-        .replace(/\n {2}/g, () => '\n')
-        // Remove prefixing and trailing braces
-        .replace(/^{\n|}$/g, '');
+    return (
+        JSON.stringify(obj, null, "  ")
+            // Remove indention
+            .replace(/\n {2}/g, () => "\n")
+            // Remove prefixing and trailing braces
+            .replace(/^{\n|}$/g, "")
+    );
 }
 
 function doubleDigit(num: number) {
-    return (Array(2).fill('0').join('') + num).slice(-2)
+    return (Array(2).fill("0").join("") + num).slice(-2);
 }
 
 function formatDate(date: Date) {
@@ -180,5 +175,5 @@ export default {
     parse,
     split,
     escape: escapeYAML,
-    stringify
+    stringify,
 };

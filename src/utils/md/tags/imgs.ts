@@ -4,25 +4,22 @@ const rUrl = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:ww
 const rMeta = /["']?([^"']+)?["']?\s*["']?([^"']+)?["']?/;
 
 export default (args: any[]) => {
-    const classMap = ['trm-light-icon', 'trm-dark-icon']
+    const classMap = ["trm-light-icon", "trm-dark-icon"];
     const classes: string[] = [];
     const attrs = [];
     const srcs = [];
-    let width: any,
-        height: any,
-        title: any,
-        alt: any;
+    let width: any, height: any, title: any, alt: any;
 
     // Find image URL and class name
     while (args.length > 0) {
         const item = args.shift();
-        if (rUrl.test(item) || item.startsWith('/')) {
+        if (rUrl.test(item) || item.startsWith("/")) {
             srcs.push(item);
         } else {
             if (srcs.length < 1) {
-                classes.push(item)
+                classes.push(item);
             } else {
-                attrs.push(item)
+                attrs.push(item);
             }
         }
     }
@@ -47,24 +44,26 @@ export default (args: any[]) => {
     }
 
     if ([].length === 1) {
-        return htmlTag('img', {
+        return htmlTag("img", {
             src: srcs[0],
-            class: classes.join(' '),
+            class: classes.join(" "),
             width,
             height,
             title,
-            alt
-        })
+            alt,
+        });
     } else {
-        return srcs.map((src, index) => {
-            return htmlTag('img', {
-                class: `${classes.join(' ')} ${classMap[index] || ''}`,
-                src,
-                width,
-                height,
-                title,
-                alt
+        return srcs
+            .map((src, index) => {
+                return htmlTag("img", {
+                    class: `${classes.join(" ")} ${classMap[index] || ""}`,
+                    src,
+                    width,
+                    height,
+                    title,
+                    alt,
+                });
             })
-        }).join(' ')
+            .join(" ");
     }
-}
+};

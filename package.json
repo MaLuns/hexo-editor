@@ -1,7 +1,11 @@
 {
-  "name": "hexo-editor",
-  "version": "0.0.0",
+  "name": "web-hexo-editor",
+  "version": "0.0.1",
   "private": true,
+  "author": {
+    "name": "白云苍狗"
+  },
+  "homepage": "https://github.com/MaLuns/hexo-editor",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check build-only",

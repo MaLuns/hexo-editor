@@ -1,41 +1,44 @@
-import { htmlTag } from "@/utils"
+import { htmlTag } from "@/utils";
 import { renderer } from "../index";
 
 /**
  * 相册
- * @param {*} args 
- * @param {*} content 
- * @returns 
+ * @param {*} args
+ * @param {*} content
+ * @returns
  */
 export const galleryGroup = (args: any[], content: string) => {
     return `<div class="fj-gallery no-fancybox">
-    ${content.split('\n').map(md => renderer(md)).join('')} </div>`
-}
+    ${content
+        .split("\n")
+        .map((md) => renderer(md))
+        .join("")} </div>`;
+};
 
 /**
  * 相册图片
- * @param {*} args 
- * @returns 
+ * @param {*} args
+ * @returns
  */
 export const galleryItem = (args: any[]) => {
-    return htmlTag('img', {
-        src: (args[0]),
-        'data-src': (args[1])
-    })
-}
+    return htmlTag("img", {
+        src: args[0],
+        "data-src": args[1],
+    });
+};
 
 /**
  * 相册库
- * @param {*} args 
- * @returns 
+ * @param {*} args
+ * @returns
  */
 export const gallery = (args: any[]) => {
-    const name = args[0]
-    const desrc = args[1]
-    const url = (args[2])
-    const img = (args[3])
-    const col = args[4] || 6
-    const ratio = args[5] || 80
+    const name = args[0];
+    const desrc = args[1];
+    const url = args[2];
+    const img = args[3];
+    const col = args[4] || 6;
+    const ratio = args[5] || 80;
 
     return `
 <div class="col-lg-${col}">
@@ -50,5 +53,5 @@ export const gallery = (args: any[]) => {
             </div>
         </div>
     </a>
-</div>`
-}
+</div>`;
+};

@@ -1,36 +1,36 @@
 <script lang="ts" setup>
 import { EyeSharp, EyeOffSharp, ListSharp, CodeSlashSharp } from "@vicons/ionicons5";
-import { debounce } from '@/utils';
-import { renderer } from '@/utils/md';
+import { debounce } from "@/utils";
+import { renderer } from "@/utils/md";
 
-const emit = defineEmits(['update:modelValue', 'save'])
+const emit = defineEmits(["update:modelValue", "save"]);
 
 const props = defineProps({
     modelValue: String,
     theme: String,
     preview: {
         type: Boolean,
-        default: true
-    }
-})
+        default: true,
+    },
+});
 
 const data = reactive({
-    preview: props.preview
-})
+    preview: props.preview,
+});
 
-const htmlText = ref('')
+const htmlText = ref("");
 
 const renderMarkdown = debounce(async (val: string) => {
-    htmlText.value = renderer(val)
-}, 300)
+    htmlText.value = renderer(val);
+}, 300);
 
 const handleChange = async (val: string) => {
-    emit('update:modelValue', val)
-    renderMarkdown(val)
-}
+    emit("update:modelValue", val);
+    renderMarkdown(val);
+};
 
 if (props.modelValue) {
-    renderMarkdown(props.modelValue)
+    renderMarkdown(props.modelValue);
 }
 </script>
 <template>
@@ -54,7 +54,7 @@ if (props.modelValue) {
                 </n-icon>
             </n-space>
             <n-space :item-style="{ alignItems: 'center', display: 'flex' }">
-                <n-icon size="22" @click="data.preview = !data.preview;">
+                <n-icon size="22" @click="data.preview = !data.preview">
                     <EyeSharp v-if="data.preview" />
                     <EyeOffSharp v-else />
                 </n-icon>
@@ -64,17 +64,13 @@ if (props.modelValue) {
                             <ListSharp />
                         </n-icon>
                     </template>
-                    <div>
-                        目录列表
-                    </div>
+                    <div>目录列表</div>
                 </n-popover>
             </n-space>
         </div>
         <div class="markdown-editor__main">
             <div class="markdown-editor__editor">
-                <EditorMonaco :value="props.modelValue" @save="$emit('save')" @change="handleChange" language="md"
-                    :theme="props.theme">
-                </EditorMonaco>
+                <EditorMonaco :value="props.modelValue" @save="$emit('save')" @change="handleChange" language="md" :theme="props.theme"> </EditorMonaco>
             </div>
             <div class="markdown-editor__preview" v-if="data.preview">
                 <editor-preview class="editor-preview" :html="htmlText"></editor-preview>
@@ -96,16 +92,14 @@ if (props.modelValue) {
         justify-content: space-between;
         padding: 0 1rem;
 
-
         .n-icon {
-            transition: color .3s;
+            transition: color 0.3s;
             cursor: pointer;
 
             &:hover {
                 color: #8c63ca;
             }
         }
-
     }
 
     .markdown-editor__main {

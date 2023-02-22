@@ -1,13 +1,7 @@
 export default class IDB<T> {
     private db: IDBDatabase | null = null;
 
-    constructor(
-        private readonly dbName: string,
-        private readonly storeName: string,
-        private readonly version: number,
-        private readonly keyPath?: keyof T & string
-    ) {
-    }
+    constructor(private readonly dbName: string, private readonly storeName: string, private readonly version: number, private readonly keyPath?: keyof T & string) {}
 
     private async _open(): Promise<IDBDatabase> {
         if (this.db) return Promise.resolve(this.db);
@@ -20,12 +14,12 @@ export default class IDB<T> {
                         keyPath: this.keyPath ?? undefined,
                     });
 
-                    store.createIndex('', '')
+                    store.createIndex("", "");
                 }
-                this.db = db
+                this.db = db;
             };
             request.onsuccess = (event) => {
-                this.db = request.result
+                this.db = request.result;
                 resolve(request.result);
             };
             request.onerror = (event) => {

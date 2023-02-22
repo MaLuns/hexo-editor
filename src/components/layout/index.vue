@@ -3,7 +3,7 @@ import { themmStore } from "@/store";
 </script>
 <template>
     <div class="layout">
-        <div class="layout-header">
+        <div class="layout-sider">
             <LayoutSider></LayoutSider>
         </div>
         <div class="layout-main">
@@ -21,9 +21,8 @@ import { themmStore } from "@/store";
     height: 100vh;
     overflow: hidden;
 
-    .layout-header {
-        width: v-bind('themmStore.config.layoutSiderWidth');
-        border-right: 1px solid #eee;
+    .layout-sider {
+        width: v-bind("themmStore.config.layoutSiderWidth");
         flex-shrink: 0;
         box-sizing: border-box;
     }

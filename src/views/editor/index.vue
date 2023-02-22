@@ -1,73 +1,73 @@
 <script lang="ts" setup>
-import { fileStore, themmStore } from '@/store';
+import { fileStore, themmStore } from "@/store";
 import { DocumentTextOutline } from "@vicons/ionicons5";
 import AddPost from "./addPost.vue";
 
-const message = useMessage()
-const postEditorRef = ref()
-const showModal = ref(false)
+const message = useMessage();
+const postEditorRef = ref();
+const showModal = ref(false);
 
 const data = reactive({
     drafts: <PostModel[]>[],
     posts: <PostModel[]>[],
     pages: <PostModel[]>[],
-    current: '',
+    current: "",
     openPosts: <PostModel[]>[],
     all: [
-        { title: '草稿', key: 'drafts' },
-        { title: '已发布', key: 'posts' },
-        { title: '页面', key: 'pages' }
-    ]
-})
+        { title: "草稿", key: "drafts" },
+        { title: "已发布", key: "posts" },
+        { title: "页面", key: "pages" },
+    ],
+});
 
 const init = () => {
-    fileStore.fs?.getDraftDirectory().then(res => {
-        data.drafts = res
-    })
-    fileStore.fs?.getPostDirectory().then(res => {
-        data.posts = res
-    })
-    fileStore.fs?.getPageFiles().then(res => {
-        data.pages = res
-    })
-}
+    fileStore.fs?.getDraftDirectory().then((res) => {
+        data.drafts = res;
+    });
+    fileStore.fs?.getPostDirectory().then((res) => {
+        data.posts = res;
+    });
+    fileStore.fs?.getPageFiles().then((res) => {
+        data.pages = res;
+    });
+};
 
 const selectPost = (post: PostModel) => {
-    postEditorRef.value.add(post)
-    data.current = post.path
-}
+    postEditorRef.value.add(post);
+    data.current = post.path;
+};
 
-const createPost = (newData: { type: HexoFileType, post: PostModel }) => {
+const createPost = (newData: { type: HexoFileType; post: PostModel }) => {
     switch (newData.type) {
         case 1:
-            data.posts.unshift(newData.post)
+            data.posts.unshift(newData.post);
             break;
         case 2:
-            data.drafts.unshift(newData.post)
+            data.drafts.unshift(newData.post);
             break;
         case 3:
-            data.pages.unshift(newData.post)
+            data.pages.unshift(newData.post);
             break;
     }
-}
+};
 
 const handleDelete = (post: PostModel) => {
-    fileStore.fs?.deletePost(post.path).then((res) => {
+    fileStore.fs?.deleteFile(post.path).then((res) => {
         if (res) {
-            message.info('删除成功！')
+            message.info("删除成功！");
         } else {
-            message.error('删除失败！')
+            message.error("删除失败！");
         }
-    })
-}
+    });
+};
 
-init()
+init();
 </script>
 <template>
     <main>
         <div class="editor-aside">
             <div class="editor-aside__header">
-                <n-button type="primary" secondary @click="showModal = true;">
+                <n-button type="primary" secondary @click="showModal = true">
                     <template #icon>
                         <n-icon>
                             <DocumentTextOutline />
@@ -79,13 +79,8 @@ init()
             <n-scrollbar style="max-height: calc(100% - 30px)">
                 <n-collapse class="demosss" arrow-placement="right" :default-expanded-names="['posts']">
                     <n-collapse-item v-for="item in data.all" :name="item.key">
-                        <template #header>
-                            {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}）
-                        </template>
-                        <PostList :current="data.current" :width="themmStore.config.editorAsideWidth" :type="item.key"
-                            :list="(data[item.key as keyof typeof data] as PostModel[])" @selectPost="selectPost"
-                            @delete="handleDelete">
-                        </PostList>
+                        <template #header> {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}） </template>
+                        <PostList :current="data.current" :width="themmStore.config.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @selectPost="selectPost" @delete="handleDelete"> </PostList>
                     </n-collapse-item>
                 </n-collapse>
             </n-scrollbar>
@@ -103,7 +98,7 @@ main {
     overflow: hidden;
 
     .editor-aside {
-        width: v-bind('themmStore.config.editorAsideWidth');
+        width: v-bind("themmStore.config.editorAsideWidth");
         border-right: 1px solid #eee;
         flex-shrink: 0;
 
@@ -123,7 +118,6 @@ main {
     }
 
     .demosss {
-
         :deep(.n-collapse-item__header),
         :deep(.n-collapse-item) {
             padding: 0 !important;
