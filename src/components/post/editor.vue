@@ -1,13 +1,18 @@
 <script lang="ts" setup>
-import { useWindowResize } from "@/composables";
+import { CloseSharp } from "@vicons/ionicons5";
 import { fileStore } from "@/store";
 
 const dialog = useDialog();
 const emit = defineEmits(["select"]);
 
+const options = [
+	{ label: "关闭其他", value: "other" },
+	{ label: "关闭已保存", value: "save" },
+	{ label: "全部关闭", value: "all" },
+];
 const data = reactive({
 	tabName: "",
-	tabs: <Array<PostModel>>[],
+	tabs: [] as Array<PostModel>,
 });
 
 const closeTabs = (name: string) => {
@@ -58,6 +63,27 @@ const handleSave = async (post: PostModel) => {
 	}
 };
 
+const handleCloseTabs = (val: string) => {
+	if (val === "other") {
+		data.tabs = data.tabs.filter((item) => item.path === data.tabName);
+	} else if (val === "save") {
+		data.tabs = data.tabs.filter((item) => item.md !== item.frontmatter._content);
+		if (data.tabs.length) {
+			const tab = data.tabs.find((item) => item.path === data.tabName);
+			if (!tab) {
+				data.tabName = data.tabs[0].path;
+			}
+		} else {
+			data.tabName = "";
+		}
+		emit("select", data.tabName);
+	} else {
+		data.tabs = [];
+		data.tabName = "";
+		emit("select", "");
+	}
+};
+
 const add = (post: PostModel) => {
 	let item = data.tabs.find((item) => item.path === post.path);
 	if (!item) {
@@ -76,16 +102,22 @@ defineExpose({
 });
 </script>
 <template>
-	<n-tabs v-model:value="data.tabName" size="small" type="card" closable @update:value="changeTabs" tab-style="min-width: 120px;" pane-style="height:calc(100vh - 40px);" @close="closeTabs">
-		<n-tab-pane class="tab-pane" v-for="panel in data.tabs" :key="panel.path" :tab="panel.path" :name="panel.path" display-directive="show:lazy">
+	<n-tabs v-model:value="data.tabName" size="small" type="card" closable tab-style="min-width: 120px;" pane-style="height:calc(100vh - 40px);" @update:value="changeTabs" @close="closeTabs">
+		<n-tab-pane v-for="panel in data.tabs" :key="panel.path" class="tab-pane" :tab="panel.path" :name="panel.path" display-directive="show:lazy">
 			<template #tab>
 				{{ panel.name }}
-				<span class="save-tag" v-if="panel.md !== panel.frontmatter._content" title="未保存"></span>
+				<span v-if="panel.md !== panel.frontmatter._content" class="save-tag" title="未保存"></span>
 			</template>
-			<EditorMarkdown @save="handleSave(panel)" v-model="panel.md" theme="vs"> </EditorMarkdown>
+			<EditorMarkdown v-model="panel.md" :path="panel.path" @save="handleSave(panel)"> </EditorMarkdown>
 		</n-tab-pane>
 
-		<template #suffix> Suffix </template>
+		<template v-if="data.tabs.length" #suffix>
+			<n-popselect :options="options" @change="handleCloseTabs">
+				<n-icon size="22">
+					<CloseSharp />
+				</n-icon>
+			</n-popselect>
+		</template>
 	</n-tabs>
 </template>
 <style lang="less" scoped>
@@ -94,7 +126,6 @@ defineExpose({
 		.n-tabs-tab-pad {
 			display: none;
 		}
-
 		.n-tabs-tab {
 			border-radius: 0;
 			border: 0 !important;
@@ -106,6 +137,11 @@ defineExpose({
 
 	:deep(.n-tabs-pad) {
 		background-color: #f9f9f9;
+	}
+	:deep(.n-tabs-nav__suffix) {
+		background-color: #f9f9f9;
+		cursor: pointer;
+		padding: 0 8px;
 	}
 }
 

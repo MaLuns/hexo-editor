@@ -6,21 +6,18 @@ import AddPost from "./addPost.vue";
 const message = useMessage();
 const postEditorRef = ref();
 const showModal = ref(false);
-const a: Array<{
-	title: string;
-	key: string;
-}> = [
-	{ title: "草稿", key: "drafts" },
-	{ title: "已发布", key: "posts" },
-	{ title: "页面", key: "pages" },
-];
+
 const data = reactive({
-	drafts: <Array<PostModel>>[],
-	posts: <Array<PostModel>>[],
-	pages: <Array<PostModel>>[],
+	drafts: [] as Array<PostModel>,
+	posts: [] as Array<PostModel>,
+	pages: [] as Array<PostModel>,
 	current: "",
-	openPosts: <Array<PostModel>>[],
-	all: a
+	openPosts: [] as Array<PostModel>,
+	all: [
+		{ title: "草稿", key: "drafts" },
+		{ title: "已发布", key: "posts" },
+		{ title: "页面", key: "pages" },
+	],
 });
 
 const init = () => {
@@ -54,12 +51,53 @@ const createPost = (newData: { type: HexoFileType; post: PostModel }) => {
 	}
 };
 
-const handleDelete = (post: PostModel) => {
-	fileStore.fs?.deleteFile(post.path).then((res) => {
-		if (res) {
-			message.info("删除成功！");
+const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpublishPost") => {
+	const getType = (path: string) => {
+		if (path.includes("_drafts")) {
+			return "drafts";
+		} else if (path.includes("_posts")) {
+			return "posts";
 		} else {
-			message.error("删除失败！");
+			return "pages";
+		}
+	};
+	const filterData = (key: "drafts" | "posts" | "pages", path: string) => (data[key] = data[key].filter((item) => item.path !== path));
+	const messages = {
+		deleteFile: {
+			success: "删除成功！",
+			error: "删除失败！",
+			fun: (post: PostModel) => {
+				const key = getType(post.path);
+				filterData(key, post.path);
+			},
+		},
+		publishPost: {
+			success: "发布成功！",
+			error: "发布失败！",
+			fun: (post: PostModel) => {
+				filterData("drafts", post.path);
+				fileStore.fs?.getPostDirectory().then((res) => {
+					data.posts = res;
+				});
+			},
+		},
+		unpublishPost: {
+			success: "取消发布成功！",
+			error: "取消发布失败！",
+			fun: (post: PostModel) => {
+				filterData("posts", post.path);
+				fileStore.fs?.getDraftDirectory().then((res) => {
+					data.drafts = res;
+				});
+			},
+		},
+	};
+	fileStore.fs![key](post.path).then((res) => {
+		if (res) {
+			message.info(messages[key].success);
+			messages[key].fun(post);
+		} else {
+			message.error(messages[key].error);
 		}
 	});
 };
@@ -81,9 +119,9 @@ init();
 			</div>
 			<n-scrollbar style="max-height: calc(100% - 30px)">
 				<n-collapse class="demosss" arrow-placement="right" :default-expanded-names="['posts']">
-					<n-collapse-item v-for="item in data.all" :name="item.key">
+					<n-collapse-item v-for="item in data.all" :key="item.key" :name="item.key">
 						<template #header> {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}） </template>
-						<PostList :current="data.current" :width="themmStore.config.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @selectPost="selectPost" @delete="handleDelete"> </PostList>
+						<PostList :current="data.current" :width="themmStore.config.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="init()"> </PostList>
 					</n-collapse-item>
 				</n-collapse>
 			</n-scrollbar>

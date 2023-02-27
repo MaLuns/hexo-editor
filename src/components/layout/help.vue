@@ -34,8 +34,8 @@ defineExpose({
 });
 </script>
 <template>
-	<ShowModal v-model:show="showModal" width="600px" title="Markdown 语法示例">
-		<n-data-table :max-height="500" :columns="columns" :data="markdown" striped :render-cell="renderCell" />
+	<ShowModal v-model:show="showModal" width="800px" title="Markdown 语法示例">
+		<n-data-table :max-height="400" :columns="columns" :data="markdown" striped :render-cell="renderCell" />
 	</ShowModal>
 </template>
 <style lang="less" scoped>

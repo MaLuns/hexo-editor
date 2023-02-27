@@ -66,7 +66,6 @@ onMounted(() => {
 			...def_config,
 			...props.config,
 			language: props.language,
-			theme: props.theme,
 			value: props.value,
 		});
 

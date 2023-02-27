@@ -79,4 +79,11 @@ export default abstract class AbstractFileSystem {
 	 * @param type
 	 */
 	abstract getFullPathByAdd(name: string, type: HexoFileType): Promise<string>;
+
+	/**
+	 * 转换预览文章中 图片路径
+	 * @param text HTML 片段
+	 * @param path 文章路径
+	 */
+	abstract transformImgUrl(text: string, path: string): Promise<string>;
 }

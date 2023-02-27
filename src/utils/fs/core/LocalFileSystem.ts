@@ -136,6 +136,7 @@ export default class LocalFileSystem extends AbstractFileSystem {
 	_root: FileSystemDirectoryHandle | undefined;
 	_hexo_config: YamlConfig | undefined;
 	_hexo_theme_config: YamlConfig | undefined;
+	_cache_img: { [k: string]: string } = {};
 
 	/**
 	 * 跟据路径返回 FileSystemHandle
@@ -283,7 +284,7 @@ export default class LocalFileSystem extends AbstractFileSystem {
 			const posts: PostModel[] = [];
 			for await (const data of dir.entries()) {
 				const [, value] = data as [string, FileSystemDirectoryHandle | FileSystemFileHandle];
-				if (value.name.startsWith("")) break;
+				if (value.name.startsWith("_")) break;
 				if (value.kind === "directory") {
 					posts.push(...(await getPage(value, `${path}/${value.name}`)));
 				} else {
@@ -323,7 +324,7 @@ export default class LocalFileSystem extends AbstractFileSystem {
 			// eslint-disable-next-line no-unsafe-optional-chaining
 			for await (const data of postDirectoryHandle?.entries()) {
 				const [, value] = data as [string, FileSystemDirectoryHandle | FileSystemFileHandle];
-				if (value.kind === "file") {
+				if (value.kind === "file" && value.name.endsWith(".md")) {
 					const post = await parsePost(value);
 					post.path = `${hexoThemeConfig.source_dir}/${name}/${value.name}`;
 					posts.push(post);
@@ -347,8 +348,11 @@ export default class LocalFileSystem extends AbstractFileSystem {
 	}
 
 	async getImageUrl(path: string): Promise<string> {
-		const file = await this._getHandle(path, true);
-		return file ? URL.createObjectURL(await file.getFile()) : "";
+		if (!this._cache_img[path]) {
+			const file = await this._getHandle(path, true);
+			this._cache_img[path] = file ? URL.createObjectURL(await file.getFile()) : "";
+		}
+		return this._cache_img[path];
 	}
 
 	async addPostOrPage(info: PostOrPageModel): Promise<PostModel | undefined> {
@@ -473,17 +477,17 @@ export default class LocalFileSystem extends AbstractFileSystem {
 			flag = flag && (await conpyFile(sourceFile, draftDir));
 
 			const bool = await this._isPostAssetFolder();
-			const postDir = await this._getDraftsDirHandle();
+			const postDir = await this._getPostDirHandle();
 			const paths = path.split("/");
 			const fileName = <string>paths.pop();
 			const dirName = fileName.replace(".md", "");
 
 			if (bool && postDir) {
-				const draftAssetsDir = await postDir.getDirectoryHandle(dirName, { create: false }).catch(() => null);
+				const postAssetsDir = await postDir.getDirectoryHandle(dirName, { create: false }).catch(() => null);
 				// 如果存在资源文件夹
-				if (draftAssetsDir) {
-					const postAssetsDir = await draftDir.getDirectoryHandle(dirName, { create: true });
-					flag = flag && (await copyDirectory(draftAssetsDir, postAssetsDir));
+				if (postAssetsDir) {
+					const draftAssetsDir = await draftDir.getDirectoryHandle(dirName, { create: true });
+					flag = flag && (await copyDirectory(postAssetsDir, draftAssetsDir));
 
 					if (flag) postDir?.removeEntry(dirName, { recursive: true });
 				}
@@ -515,5 +519,23 @@ export default class LocalFileSystem extends AbstractFileSystem {
 				break;
 		}
 		return path;
+	}
+
+	async transformImgUrl(text: string, path: string): Promise<string> {
+		const reg = /(?<=(img[^>]*src="))[^"]*/g;
+		const srcs = text.match(reg);
+		const imgs: { [k: string]: string } = {};
+		if (srcs) {
+			for (let index = 0; index < srcs.length; index++) {
+				const src = srcs[index];
+				if (!/^(#|\/\/|http(s)?:)/.test(src)) {
+					imgs[src] = await this.getImageUrl("source" + src);
+				}
+			}
+			text = text.replace(reg, (str) => imgs[str] || str);
+			return text;
+		} else {
+			return text;
+		}
 	}
 }

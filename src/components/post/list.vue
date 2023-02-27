@@ -1,16 +1,25 @@
 <script lang="ts" setup>
-import { DocumentText, Bug, ArrowUndoCircle, Send } from "@vicons/ionicons5";
+import { DocumentText, Bug, ArrowUndoCircle, Send, RefreshSharp } from "@vicons/ionicons5";
 import { NAvatar, NIcon, NText, NTime } from "naive-ui";
-const emit = defineEmits(["selectPost", "publish", "unpublish", "delete"]);
+const emit = defineEmits(["selectPost", "publish", "unpublish", "delete", "refresh"]);
 
 const props = defineProps({
 	list: {
 		type: Array<PostModel>,
 		default: [],
 	},
-	current: String,
-	width: String,
-	type: String,
+	current: {
+		type: String,
+		default: "",
+	},
+	width: {
+		type: String,
+		default: "200px",
+	},
+	type: {
+		type: String,
+		default: "",
+	},
 });
 
 const renderIcon = (icon: Component) => {
@@ -22,6 +31,12 @@ const renderIcon = (icon: Component) => {
 };
 
 const menuOptions = [
+	{
+		label: "刷新列表",
+		key: "refresh",
+		icon: renderIcon(markRaw(RefreshSharp)),
+		menu_kesy: true,
+	},
 	{
 		label: "发布文章",
 		key: "publish",
@@ -48,16 +63,14 @@ const showDropdownRef = ref(false);
 const xRef = ref(0);
 const yRef = ref(0);
 const data = reactive({
-	options: <
-		{
-			key: string;
-			label?: string;
-			type?: string;
-			menu_kesy?: boolean | string[];
-			disabled?: boolean;
-			render?: any;
-		}[]
-	>[],
+	options: [] as Array<{
+		key: string;
+		label?: string;
+		type?: string;
+		menu_kesy?: boolean | string[];
+		disabled?: boolean;
+		render?: any;
+	}>,
 });
 
 let currentPost: PostModel | null = null;
@@ -121,7 +134,7 @@ const handleSelect = (key: "publish" | "unpublish" | "delete") => {
 </script>
 <template>
 	<n-list class="post-list__list" @contextmenu="handleContextMenu">
-		<n-list-item v-for="item in props.list" :key="item.path" @click="emit('selectPost', item)" :class="{ acitve: item.path === props.current }" @mouseenter="handleMouseenter(item)">
+		<n-list-item v-for="item in props.list" :key="item.path" :class="{ acitve: item.path === props.current }" @click="emit('selectPost', item)" @mouseenter="handleMouseenter(item)">
 			<n-thing>
 				<template #header>
 					<n-ellipsis :style="{ 'max-width': 'calc(' + props.width + ' - 60px)' }" :tooltip="false" style="font-size: 14px; line-height: 1.5">

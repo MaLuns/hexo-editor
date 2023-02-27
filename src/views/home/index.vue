@@ -18,7 +18,7 @@ window.$message = useMessage();
 const db = new DataDB<FileStoreModel>("hexo-editor-file", "fs", 1);
 
 const data = reactive({
-	list: <Array<any>>[],
+	list: [] as Array<any>,
 });
 
 const renderIcon = (type: FileStoreTypeEnum) => {

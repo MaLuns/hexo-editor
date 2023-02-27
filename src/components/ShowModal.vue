@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+defineEmits(["update:show"]);
 const props = defineProps({
 	show: {
 		type: Boolean,

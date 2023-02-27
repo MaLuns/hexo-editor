@@ -1,3 +1,5 @@
+import { renderer } from "../index";
+
 export default (args: any[], content: string) => {
 	const tabBlock = /<!--\s*tab (.*?)\s*-->\n([\w\W\s\S]*?)<!--\s*endtab\s*-->/g;
 
@@ -20,12 +22,12 @@ export default (args: any[], content: string) => {
 
 	for (let i = 0; i < matches.length; i += 2) {
 		const tabParameters = matches[i].split("@");
-		const postContent = matches[i + 1];
+		let postContent = matches[i + 1];
 		let tabCaption = tabParameters[0] || "";
 		let tabIcon = tabParameters[1] || "";
 		let tabHref = "";
 
-		/* postContent = postContent; */
+		postContent = renderer(postContent);
 
 		tabId += 1;
 		tabHref = (tabName + " " + tabId).toLowerCase().split(" ").join("-");
