@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { fileStore } from "@/store";
+import { registerHook } from "@/core/hook";
+import { fileStore, themmStore } from "@/store";
 import { debounce } from "@/utils";
+import { regPaste } from "@/utils/editor";
 import { renderer } from "@/utils/md";
 
 const emit = defineEmits(["update:modelValue", "save"]);
-
 const props = defineProps({
 	modelValue: {
 		type: String,
@@ -20,6 +21,7 @@ const props = defineProps({
 	},
 });
 
+const editorMonacoRef = ref();
 const data = reactive({
 	preview: props.preview,
 });
@@ -38,6 +40,14 @@ const handleChange = async (val: string) => {
 if (props.modelValue) {
 	renderMarkdown(props.modelValue);
 }
+
+registerHook(
+	"MONACO_READY",
+	(payload) => {
+		regPaste(payload.editor);
+	},
+	true
+);
 </script>
 <template>
 	<div class="markdown-editor">
@@ -46,7 +56,7 @@ if (props.modelValue) {
 		</div> -->
 		<div class="markdown-editor__main">
 			<div class="markdown-editor__editor">
-				<EditorMonaco :value="props.modelValue" language="md" @save="$emit('save')" @change="handleChange"> </EditorMonaco>
+				<EditorMonaco ref="editorMonacoRef" :value="props.modelValue" language="md" :theme="themmStore.editorTheme" @save="$emit('save')" @change="handleChange"> </EditorMonaco>
 			</div>
 			<div v-if="data.preview" class="markdown-editor__preview">
 				<editor-preview class="editor-preview" :html="htmlText"></editor-preview>

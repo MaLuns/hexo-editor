@@ -1,6 +1,7 @@
 import yaml from "js-yaml";
 import fm from "@/utils/front-matter";
 import AbstractFileSystem from "./AbstractFileSystem";
+import { formatDate } from "@/utils";
 
 enum HexoFileType {
 	post = 1,
@@ -133,13 +134,14 @@ const yamlDumpOpt = {
 };
 
 export default class LocalFileSystem extends AbstractFileSystem {
+	_count = 0;
 	_root: FileSystemDirectoryHandle | undefined;
 	_hexo_config: YamlConfig | undefined;
 	_hexo_theme_config: YamlConfig | undefined;
 	_cache_img: { [k: string]: string } = {};
 
 	/**
-	 * 跟据路径返回 FileSystemHandle
+	 * 跟据路径返回 FileSystemHandle （不会自动创建）
 	 * @param path
 	 */
 	async _getHandle(path: string): Promise<FileSystemDirectoryHandle | null>;
@@ -343,8 +345,27 @@ export default class LocalFileSystem extends AbstractFileSystem {
 		return this._getPostsByType("draft");
 	}
 
-	async uploadImage(): Promise<string> {
-		throw new Error("Method not implemented.");
+	async uploadImage(file: File, path: string): Promise<string> {
+		const bool = await this._isPostAssetFolder();
+		const fileName = `img_${formatDate(new Date(), "YYYYMMDDhhmmss")}_${++this._count}.${file.name.split(".")[1]}`;
+		let assetsDir = "";
+		let imgPath = fileName;
+
+		if (bool) {
+			assetsDir = path.replace(".md", "/");
+		} else {
+			const config = await this.getHexoConfig();
+			const sourceDir = config?.source || "source";
+			assetsDir = `${sourceDir}/images/`;
+			imgPath = `${sourceDir}/images/${fileName}`;
+		}
+
+		const assetsDirHandle = (await createFileOrDir(this._root!, assetsDir)) as FileSystemDirectoryHandle;
+		const imgHandle = await assetsDirHandle.getFileHandle(fileName, { create: true });
+		const write = await imgHandle.createWritable({ keepExistingData: false });
+		await write.write(file);
+		await write.close();
+		return imgPath;
 	}
 
 	async getImageUrl(path: string): Promise<string> {
@@ -526,14 +547,23 @@ export default class LocalFileSystem extends AbstractFileSystem {
 		const srcs = text.match(reg);
 		const imgs: { [k: string]: string } = {};
 		if (srcs) {
+			const bool = await this._isPostAssetFolder();
+			const config = await this.getHexoConfig();
+			const sourceDir = config?.source || "source";
+
 			for (let index = 0; index < srcs.length; index++) {
 				const src = srcs[index];
 				if (!/^(#|\/\/|http(s)?:)/.test(src)) {
-					imgs[src] = await this.getImageUrl("source" + src);
+					if (bool && !/$[\\\/]/.test(src)) {
+						imgs[src] = await this.getImageUrl(path.replace(".md", "/") + src);
+					}
+
+					if (!imgs[src]) {
+						imgs[src] = await this.getImageUrl(sourceDir + src);
+					}
 				}
 			}
-			text = text.replace(reg, (str) => imgs[str] || str);
-			return text;
+			return text.replace(reg, (str) => imgs[str] || str);
 		} else {
 			return text;
 		}

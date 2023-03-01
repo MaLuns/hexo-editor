@@ -19,19 +19,14 @@ class Renderer extends MarkedRenderer {
 	}
 
 	// Prepend root to image path
-	image(href: string, title: string | null, text: string) {
-		if (!/^(#|\/\/|http(s)?:)/.test(href)) {
-			// 转换本地路径
-			console.log(href);
-		}
-
+	/* image(href: string, title: string | null, text: string) {
 		let out = `<img src="${encodeURI(href)}"`;
 		if (text) out += ` alt="${text}"`;
 		if (title) out += ` title="${title}"`;
 
 		out += ">";
 		return out;
-	}
+	} */
 }
 
 const defaultConfig = {

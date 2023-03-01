@@ -15,6 +15,12 @@ const data = reactive({
 	tabs: [] as Array<PostModel>,
 });
 
+watchEffect(() => {
+	const tab = data.tabs.find((item) => item.path === data.tabName);
+	fileStore.post = tab || null;
+	/* emit("select", tab?.path); */
+});
+
 const closeTabs = (name: string) => {
 	const index = data.tabs.findIndex((item) => item.path === name);
 	const closeTab = data.tabs[index];

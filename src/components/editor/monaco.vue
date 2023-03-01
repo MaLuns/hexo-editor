@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { triggerHook } from "@/core/hook";
 import * as monaco from "monaco-editor";
 const emit = defineEmits(["change", "save"]);
 
@@ -27,7 +28,6 @@ const props = defineProps({
 
 const editContainerRef = ref();
 const containerHeight = ref("0px");
-let monacoEditor: monaco.editor.IStandaloneCodeEditor | null = null;
 
 const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 	automaticLayout: true,
@@ -45,7 +45,7 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 		top: 4,
 		bottom: 4,
 	},
-	contextmenu: false,
+	contextmenu: true,
 	hover: {
 		enabled: false,
 	},
@@ -59,6 +59,7 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 	},
 };
 
+let monacoEditor: monaco.editor.IStandaloneCodeEditor | null = null;
 onMounted(() => {
 	containerHeight.value = useAutoParentHeight(props.height);
 	nextTick(() => {
@@ -76,7 +77,17 @@ onMounted(() => {
 		monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
 			emit("save");
 		});
+
+		setTimeout(() => {
+			triggerHook("MONACO_READY", { editor: monacoEditor, monaco: monaco });
+		}, 500);
 	});
+});
+
+defineExpose({
+	getEditor() {
+		return monacoEditor;
+	},
 });
 </script>
 

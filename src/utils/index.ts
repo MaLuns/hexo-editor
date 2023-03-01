@@ -2,6 +2,12 @@ export const regexRules = {
 	fileName: /^[^\\/:*?"<>|\s]+$/i,
 };
 
+/**
+ * 时间格式化
+ * @param date
+ * @param format
+ * @returns
+ */
 export const formatDate = (date: Date, format: string): string => {
 	const year = date.getFullYear();
 	const month = date.getMonth() + 1;
@@ -78,15 +84,19 @@ export const htmlTag = (tag: string, attrs: any, text?: string | undefined) => {
 	return result;
 };
 
-export const readDirectory = async (directorys: any) => {
-	const dir: Array<any> = [];
-	for await (const [, value] of directorys.entries()) {
-		if (value.kind === "file") {
-			dir.push(value);
-		} else {
-			value.children = await readDirectory(value);
-			dir.push(value);
-		}
-	}
-	return dir;
-};
+export function getLogger(subject: string) {
+	const logger =
+		(level: string) =>
+		(...args: any) => {
+			const time = `${new Date().toLocaleString()}.${Date.now() % 1000}`;
+			(console as any)[level](`[${time}] [${level}] ${subject} >`, ...args);
+		};
+
+	return {
+		debug: import.meta.env.MODE === "development" ? logger("debug") : () => 0,
+		log: logger("log"),
+		info: logger("info"),
+		warn: logger("warn"),
+		error: logger("error"),
+	};
+}

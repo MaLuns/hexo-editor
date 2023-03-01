@@ -1,4 +1,4 @@
-declare interface Post {
+/* declare interface Post {
 	frontmatter: string;
 	attributes: {
 		[x: string]: any;
@@ -9,7 +9,7 @@ declare interface Post {
 	fileName: string;
 	_handle: FileSystemFileHandle;
 	_raw: string;
-}
+} */
 
 declare enum FileStoreTypeEnum {
 	Local = 1,
@@ -17,9 +17,13 @@ declare enum FileStoreTypeEnum {
 	Gitee = 3,
 }
 
-declare interface FileStoreModel {
+/* declare interface FileStoreModel {
 	id?: string;
 	name: string;
 	type: FileStoreTypeEnum;
 	value: FileStoreModel.type extends "Local" ? FileSystemDirectoryHandle : string;
-}
+} */
+
+declare type HookTypes = {
+	MONACO_READY: { editor: Monaco.editor.IStandaloneCodeEditor; monaco: typeof Monaco };
+};

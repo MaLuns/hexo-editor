@@ -32,7 +32,7 @@ export default abstract class AbstractFileSystem {
 	/**
 	 *  上传图片
 	 */
-	abstract uploadImage(): Promise<string>;
+	abstract uploadImage(file: File, path: string): Promise<string>;
 
 	/**
 	 * 获取图片路径

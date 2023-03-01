@@ -9,7 +9,10 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
-import { switchTheme } from "@/utils/editor";
+import { initAction, removeDefaultAction } from "@/utils/editor";
+
+removeDefaultAction();
+initAction(["insert-date", "themes"]);
 
 !customElements.get("editor-preview") && customElements.define("editor-preview", defineCustomElement(EditorPreview));
 self.MonacoEnvironment = {
@@ -36,7 +39,3 @@ app.config.compilerOptions.isCustomElement = (tag) => {
 };
 app.use(router);
 app.mount("#app");
-
-setTimeout(() => {
-	switchTheme("github-light");
-}, 6000);
