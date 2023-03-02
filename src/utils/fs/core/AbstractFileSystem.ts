@@ -44,7 +44,7 @@ export default abstract class AbstractFileSystem {
 	/**
 	 *  添加 文章 或 页面
 	 */
-	abstract addPostOrPage(info: PostOrPageModel): Promise<PostModel | undefined>;
+	abstract addPostOrPage(info: PostOrPageInfoModel): Promise<PostModel | undefined>;
 
 	/**
 	 * 删除文件

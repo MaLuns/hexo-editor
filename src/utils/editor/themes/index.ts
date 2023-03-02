@@ -1,11 +1,26 @@
-import { themmStore } from "@/store";
+/* import { configStore } from "@/store"; */
 import * as monaco from "monaco-editor";
-
 import themelist from "./themelist.json";
-const importModules = import.meta.glob("./*.json");
-const keys = Object.keys(importModules);
+
+export const themes = ((list) => {
+	const convert = (l: any) => {
+		const theme = [];
+		for (const key in l) {
+			if (Object.prototype.hasOwnProperty.call(l, key)) {
+				theme.push({
+					label: l[key as keyof typeof l],
+					value: key,
+				});
+			}
+		}
+		return theme;
+	};
+	return [convert(list.light), convert(list.dark)];
+})(themelist);
 
 // 执行批量替换操作
+const importModules = import.meta.glob("./*.json");
+const keys = Object.keys(importModules);
 for (const path of keys) {
 	// 裁剪字符串方式得到路径中的文件名（无扩展名）
 	const name = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".json"));
@@ -14,28 +29,20 @@ for (const path of keys) {
 	delete importModules[path];
 }
 
-export const themes = ((list) => {
-	const themes = [];
-	for (const key in list) {
-		if (Object.prototype.hasOwnProperty.call(list, key)) {
-			themes.push({
-				label: list[key as keyof typeof list],
-				value: key,
-			});
-		}
-	}
-	return themes;
-})(themelist);
-
-export const switchTheme = (key: string) => {
-	const element = themelist[key as keyof typeof themelist];
-	if (importModules[element]) {
-		importModules[element]().then((res) => {
-			monaco.editor.defineTheme(key, res as monaco.editor.IStandaloneThemeData);
-			monaco.editor.setTheme(key);
-			themmStore.editorTheme = key;
+export const loadEditorTheme = (key: "light" | "dark", theme: string) => {
+	const element = themelist[key];
+	const name = element[theme as keyof typeof element];
+	if (importModules[name]) {
+		importModules[name]().then((res) => {
+			monaco.editor.defineTheme(theme, res as monaco.editor.IStandaloneThemeData);
+			monaco.editor.setTheme(theme);
 		});
+	} else {
+		if (["vs", "vs-dark"].includes(theme)) {
+			monaco.editor.setTheme(theme);
+		}
 	}
 };
 
-console.log(switchTheme);
+/*  */
+/* themmStore.editorTheme = key; */

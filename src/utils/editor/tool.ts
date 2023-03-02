@@ -78,7 +78,5 @@ const paste = async (e: ClipboardEvent, editor: monaco.editor.ICodeEditor) => {
  * @param editor
  */
 export const regPaste = (editor: monaco.editor.ICodeEditor) => {
-	console.log(editor.getContainerDomNode());
-
 	editor.getContainerDomNode().addEventListener("paste", (e) => paste(e, editor), true);
 };

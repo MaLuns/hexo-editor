@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { triggerHook } from "@/core/hook";
+import { editorTheme, configStore } from "@/store";
 import * as monaco from "monaco-editor";
 const emit = defineEmits(["change", "save"]);
 
@@ -11,10 +12,6 @@ const props = defineProps({
 	language: {
 		type: String,
 		default: "markdown",
-	},
-	theme: {
-		type: String,
-		default: "vs",
 	},
 	config: {
 		type: Object as PropType<monaco.editor.IStandaloneEditorConstructionOptions>,
@@ -30,20 +27,23 @@ const editContainerRef = ref();
 const containerHeight = ref("0px");
 
 const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
+	theme: editorTheme.value,
+	lineNumbers: configStore.lineNumbers,
+	minimap: {
+		enabled: configStore.minimap,
+	},
+	fontSize: configStore.fontSize,
+	fontFamily: configStore.fontFamily,
 	automaticLayout: true,
 	selectOnLineNumbers: true,
-	fontSize: 14,
-	/* minimap: {
-        autohide: true
-    }, */
 	fixedOverflowWidgets: true,
 	unicodeHighlight: {
 		ambiguousCharacters: false,
 	},
 	glyphMargin: false,
 	padding: {
-		top: 4,
-		bottom: 4,
+		top: 10,
+		bottom: 10,
 	},
 	contextmenu: true,
 	hover: {

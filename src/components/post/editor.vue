@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { CloseSharp } from "@vicons/ionicons5";
-import { fileStore } from "@/store";
+import { fileStore, themeVars } from "@/store";
 
 const dialog = useDialog();
 const emit = defineEmits(["select"]);
@@ -108,7 +108,7 @@ defineExpose({
 });
 </script>
 <template>
-	<n-tabs v-model:value="data.tabName" size="small" type="card" closable tab-style="min-width: 120px;" pane-style="height:calc(100vh - 40px);" @update:value="changeTabs" @close="closeTabs">
+	<n-tabs v-model:value="data.tabName" size="small" type="card" closable style="height: 100%; overflow: hidden" pane-style="height:calc(100% - 30px);" tab-style="min-width: 120px;height:30px" @update:value="changeTabs" @close="closeTabs">
 		<n-tab-pane v-for="panel in data.tabs" :key="panel.path" class="tab-pane" :tab="panel.path" :name="panel.path" display-directive="show:lazy">
 			<template #tab>
 				{{ panel.name }}
@@ -136,16 +136,16 @@ defineExpose({
 			border-radius: 0;
 			border: 0 !important;
 			border-left: 1px solid var(--n-tab-border-color) !important;
-			background-color: #f1f1fa;
-			color: rgba(51, 51, 51, 0.7);
+			background-color: v-bind("themeVars.post.tabs.tabBgColor");
+			color: v-bind("themeVars.post.tabs.tabColor");
 		}
 	}
 
 	:deep(.n-tabs-pad) {
-		background-color: #f9f9f9;
+		background-color: v-bind("themeVars.post.tabs.panBgColor");
 	}
 	:deep(.n-tabs-nav__suffix) {
-		background-color: #f9f9f9;
+		background-color: v-bind("themeVars.post.tabs.suffixBgColor");
 		cursor: pointer;
 		padding: 0 8px;
 	}

@@ -2,6 +2,7 @@
 import type { TooltipProps } from "naive-ui";
 import { siderPage } from "@/router";
 import { AlertCircle, LogoMarkdown } from "@vicons/ionicons5";
+import { themeVars } from "@/store";
 
 const router = useRouter();
 const layoutAboutRef = ref();
@@ -39,13 +40,13 @@ const handleCheckNav = (index: number) => {
 	}
 };
 
-const handleCheckHelpNav = (item: any) => {
+/* const handleCheckHelpNav = (item: any) => {
 	if (item.key === "about") {
 		layoutAboutRef.value.show();
 	} else if (item.key === "markdown") {
 		layoutHelpRef.value.show();
 	}
-};
+}; */
 
 type TooltipThemeOverrides = NonNullable<TooltipProps["themeOverrides"]>;
 const tooltipThemeOverrides: TooltipThemeOverrides = {
@@ -70,7 +71,7 @@ const tooltipThemeOverrides: TooltipThemeOverrides = {
 				</n-tooltip>
 			</li>
 		</ul>
-		<ul class="layout-sider__item">
+		<!-- <ul class="layout-sider__item">
 			<li v-for="(item, index) in data.helpNavs" :key="index" class="layout-sider__item-nav" @click="handleCheckHelpNav(item)">
 				<n-tooltip placement="right" trigger="hover" :theme-overrides="tooltipThemeOverrides">
 					<template #trigger>
@@ -79,7 +80,7 @@ const tooltipThemeOverrides: TooltipThemeOverrides = {
 					{{ item.tips }}
 				</n-tooltip>
 			</li>
-		</ul>
+		</ul> -->
 	</div>
 	<LayoutAbout ref="layoutAboutRef"></LayoutAbout>
 	<LayoutHelp ref="layoutHelpRef"></LayoutHelp>
@@ -90,7 +91,7 @@ const tooltipThemeOverrides: TooltipThemeOverrides = {
 	flex-direction: column;
 	height: 100%;
 	justify-content: space-between;
-	background-color: #ededf5;
+	background-color: v-bind("themeVars.sider.bgColor");
 }
 
 .layout-sider__item {
@@ -105,24 +106,24 @@ const tooltipThemeOverrides: TooltipThemeOverrides = {
 		align-items: center;
 		height: 56px;
 		cursor: pointer;
-		color: #bbb0cf;
+		color: v-bind("themeVars.sider.iconColor");
 		transition: color 0.3s;
 
 		&.active {
-			color: #705697;
+			color: v-bind("themeVars.sider.iconActiveColor");
 
 			&::after {
 				position: absolute;
 				content: "";
 				width: 4px;
-				background-color: #705697;
+				background-color: v-bind("themeVars.sider.iconActiveColor");
 				height: 80%;
 				left: 0;
 			}
 		}
 
 		&:hover {
-			color: #705697;
+			color: v-bind("themeVars.sider.iconActiveColor");
 		}
 	}
 }

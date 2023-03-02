@@ -376,7 +376,7 @@ export default class LocalFileSystem extends AbstractFileSystem {
 		return this._cache_img[path];
 	}
 
-	async addPostOrPage(info: PostOrPageModel): Promise<PostModel | undefined> {
+	async addPostOrPage(info: PostOrPageInfoModel): Promise<PostModel | undefined> {
 		try {
 			const { name, type, ...res } = info;
 			const bool = await this._isPostAssetFolder();

@@ -19,6 +19,7 @@ const db = new DataDB<FileStoreModel>("hexo-editor-file", "fs", 1);
 
 const data = reactive({
 	list: [] as Array<any>,
+	isFileSystem: Boolean(window.showDirectoryPicker),
 });
 
 const renderIcon = (type: FileStoreTypeEnum) => {
@@ -83,7 +84,7 @@ const openEditor = async (fs: AbstractFileSystem) => {
 			<n-h1 style="font-size: 64px !important; font-weight: 600">Hexo-Editor</n-h1>
 			<n-p style="font-size: 16px; margin-top: 0"> 一个在线的 Hexo 编辑器 </n-p>
 			<n-space justify="center">
-				<n-button type="primary" size="large" @click="openLocalFile(FileStoreTypeEnum.Local)"> 打开 Hexo 目录 </n-button>
+				<n-button v-if="data.isFileSystem" type="primary" size="large" @click="openLocalFile(FileStoreTypeEnum.Local)"> 打开 Hexo 目录 </n-button>
 				<n-dropdown placement="bottom-start" trigger="hover" :options="data.list" @select="selectHistory">
 					<n-button type="default" size="large"> 最近使用 </n-button>
 				</n-dropdown>

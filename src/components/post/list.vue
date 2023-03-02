@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import { themeVars } from "@/store";
 import { DocumentText, Bug, ArrowUndoCircle, Send, RefreshSharp } from "@vicons/ionicons5";
 import { NAvatar, NIcon, NText, NTime } from "naive-ui";
+
 const emit = defineEmits(["selectPost", "publish", "unpublish", "delete", "refresh"]);
 
 const props = defineProps({
@@ -167,7 +169,7 @@ const handleSelect = (key: "publish" | "unpublish" | "delete") => {
 		padding: 10px;
 
 		&.acitve {
-			background-color: #fff7ed;
+			background-color: v-bind("themeVars.post.aside.list.activeBgColor");
 		}
 	}
 }

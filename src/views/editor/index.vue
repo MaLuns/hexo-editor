@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { fileStore, themmStore } from "@/store";
+import { fileStore, configStore, themeVars } from "@/store";
 import { DocumentTextOutline } from "@vicons/ionicons5";
 import AddPost from "./addPost.vue";
 
@@ -121,7 +121,7 @@ init();
 				<n-collapse class="demosss" arrow-placement="right" :default-expanded-names="['posts']">
 					<n-collapse-item v-for="item in data.all" :key="item.key" :name="item.key">
 						<template #header> {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}） </template>
-						<PostList :current="data.current" :width="themmStore.config.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="init()"> </PostList>
+						<PostList :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="init()"> </PostList>
 					</n-collapse-item>
 				</n-collapse>
 			</n-scrollbar>
@@ -139,8 +139,8 @@ main {
 	overflow: hidden;
 
 	.editor-aside {
-		width: v-bind("themmStore.config.editorAsideWidth");
-		border-right: 1px solid #eee;
+		width: v-bind("configStore.layout.editorAsideWidth");
+		border-right: 1px solid v-bind("themeVars.post.aside.borderColor");
 		flex-shrink: 0;
 
 		&__header {
@@ -166,13 +166,13 @@ main {
 		}
 
 		:deep(.n-collapse-item__header-main) {
-			--n-title-text-color: #616161;
+			--n-title-text-color: v-bind("themeVars.post.aside.list.titleColot");
 			--n-title-font-weight: 600;
 			--n-font-size: 12px;
 			display: flex;
 			justify-content: space-between;
 			line-height: 32px;
-			background-color: #f9f9ff;
+			background-color: v-bind("themeVars.post.aside.list.titleBgColor");
 			padding: 0 1em;
 		}
 

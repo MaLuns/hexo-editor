@@ -1,5 +1,8 @@
 declare type YamlConfig = { [k: string]: any };
 
+/**
+ * 根目录实体类
+ */
 declare interface RootDirModel {
 	// 文件名
 	name: string;
@@ -13,6 +16,9 @@ declare interface RootDirModel {
 	git_url?: "https://api.github.com/repos/MaLuns/hexo-theme-async/git/trees/170e7830b0b1da7c3fc88a973acceaba208a758c";
 }
 
+/**
+ * 文章实体类
+ */
 declare interface PostModel {
 	// 文件名
 	name: string;
@@ -33,13 +39,16 @@ declare interface PostModel {
 	};
 }
 
+/**
+ * Hexo 文章类型枚举
+ */
 declare enum HexoFileType {
 	post = 1,
 	draft = 2,
 	page = 3,
 }
 
-declare interface PostOrPageModel {
+declare interface PostOrPageInfoModel {
 	// 文件名
 	name: string;
 	// 标题

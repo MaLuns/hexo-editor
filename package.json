@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "author": {
-    "name": "白云苍狗"
+    "name": "白云苍狗",
+    "url": "https://github.com/MaLuns"
   },
   "homepage": "https://github.com/MaLuns/hexo-editor",
   "scripts": {

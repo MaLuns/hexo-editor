@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { registerHook } from "@/core/hook";
-import { fileStore, themmStore } from "@/store";
+import { fileStore, themeMode } from "@/store";
 import { debounce } from "@/utils";
 import { regPaste } from "@/utils/editor";
 import { renderer } from "@/utils/md";
@@ -22,11 +22,13 @@ const props = defineProps({
 });
 
 const editorMonacoRef = ref();
+const htmlText = ref("");
+const theme = computed(() => {
+	return themeMode.value ? "dark" : "light";
+});
 const data = reactive({
 	preview: props.preview,
 });
-
-const htmlText = ref("");
 
 const renderMarkdown = debounce(async (val: string) => {
 	htmlText.value = (await fileStore.fs?.transformImgUrl(renderer(val), props.path)) || "";
@@ -56,10 +58,10 @@ registerHook(
 		</div> -->
 		<div class="markdown-editor__main">
 			<div class="markdown-editor__editor">
-				<EditorMonaco ref="editorMonacoRef" :value="props.modelValue" language="md" :theme="themmStore.editorTheme" @save="$emit('save')" @change="handleChange"> </EditorMonaco>
+				<EditorMonaco ref="editorMonacoRef" :value="props.modelValue" language="md" @save="$emit('save')" @change="handleChange"> </EditorMonaco>
 			</div>
 			<div v-if="data.preview" class="markdown-editor__preview">
-				<editor-preview class="editor-preview" :html="htmlText"></editor-preview>
+				<editor-preview class="editor-preview" :theme="theme" :html="htmlText"></editor-preview>
 			</div>
 		</div>
 	</div>

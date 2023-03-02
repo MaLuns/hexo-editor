@@ -1,0 +1,16 @@
+.n-scrollbar>.n-scrollbar-rail.n-scrollbar-rail--vertical,
+.n-scrollbar+.n-scrollbar-rail.n-scrollbar-rail--vertical {
+    right: 0px;
+}
+
+.loop(@name, @property, @max, @min, @setp) when (@max >=@min) {
+    .loop(@name, @property, (@max - @setp), @min, @setp);
+
+    .@{name}-@{max} {
+        @{property}: (0px + @max);
+    }
+}
+
+.loop(w, width, 300, 100, 20);
+.loop(p, padding, 50, 0, 10);
+.loop(m, margin, 50, 0, 10);
