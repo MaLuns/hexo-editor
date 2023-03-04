@@ -1,4 +1,4 @@
-const themeVars: ThemeVars = {
+const themeColors: ThemeVars = {
 	sider: {
 		bgColor: "#ededf5",
 		iconColor: "#bbb0cf",
@@ -29,4 +29,4 @@ const themeVars: ThemeVars = {
 	},
 };
 
-export default themeVars;
+export default themeColors;

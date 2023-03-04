@@ -84,6 +84,11 @@ export const htmlTag = (tag: string, attrs: any, text?: string | undefined) => {
 	return result;
 };
 
+/**
+ * 日志打印
+ * @param subject
+ * @returns
+ */
 export function getLogger(subject: string) {
 	const logger =
 		(level: string) =>
@@ -100,3 +105,34 @@ export function getLogger(subject: string) {
 		error: logger("error"),
 	};
 }
+
+/**
+ * 对象合并
+ * @param target
+ * @param source
+ * @returns
+ */
+export const deepMerge = <T>(target: T, source: T): T => {
+	// 判断是否都是对象类型
+	if (isObject(target) && isObject(source)) {
+		for (const key in source) {
+			if (isObject(source[key]) && isObject(target[key])) {
+				// 递归合并子对象
+				deepMerge(target[key], source[key]);
+			} else {
+				if (Reflect.getOwnPropertyDescriptor(source as unknown as object, key)) {
+					// 直接复制属性值
+					target[key] = source[key];
+				}
+			}
+		}
+	}
+	return target;
+};
+
+/**
+ * 是否是对象
+ * @param obj
+ * @returns
+ */
+export const isObject = (obj: any): boolean => Object.prototype.toString.call(obj) === "[object Object]";

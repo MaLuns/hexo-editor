@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { fileStore, configStore, themeVars } from "@/store";
+import { HexoFileType } from "@/enums";
+import { fileStore, configStore, themeColors } from "@/store";
 import { DocumentTextOutline } from "@vicons/ionicons5";
 import AddPost from "./addPost.vue";
 
@@ -39,13 +40,13 @@ const selectPost = (post: PostModel) => {
 
 const createPost = (newData: { type: HexoFileType; post: PostModel }) => {
 	switch (newData.type) {
-		case 1:
+		case HexoFileType.post:
 			data.posts.unshift(newData.post);
 			break;
-		case 2:
+		case HexoFileType.draft:
 			data.drafts.unshift(newData.post);
 			break;
-		case 3:
+		case HexoFileType.page:
 			data.pages.unshift(newData.post);
 			break;
 	}
@@ -140,7 +141,7 @@ main {
 
 	.editor-aside {
 		width: v-bind("configStore.layout.editorAsideWidth");
-		border-right: 1px solid v-bind("themeVars.post.aside.borderColor");
+		border-right: 1px solid v-bind("themeColors.post.aside.borderColor");
 		flex-shrink: 0;
 
 		&__header {
@@ -166,13 +167,13 @@ main {
 		}
 
 		:deep(.n-collapse-item__header-main) {
-			--n-title-text-color: v-bind("themeVars.post.aside.list.titleColot");
+			--n-title-text-color: v-bind("themeColors.post.aside.list.titleColot");
 			--n-title-font-weight: 600;
 			--n-font-size: 12px;
 			display: flex;
 			justify-content: space-between;
 			line-height: 32px;
-			background-color: v-bind("themeVars.post.aside.list.titleBgColor");
+			background-color: v-bind("themeColors.post.aside.list.titleBgColor");
 			padding: 0 1em;
 		}
 

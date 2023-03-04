@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { triggerHook } from "@/core/hook";
 import { editorTheme, configStore } from "@/store";
 import * as monaco from "monaco-editor";
-const emit = defineEmits(["change", "save"]);
+const emit = defineEmits(["change", "save", "ready"]);
 
+const editContainerRef = ref();
+const containerHeight = ref("0px");
 const props = defineProps({
 	value: {
 		type: String,
@@ -21,10 +22,11 @@ const props = defineProps({
 		type: String,
 		default: "300px",
 	},
+	hookPrefix: {
+		type: String,
+		default: "",
+	},
 });
-
-const editContainerRef = ref();
-const containerHeight = ref("0px");
 
 const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 	theme: editorTheme.value,
@@ -57,9 +59,11 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 		/* vertical: 'hidden' */
 		verticalScrollbarSize: 0,
 	},
+	model: null,
+	wordWrap: "on",
 };
 
-let monacoEditor: monaco.editor.IStandaloneCodeEditor | null = null;
+let monacoEditor: monaco.editor.IStandaloneCodeEditor;
 onMounted(() => {
 	containerHeight.value = useAutoParentHeight(props.height);
 	nextTick(() => {
@@ -67,7 +71,6 @@ onMounted(() => {
 			...def_config,
 			...props.config,
 			language: props.language,
-			value: props.value,
 		});
 
 		monacoEditor.onDidChangeModelContent(() => {
@@ -79,18 +82,18 @@ onMounted(() => {
 		});
 
 		setTimeout(() => {
-			triggerHook("MONACO_READY", { editor: monacoEditor, monaco: monaco });
+			emit("ready", { editor: monacoEditor, monaco: monaco });
 		}, 500);
 	});
 });
 
 defineExpose({
 	getEditor() {
-		return monacoEditor;
+		return { editor: monacoEditor, monaco: monaco };
 	},
 });
 </script>
 
 <template>
-	<div ref="editContainerRef" :style="{ height: containerHeight }"></div>
+	<div ref="editContainerRef" :style="{ height: '100%' }"></div>
 </template>

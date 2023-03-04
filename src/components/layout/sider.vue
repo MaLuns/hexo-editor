@@ -2,7 +2,7 @@
 import type { TooltipProps } from "naive-ui";
 import { siderPage } from "@/router";
 import { AlertCircle, LogoMarkdown } from "@vicons/ionicons5";
-import { themeVars } from "@/store";
+import { themeColors } from "@/store";
 
 const router = useRouter();
 const layoutAboutRef = ref();
@@ -91,7 +91,7 @@ const tooltipThemeOverrides: TooltipThemeOverrides = {
 	flex-direction: column;
 	height: 100%;
 	justify-content: space-between;
-	background-color: v-bind("themeVars.sider.bgColor");
+	background-color: v-bind("themeColors.sider.bgColor");
 }
 
 .layout-sider__item {
@@ -106,24 +106,24 @@ const tooltipThemeOverrides: TooltipThemeOverrides = {
 		align-items: center;
 		height: 56px;
 		cursor: pointer;
-		color: v-bind("themeVars.sider.iconColor");
+		color: v-bind("themeColors.sider.iconColor");
 		transition: color 0.3s;
 
 		&.active {
-			color: v-bind("themeVars.sider.iconActiveColor");
+			color: v-bind("themeColors.sider.iconActiveColor");
 
 			&::after {
 				position: absolute;
 				content: "";
 				width: 4px;
-				background-color: v-bind("themeVars.sider.iconActiveColor");
+				background-color: v-bind("themeColors.sider.iconActiveColor");
 				height: 80%;
 				left: 0;
 			}
 		}
 
 		&:hover {
-			color: v-bind("themeVars.sider.iconActiveColor");
+			color: v-bind("themeColors.sider.iconActiveColor");
 		}
 	}
 }

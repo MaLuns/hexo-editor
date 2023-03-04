@@ -2,12 +2,7 @@ import yaml from "js-yaml";
 import fm from "@/utils/front-matter";
 import AbstractFileSystem from "./AbstractFileSystem";
 import { formatDate } from "@/utils";
-
-enum HexoFileType {
-	post = 1,
-	draft = 2,
-	page = 3,
-}
+import { HexoFileType } from "@/enums";
 
 /**
  * 读取文件信息

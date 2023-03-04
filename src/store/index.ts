@@ -1,17 +1,11 @@
 import type AbstractFileSystem from "@/utils/fs/core/AbstractFileSystem";
 import { darkTheme } from "naive-ui";
+import { deepMerge } from "@/utils";
+import storage from "@/utils/storage";
+
 import themes from "@/themes";
 
-export const fileStore = reactive({
-	fs: <AbstractFileSystem | null>null,
-	post: <PostModel | null>null,
-	setFileSystem(fs: AbstractFileSystem) {
-		this.fs = fs;
-	},
-});
-
-// 全局配置
-export const configStore = reactive(<GlobalConfig>{
+const defConfig: GlobalConfig = {
 	layout: {
 		layoutSiderWidth: "54px",
 		layoutFooterBar: "22px",
@@ -31,7 +25,18 @@ export const configStore = reactive(<GlobalConfig>{
 	minimap: true,
 	imgStorageDir: "source/images/",
 	pictureBed: "",
+};
+
+export const fileStore = reactive({
+	fs: <AbstractFileSystem | null>null,
+	post: <PostModel | null>null,
+	setFileSystem(fs: AbstractFileSystem) {
+		this.fs = fs;
+	},
 });
+
+// 全局配置
+export const configStore = reactive(<GlobalConfig>deepMerge(defConfig, storage.getItem("config", {})));
 
 export const themeMode = computed(() => {
 	if (configStore.theme === "system") {
@@ -47,4 +52,12 @@ export const editorTheme = computed(() => {
 	return configStore.theme === "light" ? configStore.editorLightTheme : configStore.editorDartTheme;
 });
 
-export const themeVars = computed(() => (themeMode.value ? themes[1] : themes[0]));
+export const themeColors = computed(() => (themeMode.value ? themes[1] : themes[0]));
+
+watch(
+	() => configStore,
+	(val) => {
+		storage.setItem("config", val);
+	},
+	{ deep: true }
+);

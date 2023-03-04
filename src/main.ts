@@ -9,12 +9,8 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
-import { initAction, removeDefaultAction } from "@/utils/editor";
+import { removeDefaultAction } from "@/utils/editor";
 
-removeDefaultAction();
-initAction(["insert-date", "themes"]);
-
-!customElements.get("editor-preview") && customElements.define("editor-preview", defineCustomElement(EditorPreview));
 self.MonacoEnvironment = {
 	getWorker(_, label) {
 		if (label === "json") {
@@ -32,10 +28,11 @@ self.MonacoEnvironment = {
 		return new editorWorker();
 	},
 };
+removeDefaultAction();
 
+!customElements.get("editor-preview") && customElements.define("editor-preview", defineCustomElement(EditorPreview));
 const app = createApp(App);
-app.config.compilerOptions.isCustomElement = (tag) => {
-	return ["editor-preview"].includes(tag);
-};
+app.config.compilerOptions.isCustomElement = (tag) => ["editor-preview"].includes(tag);
+
 app.use(router);
 app.mount("#app");

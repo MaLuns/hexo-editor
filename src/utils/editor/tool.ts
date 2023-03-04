@@ -1,6 +1,17 @@
 import { fileStore } from "@/store";
 import * as monaco from "monaco-editor";
 
+const components = {
+	scheme: "web-hexo-editor",
+};
+
+export const uri = (path: string) => {
+	return monaco.Uri.from({
+		...components,
+		path,
+	});
+};
+
 /**
  * Insert text at current cursor.
  * @param editor
@@ -56,7 +67,7 @@ export const replaceLine = (editor: monaco.editor.ICodeEditor, line: number, tex
 };
 
 const paste = async (e: ClipboardEvent, editor: monaco.editor.ICodeEditor) => {
-	if (!editor.hasTextFocus() && !fileStore.post) {
+	if (!editor.hasTextFocus() || !fileStore.post) {
 		return;
 	}
 	const items = e.clipboardData!.items;

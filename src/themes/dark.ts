@@ -1,4 +1,4 @@
-const themeVars: ThemeVars = {
+const themeColors: ThemeVars = {
 	sider: {
 		bgColor: "#2d2730",
 		iconColor: "#adadad",
@@ -6,7 +6,7 @@ const themeVars: ThemeVars = {
 	},
 	post: {
 		tabs: {
-			tabBgColor: "",
+			tabBgColor: "#3e3e3e",
 			tabColor: "",
 			panBgColor: "#282828",
 			suffixBgColor: "#2d2730",
@@ -28,4 +28,4 @@ const themeVars: ThemeVars = {
 		color: "#b5b5b5",
 	},
 };
-export default themeVars;
+export default themeColors;

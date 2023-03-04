@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { registerHook } from "@/core/hook";
+import type * as monaco from "monaco-editor";
+import EditorMonaco from "./monaco.vue";
 import { fileStore, themeMode } from "@/store";
 import { debounce } from "@/utils";
-import { regPaste } from "@/utils/editor";
+import { regPaste, uri } from "@/utils/editor";
 import { renderer } from "@/utils/md";
 
 const emit = defineEmits(["update:modelValue", "save"]);
@@ -19,50 +20,87 @@ const props = defineProps({
 		type: String,
 		default: "",
 	},
+	autoRender: {
+		type: Number,
+		default: 300,
+	},
 });
 
-const editorMonacoRef = ref();
+const editorMonacoRef = ref<InstanceType<typeof EditorMonaco>>();
 const htmlText = ref("");
-const theme = computed(() => {
-	return themeMode.value ? "dark" : "light";
-});
-const data = reactive({
-	preview: props.preview,
-});
+const theme = computed(() => (themeMode.value ? "dark" : "light"));
+const catchStates = new Map<string | undefined, monaco.editor.ICodeEditorViewState | null>();
 
-const renderMarkdown = debounce(async (val: string) => {
-	htmlText.value = (await fileStore.fs?.transformImgUrl(renderer(val), props.path)) || "";
-}, 300);
+let renderMarkdown: (val: string) => void;
+watch(
+	() => props.autoRender,
+	() => {
+		renderMarkdown = debounce(async (val: string) => {
+			htmlText.value = (await fileStore.fs?.transformImgUrl(renderer(val), props.path)) || "";
+		}, props.autoRender);
+	},
+	{
+		immediate: true,
+	}
+);
+watch(
+	() => props.modelValue,
+	(val) => renderMarkdown(val),
+	{
+		immediate: true,
+	}
+);
 
-const handleChange = async (val: string) => {
-	emit("update:modelValue", val);
-	renderMarkdown(val);
+const handleReady = (e: { editor: monaco.editor.IStandaloneCodeEditor; monaco: any }) => {
+	regPaste(e.editor);
 };
 
-if (props.modelValue) {
-	renderMarkdown(props.modelValue);
-}
+const addModel = (val: string, path: string): monaco.Uri => {
+	const u = uri(path);
+	const payload = editorMonacoRef.value!.getEditor();
+	const model = payload.monaco.editor.createModel(val, "md", u);
+	payload.editor.setModel(model);
+	return u;
+};
 
-registerHook(
-	"MONACO_READY",
-	(payload) => {
-		regPaste(payload.editor);
-	},
-	true
-);
+const setModel = (uri: monaco.Uri) => {
+	const payload = editorMonacoRef.value!.getEditor();
+	const oldModel = payload.editor.getModel();
+	if (oldModel) {
+		const oldState = payload.editor.saveViewState();
+		catchStates.set(oldModel.uri.toString(), oldState);
+	}
+
+	const model = payload.monaco.editor.getModel(uri);
+	const newState = catchStates.get(model?.uri.toString());
+	payload.editor.setModel(model);
+	if (newState) {
+		payload.editor.restoreViewState(newState);
+	}
+};
+
+const removeModel = (uri: monaco.Uri) => {
+	const payload = editorMonacoRef.value!.getEditor();
+	const model = payload.monaco.editor.getModel(uri);
+	catchStates.delete(uri.toString());
+	if (!model?.isDisposed()) {
+		model?.dispose();
+	}
+};
+
+defineExpose({
+	addModel,
+	setModel,
+	removeModel,
+});
 </script>
 <template>
 	<div class="markdown-editor">
-		<!-- <div class="markdown-editor__header">
-			<EditorToolbar></EditorToolbar>
-		</div> -->
-		<div class="markdown-editor__main">
-			<div class="markdown-editor__editor">
-				<EditorMonaco ref="editorMonacoRef" :value="props.modelValue" language="md" @save="$emit('save')" @change="handleChange"> </EditorMonaco>
-			</div>
-			<div v-if="data.preview" class="markdown-editor__preview">
-				<editor-preview class="editor-preview" :theme="theme" :html="htmlText"></editor-preview>
-			</div>
+		<div class="markdown-editor__editor">
+			<EditorMonaco ref="editorMonacoRef" :value="props.modelValue" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></EditorMonaco>
+		</div>
+		<div v-if="props.preview" class="markdown-editor__preview">
+			<editor-preview class="editor-preview" :theme="theme" :html="htmlText"></editor-preview>
 		</div>
 	</div>
 </template>
@@ -70,29 +108,12 @@ registerHook(
 .markdown-editor {
 	display: flex;
 	height: 100%;
-	flex-direction: column;
 
-	.markdown-editor__header {
-		flex-shrink: 0;
-		height: 36px;
-		border-bottom: 1px solid #eee;
-		display: flex;
-		justify-content: space-between;
-		padding: 0 1rem;
-	}
-
-	.markdown-editor__main {
-		display: flex;
+	.markdown-editor__editor,
+	.markdown-editor__preview {
 		flex: 1;
 		flex-shrink: 0;
-		height: calc(100% - 36px);
-
-		.markdown-editor__editor,
-		.markdown-editor__preview {
-			flex: 1;
-			flex-shrink: 0;
-			width: 50%;
-		}
+		width: 50%;
 	}
 
 	.editor-preview {

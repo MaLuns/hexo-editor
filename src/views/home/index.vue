@@ -4,14 +4,11 @@ import { LogoGithub, GitBranch, FileTrayFull } from "@vicons/ionicons5";
 import Left from "./left.vue";
 import Right from "./right.vue";
 import { fileStore } from "@/store";
+import { FileStoreTypeEnum } from "@/enums";
 import DataDB from "@/utils/dataDB";
 import FileSystem from "@/utils/fs/index";
 import type AbstractFileSystem from "@/utils/fs/core/AbstractFileSystem";
-enum FileStoreTypeEnum {
-	Local = 1,
-	Github = 2,
-	Gitee = 3,
-}
+
 const route = useRouter();
 window.$message = useMessage();
 

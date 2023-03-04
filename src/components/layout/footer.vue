@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { configStore, themeVars } from "@/store";
+import { configStore, themeColors } from "@/store";
 import { AlertCircle, Sunny, Moon, PlayForward, PlayBack } from "@vicons/ionicons5";
 const layoutAboutRef = ref();
 const layoutHelpRef = ref();
@@ -76,8 +76,8 @@ const options = [
 	height: v-bind("configStore.layout.layoutFooterBar");
 	font-size: 12px;
 	user-select: none;
-	background-color: v-bind("themeVars.footer.bgColor");
-	color: v-bind("themeVars.footer.color");
+	background-color: v-bind("themeColors.footer.bgColor");
+	color: v-bind("themeColors.footer.color");
 	box-sizing: border-box;
 	line-height: 1;
 

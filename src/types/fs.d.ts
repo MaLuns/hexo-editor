@@ -39,15 +39,6 @@ declare interface PostModel {
 	};
 }
 
-/**
- * Hexo 文章类型枚举
- */
-declare enum HexoFileType {
-	post = 1,
-	draft = 2,
-	page = 3,
-}
-
 declare interface PostOrPageInfoModel {
 	// 文件名
 	name: string;
