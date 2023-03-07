@@ -107,7 +107,7 @@ init();
 </script>
 <template>
 	<main>
-		<div class="editor-aside">
+		<div v-show="configStore.layout.isShowLayoutEditorAside" class="editor-aside">
 			<div class="editor-aside__header">
 				<n-button type="primary" secondary @click="showModal = true">
 					<template #icon>

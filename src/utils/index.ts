@@ -136,3 +136,11 @@ export const deepMerge = <T>(target: T, source: T): T => {
  * @returns
  */
 export const isObject = (obj: any): boolean => Object.prototype.toString.call(obj) === "[object Object]";
+
+/**
+ * 格式化字符串
+ * @param str
+ * @param vals
+ * @returns
+ */
+export const strFormat = (str: string, ...vals: any[]): string => vals.reduce((s, v, i) => s.replace(new RegExp("\\{" + i + "\\}", "g"), v), str);

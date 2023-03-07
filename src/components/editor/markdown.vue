@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import type * as monaco from "monaco-editor";
 import EditorMonaco from "./monaco.vue";
-import { fileStore, themeMode } from "@/store";
+import { configStore, fileStore, themeMode } from "@/store";
 import { debounce } from "@/utils";
-import { regPaste, uri } from "@/utils/editor";
+import { regPaste, singleCommandInit, uri } from "@/utils/editor";
 import { renderer } from "@/utils/md";
 
 const emit = defineEmits(["update:modelValue", "save"]);
@@ -11,10 +11,6 @@ const props = defineProps({
 	modelValue: {
 		type: String,
 		default: "",
-	},
-	preview: {
-		type: Boolean,
-		default: true,
 	},
 	path: {
 		type: String,
@@ -33,26 +29,28 @@ const catchStates = new Map<string | undefined, monaco.editor.ICodeEditorViewSta
 
 let renderMarkdown: (val: string) => void;
 watch(
-	() => props.autoRender,
-	() => {
-		renderMarkdown = debounce(async (val: string) => {
-			htmlText.value = (await fileStore.fs?.transformImgUrl(renderer(val), props.path)) || "";
-		}, props.autoRender);
+	() => configStore.autoRender,
+	(val) => {
+		if (val === 0) {
+			renderMarkdown = () => "";
+		} else {
+			renderMarkdown = debounce(async (val: string) => {
+				htmlText.value = (await fileStore.fs?.transformImgUrl(renderer(val), props.path)) || "";
+			}, val);
+		}
 	},
-	{
-		immediate: true,
-	}
+	{ immediate: true }
 );
+
 watch(
 	() => props.modelValue,
 	(val) => renderMarkdown(val),
-	{
-		immediate: true,
-	}
+	{ immediate: true }
 );
 
 const handleReady = (e: { editor: monaco.editor.IStandaloneCodeEditor; monaco: any }) => {
 	regPaste(e.editor);
+	singleCommandInit(e.editor, ["wordWrap", "mouseWheelZoom"]);
 };
 
 const addModel = (val: string, path: string): monaco.Uri => {
@@ -96,10 +94,10 @@ defineExpose({
 </script>
 <template>
 	<div class="markdown-editor">
-		<div class="markdown-editor__editor">
+		<div v-show="configStore.layout.isShowMarkdownEditor" class="markdown-editor__editor">
 			<EditorMonaco ref="editorMonacoRef" :value="props.modelValue" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></EditorMonaco>
 		</div>
-		<div v-if="props.preview" class="markdown-editor__preview">
+		<div v-show="configStore.layout.isShowMarkdownPrew" class="markdown-editor__preview">
 			<editor-preview class="editor-preview" :theme="theme" :html="htmlText"></editor-preview>
 		</div>
 	</div>

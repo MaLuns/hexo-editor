@@ -8,6 +8,7 @@ const siblings = (ele: any, selector: string) => {
 		return child !== ele;
 	});
 };
+
 export default {
 	props: {
 		html: {

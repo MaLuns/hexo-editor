@@ -2,8 +2,10 @@ import type AbstractFileSystem from "@/utils/fs/core/AbstractFileSystem";
 import { darkTheme } from "naive-ui";
 import { deepMerge } from "@/utils";
 import storage from "@/utils/storage";
+import * as monaco from "monaco-editor";
 
 import themes from "@/themes";
+import { loadEditorTheme } from "@/utils/editor";
 
 const defConfig: GlobalConfig = {
 	layout: {
@@ -11,18 +13,28 @@ const defConfig: GlobalConfig = {
 		layoutFooterBar: "22px",
 		editorAsideWidth: "280px",
 		isShowLayoutSider: true,
+		isShowLayoutEditorAside: true,
+		isShowMarkdownEditor: true,
+		isShowMarkdownPrew: true,
 	},
 	theme: "light",
 	language: "zh_cn",
 	preStyle: "",
 	editorLightTheme: "vs",
 	editorDartTheme: "vs-dark",
-	lineNumbers: "off",
+	editorOption: {
+		lineNumbers: "off",
+		minimap: {
+			enabled: true,
+			renderCharacters: false,
+		},
+		fontSize: 14,
+		fontFamily: undefined,
+		wordWrap: "on",
+		mouseWheelZoom: true,
+	},
 	autoSave: 0,
 	autoRender: 2000,
-	fontSize: 14,
-	fontFamily: undefined,
-	minimap: true,
 	imgStorageDir: "source/images/",
 	pictureBed: "",
 };
@@ -39,16 +51,12 @@ export const fileStore = reactive({
 export const configStore = reactive(<GlobalConfig>deepMerge(defConfig, storage.getItem("config", {})));
 
 export const themeMode = computed(() => {
-	if (configStore.theme === "system") {
-		return window.matchMedia("(prefers-color-scheme: light)").matches ? null : darkTheme;
-	}
+	if (configStore.theme === "system") return window.matchMedia("(prefers-color-scheme: light)").matches ? null : darkTheme;
 	return configStore.theme === "light" ? null : darkTheme;
 });
 
 export const editorTheme = computed(() => {
-	if (configStore.theme === "system") {
-		return window.matchMedia("(prefers-color-scheme: light)").matches ? configStore.editorLightTheme : configStore.editorDartTheme;
-	}
+	if (configStore.theme === "system") return window.matchMedia("(prefers-color-scheme: light)").matches ? configStore.editorLightTheme : configStore.editorDartTheme;
 	return configStore.theme === "light" ? configStore.editorLightTheme : configStore.editorDartTheme;
 });
 
@@ -56,8 +64,21 @@ export const themeColors = computed(() => (themeMode.value ? themes[1] : themes[
 
 watch(
 	() => configStore,
+	(val) => storage.setItem("config", val),
+	{ deep: true }
+);
+
+watch(
+	() => editorTheme.value,
+	(val) => loadEditorTheme(themeMode.value ? "dark" : "light", val),
+	{ immediate: true }
+);
+
+watch(
+	() => configStore.editorOption,
 	(val) => {
-		storage.setItem("config", val);
+		const edits = monaco.editor.getEditors();
+		edits.forEach((item) => item.updateOptions(val));
 	},
 	{ deep: true }
 );

@@ -1,6 +1,7 @@
 import { marked } from "marked";
 import hljs from "highlight.js";
 import tags from "./tags";
+import { triggerHook } from "@/core/hook";
 
 const MarkedRenderer = marked.Renderer;
 hljs.configure({ classPrefix: "" });
@@ -56,5 +57,8 @@ const defaultConfig = {
 };
 
 export const renderer = (text: string, option?: any) => {
-	return marked(tags.render(text), Object.assign(defaultConfig, option)) as unknown as string;
+	triggerHook("MARKDOWN_RENDER_BEFORE");
+	const html = marked(tags.render(text), Object.assign(defaultConfig, option)) as unknown as string;
+	triggerHook("MARKDOWN_RENDER_AFTER");
+	return html;
 };

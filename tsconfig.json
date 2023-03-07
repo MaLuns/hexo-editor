@@ -8,6 +8,11 @@
     "src/**/*.vue"
   ],
   "compilerOptions": {
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "baseUrl": ".",
     "paths": {
       "@/*": [

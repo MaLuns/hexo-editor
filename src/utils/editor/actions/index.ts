@@ -47,16 +47,9 @@ const menuActions: { [k: string]: monaco.editor.IActionDescriptor } = {
 		id: "plugin.editor.switch-themes",
 		label: "切换主题",
 		contextMenuGroupId: "a",
-		run: (editor: monaco.editor.IStandaloneCodeEditor) => {
-			editor.getAction("dedede")?.run();
-			editor.addCommand(KM.Alt, () => {});
-		},
+		run: (editor: monaco.editor.IStandaloneCodeEditor) => {},
 	},
 };
-
-monaco.editor.registerCommand("dedede", (a) => {
-	console.log(a);
-});
 
 export const removeDefaultAction = () => {
 	const menus = actions.MenuRegistry._menuItems as Map<any, any>;

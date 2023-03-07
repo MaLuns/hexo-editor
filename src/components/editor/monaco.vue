@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { triggerHook } from "@/core/hook";
 import { editorTheme, configStore } from "@/store";
+import { debounce } from "@/utils";
 import * as monaco from "monaco-editor";
 const emit = defineEmits(["change", "save", "ready"]);
 
@@ -30,12 +32,6 @@ const props = defineProps({
 
 const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 	theme: editorTheme.value,
-	lineNumbers: configStore.lineNumbers,
-	minimap: {
-		enabled: configStore.minimap,
-	},
-	fontSize: configStore.fontSize,
-	fontFamily: configStore.fontFamily,
 	automaticLayout: true,
 	selectOnLineNumbers: true,
 	fixedOverflowWidgets: true,
@@ -60,10 +56,24 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 		verticalScrollbarSize: 0,
 	},
 	model: null,
-	wordWrap: "on",
+	...configStore.editorOption,
+	fontFamily: configStore.editorOption.fontFamily || undefined,
 };
 
 let monacoEditor: monaco.editor.IStandaloneCodeEditor;
+let autoSave = () => {};
+
+watch(
+	() => configStore.autoSave,
+	(val) => {
+		if (val === 0) {
+			autoSave = () => {};
+		} else {
+			autoSave = debounce(() => emit("save"), val);
+		}
+	},
+	{ immediate: true }
+);
 onMounted(() => {
 	containerHeight.value = useAutoParentHeight(props.height);
 	nextTick(() => {
@@ -75,11 +85,42 @@ onMounted(() => {
 
 		monacoEditor.onDidChangeModelContent(() => {
 			emit("change", monacoEditor!.getValue());
+			autoSave();
 		});
 
 		monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
 			emit("save");
 		});
+
+		const runHook = () => {
+			const selection = monacoEditor.getSelection();
+			if (selection) {
+				triggerHook("MONACO_EDITOR_CURSOR_POSITION", {
+					line: selection.positionLineNumber,
+					column: selection.positionColumn,
+					lineCount: monacoEditor.getModel()!.getLineCount(),
+					textLength: monacoEditor.getValue().length,
+					selectedLength: monacoEditor.getModel()!.getValueInRange(selection).length,
+					selectedLines: selection.endLineNumber - selection.startLineNumber + 1,
+					selectionCount: monacoEditor.getSelections()?.length || 1,
+				});
+			} else {
+				triggerHook("MONACO_EDITOR_CURSOR_POSITION", {
+					line: 0,
+					column: 0,
+					lineCount: 0,
+					textLength: 0,
+					selectedLength: 0,
+					selectedLines: 0,
+					selectionCount: 0,
+				});
+			}
+		};
+
+		monacoEditor.onDidChangeModel(function () {
+			runHook();
+		});
+		monacoEditor.onDidChangeCursorSelection(runHook);
 
 		setTimeout(() => {
 			emit("ready", { editor: monacoEditor, monaco: monaco });

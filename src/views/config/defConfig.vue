@@ -25,7 +25,7 @@
 				<n-card style="height: 100%">
 					<template #header> <h4 class="m-0">编辑器</h4> </template>
 					<n-form-item label="行号" path="lineNumbers">
-						<n-select v-model:value="configStore.lineNumbers" :options="lineNumberOptions" class="w-100" />
+						<n-select v-model:value="configStore.editorOption.lineNumbers" :options="lineNumberOptions" class="w-100" />
 					</n-form-item>
 					<n-form-item label="自动保存" path="autoSave">
 						<n-select v-model:value="configStore.autoSave" :options="timeOptions" class="w-100" />
@@ -33,17 +33,26 @@
 					<n-form-item label="自动渲染" path="autoRender">
 						<n-select v-model:value="configStore.autoRender" :options="timeOptions" class="w-100" />
 					</n-form-item>
+					<n-form-item label="显示小地图" path="minimap">
+						<n-switch v-model:value="configStore.editorOption.minimap.enabled" />
+					</n-form-item>
+					<n-form-item label="小地图样式" path="minimap">
+						<n-switch v-model:value="configStore.editorOption.minimap.renderCharacters">
+							<template #checked> 显示文字 </template>
+							<template #unchecked> 显示块 </template>
+						</n-switch>
+					</n-form-item>
+					<n-form-item label="换行显示" path="wordWrap">
+						<n-select v-model:value="configStore.editorOption.wordWrap" :options="wordWrapOptions" class="w-100" />
+					</n-form-item>
+					<n-form-item label="鼠标滚轮缩放" path="date">
+						<n-switch v-model:value="configStore.editorOption.mouseWheelZoom" />
+					</n-form-item>
 					<n-form-item label="字体大小" path="fontSize">
-						<n-slider v-model:value="configStore.fontSize" :min="12" :max="30" />
+						<n-slider v-model:value="configStore.editorOption.fontSize" :step="2" :min="12" :max="30" />
 					</n-form-item>
 					<n-form-item label="字体" path="font">
-						<n-input v-model:value="configStore.fontFamily" placeholder="e.g., 'Courier New', monospace"></n-input>
-					</n-form-item>
-					<n-form-item label="显示小地图" path="minimap">
-						<n-switch v-model:value="configStore.minimap" />
-					</n-form-item>
-					<n-form-item label="滚轮缩放" path="date">
-						<n-switch />
+						<n-input v-model:value="configStore.editorOption.fontFamily" placeholder="e.g., 'Courier New', monospace"></n-input>
 					</n-form-item>
 				</n-card>
 			</n-grid-item>
@@ -70,48 +79,28 @@ import { themes, loadEditorTheme } from "@/utils/editor";
 import { configStore } from "@/store";
 
 const themeOptions = [
-	{
-		label: "亮白",
-		value: "light",
-	},
-	{
-		label: "暗黑",
-		value: "dark",
-	},
-	{
-		label: "跟随系统",
-		value: "system",
-	},
+	{ label: "亮白", value: "light" },
+	{ label: "暗黑", value: "dark" },
+	{ label: "跟随系统", value: "system" },
 ];
 
 const languageOptions = [
-	{
-		label: "中文",
-		value: "zh_cn",
-	},
-	{
-		label: "English",
-		value: "en",
-	},
+	{ label: "中文", value: "zh_cn" },
+	{ label: "English", value: "en" },
 ];
 
 const lineNumberOptions = [
-	{
-		label: "On",
-		value: "on",
-	},
-	{
-		label: "Off",
-		value: "off",
-	},
-	{
-		label: "Relative",
-		value: "relative",
-	},
-	{
-		label: "Interval",
-		value: "interval",
-	},
+	{ label: "On", value: "on" },
+	{ label: "Off", value: "off" },
+	{ label: "Relative", value: "relative" },
+	{ label: "Interval", value: "interval" },
+];
+
+const wordWrapOptions = [
+	{ label: "On", value: "on" },
+	{ label: "Off", value: "off" },
+	{ label: "WordWrapColumn", value: "wordWrapColumn" },
+	{ label: "Bounded", value: "bounded" },
 ];
 
 const timeOptions = [

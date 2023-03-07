@@ -1,33 +1,24 @@
 <script lang="ts" setup>
 import type { Uri } from "monaco-editor";
-import { uri } from "@/utils/editor";
 import EditorMarkdown from "@/components/editor/markdown.vue";
+import { fileStore } from "@/store";
 
 type models = {
 	[k: string]: {
-		uri: Uri;
-		name: string;
-		path: string;
 		text: string;
 		raw: string;
+		uri: Uri;
+		post: PostModel;
 	};
 };
 
-const defaultModel = {
-	name: "",
-	path: "",
-	text: "",
-	raw: "",
-	uri: uri("/"),
-};
-
+const dialog = useDialog();
 const emit = defineEmits(["select"]);
 const editorMarkdownRef = ref<InstanceType<typeof EditorMarkdown>>();
 const data = reactive({
 	tabValue: "",
-	models: {
-		[""]: defaultModel,
-	} as models,
+	text: "",
+	models: {} as models,
 });
 
 const list = computed(() => {
@@ -36,38 +27,69 @@ const list = computed(() => {
 		.map((key) => {
 			const item = data.models[key];
 			return {
-				label: item.name,
-				value: item.path,
+				label: item.post.name,
+				value: item.post.path,
 				state: item.text !== item.raw ? 1 : 0,
 			};
 		});
 });
 
-const handleClose = (type: string, val: string) => {
+const handleClose = async (type: string, val: string) => {
 	const paths = list.value.map((item) => item.value);
-	const removeModels = (keys: string[] | string) => {
-		if (Array.isArray(keys)) {
-			keys.forEach((item) => {
-				editorMarkdownRef.value!.removeModel(data.models[item].uri);
-				delete data.models[item];
-			});
-		} else {
-			editorMarkdownRef.value!.removeModel(data.models[keys].uri);
-			delete data.models[keys];
-		}
+	let flag: boolean = false;
+	const removeModels = (keys: string[] | string): Promise<boolean> => {
+		return new Promise((resolve) => {
+			if (!Array.isArray(keys)) keys = [keys];
+			const noSave = keys.find((item) => data.models[item].raw !== data.models[item].text) !== undefined;
+			const remove = () => {
+				(keys as string[]).forEach((item) => {
+					editorMarkdownRef.value!.removeModel(data.models[item].uri);
+					delete data.models[item];
+				});
+			};
+			if (noSave) {
+				dialog.warning({
+					title: "提示",
+					transformOrigin: "center",
+					content: "当前文章未保存，确定关闭吗？",
+					positiveText: "确定",
+					negativeText: "取消",
+					maskClosable: false,
+					style: {
+						width: "400px",
+						position: "fixed",
+						top: "100px",
+						left: 0,
+						right: 0,
+					},
+					onPositiveClick: () => {
+						remove();
+						resolve(true);
+					},
+					onEsc: () => resolve(false),
+					onNegativeClick: () => resolve(false),
+					onClose: () => resolve(false),
+				});
+			} else {
+				remove();
+				resolve(true);
+			}
+		});
 	};
 
 	if (type === "close") {
-		removeModels(val);
-		const index = paths.findIndex((item) => item === val);
-		if (data.tabValue === val) {
-			paths.splice(index, 1);
-			const path = paths[Math.max(0, index - 1)];
-			data.tabValue = path ? path : "";
+		flag = await removeModels(val);
+		if (flag) {
+			if (data.tabValue === val) {
+				const index = paths.findIndex((item) => item === val);
+				paths.splice(index, 1);
+				const path = paths[Math.max(0, index - 1)];
+				data.tabValue = path ? path : "";
+			}
 		}
 	} else if (type === "other") {
-		data.tabValue = val;
-		removeModels(paths.filter((item) => item !== val));
+		flag = await removeModels(paths.filter((item) => item !== val));
+		if (flag) data.tabValue = val;
 	} else if (type === "save") {
 		const savePaths = list.value.filter((item) => item.state === 0).map((item) => item.value);
 		if (savePaths.includes(val)) {
@@ -77,16 +99,24 @@ const handleClose = (type: string, val: string) => {
 		}
 		removeModels(savePaths);
 	} else if (type === "all") {
-		removeModels(paths);
-		data.models = {
-			[""]: defaultModel,
-		};
-		data.tabValue = "";
+		flag = await removeModels(paths);
+		if (flag) data.tabValue = "";
 	}
 };
 
 const handleSave = () => {
-	console.log(data.models[data.tabValue]);
+	const post = data.models[data.tabValue];
+	if (post) {
+		const res = fileStore.fs?.savePost({
+			...post.post,
+			md: post.text,
+		});
+		if (res) {
+			post.post.md = post.raw = post.text;
+		} else {
+			window.$message.warning("文章保存失败");
+		}
+	}
 };
 
 const add = (post: PostModel) => {
@@ -96,11 +126,10 @@ const add = (post: PostModel) => {
 		editorMarkdownRef.value?.setModel(model.uri);
 	} else {
 		data.models[post.path] = {
-			name: post.name,
-			path: post.path,
 			text: post.md,
 			raw: post.md,
 			uri: editorMarkdownRef.value!.addModel(post.md, "/" + post.path),
+			post: post,
 		};
 	}
 };
@@ -116,6 +145,17 @@ watch(
 	}
 );
 
+const modelValue = computed({
+	get: () => {
+		return data.models[data.tabValue]?.text || "";
+	},
+	set: (val) => {
+		if (data.models[data.tabValue]) {
+			data.models[data.tabValue].text = val;
+		}
+	},
+});
+
 defineExpose({
 	add,
 	remove,
@@ -129,7 +169,7 @@ defineExpose({
 			</PostTabs>
 		</div>
 		<div class="post-editor__container">
-			<EditorMarkdown ref="editorMarkdownRef" v-model="data.models[data.tabValue].text" @save="handleSave"></EditorMarkdown>
+			<EditorMarkdown ref="editorMarkdownRef" v-model="modelValue" @save="handleSave"></EditorMarkdown>
 		</div>
 	</div>
 </template>

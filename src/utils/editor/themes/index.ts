@@ -2,6 +2,11 @@
 import * as monaco from "monaco-editor";
 import themelist from "./themelist.json";
 
+const catchs: { [k: string]: boolean } = {
+	vs: true,
+	"vs-dark": true,
+};
+
 export const themes = ((list) => {
 	const convert = (l: any) => {
 		const theme = [];
@@ -33,16 +38,18 @@ export const loadEditorTheme = (key: "light" | "dark", theme: string) => {
 	const element = themelist[key];
 	const name = element[theme as keyof typeof element];
 	if (importModules[name]) {
-		importModules[name]().then((res) => {
-			monaco.editor.defineTheme(theme, res as monaco.editor.IStandaloneThemeData);
+		if (catchs[theme]) {
 			monaco.editor.setTheme(theme);
-		});
+		} else {
+			importModules[name]().then((res) => {
+				catchs[theme] = true;
+				monaco.editor.defineTheme(theme, res as monaco.editor.IStandaloneThemeData);
+				monaco.editor.setTheme(theme);
+			});
+		}
 	} else {
 		if (["vs", "vs-dark"].includes(theme)) {
 			monaco.editor.setTheme(theme);
 		}
 	}
 };
-
-/*  */
-/* themmStore.editorTheme = key; */
