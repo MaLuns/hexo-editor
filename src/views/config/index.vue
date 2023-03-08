@@ -7,8 +7,14 @@ import DefConfig from "./defConfig.vue";
 			<n-tab-pane class="tab-pane" name="chap1" tab="常用配置">
 				<DefConfig></DefConfig>
 			</n-tab-pane>
-			<n-tab-pane class="tab-pane" name="chap2" tab="Hexo 配置"> </n-tab-pane>
-			<n-tab-pane class="tab-pane" name="chap3" tab="主题配置"> </n-tab-pane>
+			<n-tab-pane class="tab-pane" name="chap2" tab="Hexo 配置">
+				<EditorMonaco></EditorMonaco>
+			</n-tab-pane>
+			<n-tab-pane class="tab-pane" name="chap3" tab="主题配置">
+				<div style="height: 500px">
+					<EditorMonaco language="yaml"></EditorMonaco>
+				</div>
+			</n-tab-pane>
 		</n-tabs>
 	</div>
 </template>

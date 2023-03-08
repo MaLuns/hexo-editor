@@ -4,7 +4,7 @@ import EditorMonaco from "./monaco.vue";
 import { configStore, fileStore, themeMode } from "@/store";
 import { debounce } from "@/utils";
 import { regPaste, singleCommandInit, uri } from "@/utils/editor";
-import { renderer } from "@/utils/md";
+import ctx from "@/core/context";
 
 const emit = defineEmits(["update:modelValue", "save"]);
 const props = defineProps({
@@ -35,7 +35,7 @@ watch(
 			renderMarkdown = () => "";
 		} else {
 			renderMarkdown = debounce(async (val: string) => {
-				htmlText.value = (await fileStore.fs?.transformImgUrl(renderer(val), props.path)) || "";
+				htmlText.value = (await fileStore.fs?.transformImgUrl(ctx.markdown.renderer(val), props.path)) || "";
 			}, val);
 		}
 	},

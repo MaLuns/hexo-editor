@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type AbstractFileSystem from "@/core/file-system/abstract-file-system";
 import { NIcon, type DropdownOption } from "naive-ui";
 import { LogoGithub, GitBranch, FileTrayFull } from "@vicons/ionicons5";
 import Left from "./left.vue";
@@ -6,8 +7,7 @@ import Right from "./right.vue";
 import { fileStore } from "@/store";
 import { FileStoreTypeEnum } from "@/enums";
 import DataDB from "@/utils/dataDB";
-import FileSystem from "@/utils/fs/index";
-import type AbstractFileSystem from "@/utils/fs/core/AbstractFileSystem";
+import ctx from "@/core/context";
 
 const route = useRouter();
 window.$message = useMessage();
@@ -41,7 +41,7 @@ db.getAll().then((res) => {
 
 const openLocalFile = async (type: FileStoreTypeEnum) => {
 	if (type === FileStoreTypeEnum.Local) {
-		const fs = FileSystem.getInstance("LocalFileSystem");
+		const fs = ctx.fs.getInstance(FileStoreTypeEnum.Local);
 		const root = await fs.getRootsDirectory();
 		if (root) {
 			const item = data.list.find((item) => {
@@ -56,7 +56,7 @@ const openLocalFile = async (type: FileStoreTypeEnum) => {
 
 const selectHistory = async (key: string | number, option: DropdownOption) => {
 	if (option.type === FileStoreTypeEnum.Local) {
-		let fs = FileSystem.getInstance("LocalFileSystem");
+		let fs = ctx.fs.getInstance(FileStoreTypeEnum.Local);
 		if (await fs.getRootsDirectory(option.value as FileSystemDirectoryHandle)) {
 			openEditor(fs);
 		}

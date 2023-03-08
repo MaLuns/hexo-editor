@@ -1,8 +1,11 @@
+import type { Plugin } from "@/core/plugin";
+
 import yaml from "js-yaml";
 import fm from "@/utils/front-matter";
-import AbstractFileSystem from "./AbstractFileSystem";
+import AbstractFileSystem from "@/core/file-system/abstract-file-system";
 import { formatDate } from "@/utils";
 import { HexoFileType } from "@/enums";
+import { configStore } from "@/store";
 
 /**
  * 读取文件信息
@@ -79,7 +82,7 @@ const copyDirectory = async (sourceDir: FileSystemDirectoryHandle, targetDir: Fi
 	try {
 		let flag = true;
 		// 递归复制子目录
-		for await (const entry of sourceDir.entries()) {
+		for await (const [, entry] of sourceDir.entries()) {
 			if (entry.isFile) {
 				// 如果是文件，复制到目标目录中
 				const file = await entry.getFile();
@@ -128,7 +131,7 @@ const yamlDumpOpt = {
 	prefixSeparator: true,
 };
 
-export default class LocalFileSystem extends AbstractFileSystem {
+class LocalFileSystem extends AbstractFileSystem {
 	_count = 0;
 	_root: FileSystemDirectoryHandle | undefined;
 	_hexo_config: YamlConfig | undefined;
@@ -319,8 +322,8 @@ export default class LocalFileSystem extends AbstractFileSystem {
 			const name = type === "post" ? "_posts" : "_drafts";
 			const postDirectoryHandle = await sourceDirectoryHandle?.getDirectoryHandle(name, { create: true });
 			// eslint-disable-next-line no-unsafe-optional-chaining
-			for await (const data of postDirectoryHandle?.entries()) {
-				const [, value] = data as [string, FileSystemDirectoryHandle | FileSystemFileHandle];
+			for await (const [, value] of postDirectoryHandle!.entries()) {
+				/* const [, value] = data as [string, FileSystemDirectoryHandle | FileSystemFileHandle]; */
 				if (value.kind === "file" && value.name.endsWith(".md")) {
 					const post = await parsePost(value);
 					post.path = `${hexoThemeConfig.source_dir}/${name}/${value.name}`;
@@ -351,8 +354,8 @@ export default class LocalFileSystem extends AbstractFileSystem {
 		} else {
 			const config = await this.getHexoConfig();
 			const sourceDir = config?.source || "source";
-			assetsDir = `${sourceDir}/images/`;
-			imgPath = `${sourceDir}/images/${fileName}`;
+			assetsDir = configStore.imgStorageDir || `${sourceDir}/images/`;
+			imgPath = `${assetsDir}/${fileName}`;
 		}
 
 		const assetsDirHandle = (await createFileOrDir(this._root!, assetsDir)) as FileSystemDirectoryHandle;
@@ -564,3 +567,10 @@ export default class LocalFileSystem extends AbstractFileSystem {
 		}
 	}
 }
+
+export default <Plugin>{
+	name: "local-file-system",
+	register(ctx) {
+		ctx.fs.register(LocalFileSystem);
+	},
+};

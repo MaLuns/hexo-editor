@@ -1,5 +1,5 @@
 import type { Plugin } from "@/core/plugin";
-import type { Menus } from "@/core/statusBar";
+import type { Menus } from "@/core/status-bar";
 import { TimeOutline } from "@vicons/ionicons5";
 import { registerHook } from "@/core/hook";
 import { ref } from "vue";

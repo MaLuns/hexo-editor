@@ -21,8 +21,9 @@ declare type HookTypes = {
 		selectedLines: number;
 		selectionCount: number;
 	};
-	MARKDOWN_RENDER_BEFORE: void;
-	MARKDOWN_RENDER_AFTER: void;
+	MARKDOWN_RENDER_BEFORE: string;
+	MARKDOWN_RENDER_AFTER: { text: string; html: string };
+	TOC_LIST_CLICK: TocNode;
 };
 
 declare interface LayoutConfig {
@@ -71,12 +72,15 @@ declare interface GlobalConfig {
 	autoSave: number;
 	// 自动渲染
 	autoRender: number;
+	// 隐藏 Front-Matter
+	hideFrontMatter: boolean;
 	// 上传图片存放地址
 	imgStorageDir: string;
 	// 图床
 	pictureBed: string;
 }
 
+// 主题颜色变量
 declare interface ThemeVars {
 	sider: {
 		bgColor: string;
@@ -106,4 +110,12 @@ declare interface ThemeVars {
 		bgColor: string;
 		color: string;
 	};
+}
+
+// TOC
+declare interface TocNode {
+	id: string;
+	level: number;
+	text: string;
+	children: TocNode[];
 }

@@ -39,6 +39,9 @@ declare interface PostModel {
 	};
 }
 
+/**
+ * 新增文章或页面
+ */
 declare interface PostOrPageInfoModel {
 	// 文件名
 	name: string;

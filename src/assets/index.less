@@ -3,6 +3,14 @@
     right: 0px;
 }
 
+.custom-scorll {
+    overflow: unset;
+
+    .n-scrollbar-rail.n-scrollbar-rail--vertical {
+        right: -9px;
+    }
+}
+
 .loop(@name, @property, @max, @min, @setp) when (@max >=@min) {
     .loop(@name, @property, (@max - @setp), @min, @setp);
 

@@ -1,12 +1,11 @@
-import { registerHook } from "@/core/hook";
 import type { Plugin } from "@/core/plugin";
-import type { Menus } from "@/core/statusBar";
+import { registerHook } from "@/core/hook";
 import { strFormat } from "@/utils";
 
 export default <Plugin>{
 	name: "status-bar-document-info",
 	register: (ctx) => {
-		ctx.statusBar.tapMenus((menus: Menus) => {
+		ctx.statusBar.tapMenus((menus) => {
 			const str = "L {0}, C {1} ";
 			const str2 = "总行数: {0} 字符数: {1}";
 			const str3 = "已选择: {0},{1}";

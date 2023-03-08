@@ -1,5 +1,5 @@
+import { onlyRenderer } from "@/core/markdown";
 import { htmlTag } from "@/utils";
-import { renderer } from "../index";
 
 /**
  * 相册
@@ -11,7 +11,7 @@ export const galleryGroup = (args: any[], content: string) => {
 	return `<div class="fj-gallery no-fancybox">
     ${content
 			.split("\n")
-			.map((md) => renderer(md))
+			.map((md) => onlyRenderer(md))
 			.join("")} </div>`;
 };
 

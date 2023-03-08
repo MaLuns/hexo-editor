@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { configStore, themeColors } from "@/store";
-import * as statusBar from "@/core/statusBar";
-import type { Menu, MenuItem } from "@/core/statusBar";
+import * as statusBar from "@/core/status-bar";
+import type { Menu, MenuItem } from "@/core/status-bar";
 import { CheckmarkDoneSharp } from "@vicons/ionicons5";
 
 const props = defineProps({

@@ -1,3 +1,5 @@
+import type { HexoFileType } from "@/enums";
+
 export default abstract class AbstractFileSystem {
 	/**
 	 *  获取文件根

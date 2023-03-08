@@ -1,4 +1,4 @@
-import { renderer } from "../index";
+import { onlyRenderer } from "@/core/markdown";
 
 export default (args: any[], content: string) => {
 	const tabBlock = /<!--\s*tab (.*?)\s*-->\n([\w\W\s\S]*?)<!--\s*endtab\s*-->/g;
@@ -27,7 +27,7 @@ export default (args: any[], content: string) => {
 		let tabIcon = tabParameters[1] || "";
 		let tabHref = "";
 
-		postContent = renderer(postContent);
+		postContent = onlyRenderer(postContent);
 
 		tabId += 1;
 		tabHref = (tabName + " " + tabId).toLowerCase().split(" ").join("-");

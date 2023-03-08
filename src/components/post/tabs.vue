@@ -99,6 +99,8 @@ onMounted(() => {
 	.post-tabs__prefix,
 	.post-tabs__suffix {
 		padding: 0 10px;
+		display: flex;
+		align-items: center;
 	}
 
 	.post-tabs__scroll-content {

@@ -1,5 +1,5 @@
 import type { Plugin } from "@/core/plugin";
-import type { Menus } from "@/core/statusBar";
+import type { Menus } from "@/core/status-bar";
 import { Sunny, Moon, Contrast } from "@vicons/ionicons5";
 
 export default <Plugin>{

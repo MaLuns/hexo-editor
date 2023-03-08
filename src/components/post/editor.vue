@@ -165,7 +165,9 @@ defineExpose({
 	<div class="post-editor">
 		<div class="post-editor__tabs">
 			<PostTabs v-model="data.tabValue" :list="list" @close="handleClose">
-				<slot></slot>
+				<template #suffix>
+					<PostToc></PostToc>
+				</template>
 			</PostTabs>
 		</div>
 		<div class="post-editor__container">

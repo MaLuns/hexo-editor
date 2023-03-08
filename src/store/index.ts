@@ -1,4 +1,4 @@
-import type AbstractFileSystem from "@/utils/fs/core/AbstractFileSystem";
+import type AbstractFileSystem from "@/core/file-system/abstract-file-system";
 import { darkTheme } from "naive-ui";
 import { deepMerge } from "@/utils";
 import storage from "@/utils/storage";
@@ -35,6 +35,7 @@ const defConfig: GlobalConfig = {
 	},
 	autoSave: 0,
 	autoRender: 2000,
+	hideFrontMatter: true,
 	imgStorageDir: "source/images/",
 	pictureBed: "",
 };
@@ -42,6 +43,7 @@ const defConfig: GlobalConfig = {
 export const fileStore = reactive({
 	fs: <AbstractFileSystem | null>null,
 	post: <PostModel | null>null,
+	tocs: <TocNode[]>[],
 	setFileSystem(fs: AbstractFileSystem) {
 		this.fs = fs;
 	},

@@ -11,10 +11,10 @@
 						<n-select v-model:value="configStore.language" :options="languageOptions" class="w-100" />
 					</n-form-item>
 					<n-form-item label="编辑器主题(亮)" path="date">
-						<n-select v-model:value="configStore.editorLightTheme" :options="themes[0]" class="w-200" @change="loadEditorTheme('light', $event)" />
+						<n-select v-model:value="configStore.editorLightTheme" :options="themes[0]" class="w-200" @on-update:value="loadEditorTheme('light', $event)" />
 					</n-form-item>
 					<n-form-item label="编辑器主题(暗)" path="date">
-						<n-select v-model:value="configStore.editorDartTheme" :options="themes[1]" class="w-200" @change="loadEditorTheme('dark', $event)" />
+						<n-select v-model:value="configStore.editorDartTheme" :options="themes[1]" class="w-200" @on-update:value="loadEditorTheme('dark', $event)" />
 					</n-form-item>
 					<n-form-item label="自定义样式" path="preStyle">
 						<n-input v-model:value="configStore.preStyle" type="textarea" placeholder="自定义主题样式" />
@@ -59,15 +59,18 @@
 			<n-grid-item>
 				<n-card style="height: 100%">
 					<template #header> <h4 class="m-0">其他</h4> </template>
-					<n-form-item label="Front-matter" path="date">
-						<n-switch />
+					<n-form-item label="Front-Matter" path="date">
+						<n-switch v-model:value="configStore.hideFrontMatter">
+							<template #checked> 隐藏 Front-Matter </template>
+							<template #unchecked> 显示 Front-Matter </template>
+						</n-switch>
 					</n-form-item>
 					<n-form-item label="图片存放目录" path="imgStorageDir">
 						<n-input v-model:value="configStore.imgStorageDir" />
 					</n-form-item>
-					<n-form-item label="图床" path="date">
+					<!-- <n-form-item label="图床" path="date">
 						<n-switch />
-					</n-form-item>
+					</n-form-item> -->
 				</n-card>
 			</n-grid-item>
 		</n-grid>
