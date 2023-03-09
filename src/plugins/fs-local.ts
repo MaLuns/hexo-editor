@@ -4,7 +4,7 @@ import yaml from "js-yaml";
 import fm from "@/utils/front-matter";
 import AbstractFileSystem from "@/core/file-system/abstract-file-system";
 import { formatDate } from "@/utils";
-import { HexoFileType } from "@/enums";
+import { FileStoreTypeEnum, HexoFileType } from "@/enums";
 import { configStore } from "@/store";
 
 /**
@@ -571,6 +571,6 @@ class LocalFileSystem extends AbstractFileSystem {
 export default <Plugin>{
 	name: "local-file-system",
 	register(ctx) {
-		ctx.fs.register(LocalFileSystem);
+		ctx.fs.register(FileStoreTypeEnum.Local, LocalFileSystem);
 	},
 };

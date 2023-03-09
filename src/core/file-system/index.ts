@@ -1,3 +1,4 @@
+import type { FileStoreTypeEnum } from "@/enums";
 import type AbstractFileSystem from "./abstract-file-system";
 
 type Instance = new () => AbstractFileSystem;
@@ -5,16 +6,16 @@ type Instance = new () => AbstractFileSystem;
 class ConcreteFactory {
 	private static singletons: Record<string, AbstractFileSystem> = {};
 	private static instances: {
-		[k: string]: Instance;
+		[k in FileStoreTypeEnum]?: Instance;
 	} = {};
 
-	public static register(i: Instance) {
-		ConcreteFactory.instances[i.name] = i;
+	public static register(key: FileStoreTypeEnum, i: Instance) {
+		ConcreteFactory.instances[key] = i;
 	}
 
-	public static getInstance(key: keyof typeof ConcreteFactory.instances): AbstractFileSystem {
+	public static getInstance(key: FileStoreTypeEnum): AbstractFileSystem {
 		if (!ConcreteFactory.singletons[key]) {
-			const instance = ConcreteFactory.instances[key];
+			const instance = ConcreteFactory.instances[key]!;
 			ConcreteFactory.singletons[key] = new instance();
 		}
 		return ConcreteFactory.singletons[key];
