@@ -12,6 +12,7 @@ declare type LabelVal = {
 
 declare type HookTypes = {
 	MONACO_READY: { editor: Monaco.editor.IStandaloneCodeEditor; monaco: typeof Monaco };
+	MONACO_MARKDOWN_READY: { editor: Monaco.editor.IStandaloneCodeEditor; monaco: typeof Monaco };
 	MONACO_EDITOR_CURSOR_POSITION: {
 		line: number;
 		column: number;
@@ -21,6 +22,7 @@ declare type HookTypes = {
 		selectedLines: number;
 		selectionCount: number;
 	};
+	MONACO_ACTIVATE: Monaco.editor.IStandaloneCodeEditor | null;
 	MARKDOWN_RENDER_BEFORE: string;
 	MARKDOWN_RENDER_AFTER: { text: string; html: string };
 	TOC_LIST_CLICK: TocNode;

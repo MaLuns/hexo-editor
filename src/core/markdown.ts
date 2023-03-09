@@ -1,6 +1,5 @@
 import { marked } from "marked";
 import hljs from "highlight.js";
-/* import tags from "./tags"; */
 import { triggerHook } from "@/core/hook";
 
 const codeReg = /(`){3}(.+?)(`){3}/gs;
@@ -61,6 +60,7 @@ class Renderer extends MarkedRenderer {
 	constructor() {
 		super();
 	}
+
 	code(code: string, infostring: string | undefined) {
 		infostring = infostring || "";
 		const langs = infostring.match(/\S*/);
@@ -124,10 +124,11 @@ export const onlyRenderer = (text: string, option?: any) => {
  */
 export const renderer = (text: string, option?: any) => {
 	triggerHook("MARKDOWN_RENDER_BEFORE", text);
-
 	text = tags.render(text);
 	text = filters.before.reduce((t, current) => current.run(t), text);
+
 	let html = marked(text, Object.assign(defaultConfig, option)) as unknown as string;
+
 	html = filters.after.reduce(
 		(t, current) => {
 			t.html = current.run(t);

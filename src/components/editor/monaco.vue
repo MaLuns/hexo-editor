@@ -51,8 +51,8 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 	scrollBeyondLastLine: false,
 	overviewRulerBorder: false,
 	hideCursorInOverviewRuler: true,
+	smoothScrolling: true,
 	scrollbar: {
-		/* vertical: 'hidden' */
 		verticalScrollbarSize: 0,
 	},
 	model: null,
@@ -74,6 +74,7 @@ watch(
 	},
 	{ immediate: true }
 );
+
 onMounted(() => {
 	containerHeight.value = useAutoParentHeight(props.height);
 	nextTick(() => {
@@ -120,12 +121,23 @@ onMounted(() => {
 		monacoEditor.onDidChangeModel(function () {
 			runHook();
 		});
+
 		monacoEditor.onDidChangeCursorSelection(runHook);
 
 		setTimeout(() => {
 			emit("ready", { editor: monacoEditor, monaco: monaco });
+			triggerHook("MONACO_ACTIVATE", { editor: monacoEditor, monaco: monaco });
+			triggerHook("MONACO_ACTIVATE", monacoEditor);
 		}, 500);
 	});
+});
+
+onActivated(() => {
+	triggerHook("MONACO_ACTIVATE", monacoEditor);
+});
+
+onDeactivated(() => {
+	triggerHook("MONACO_ACTIVATE", null);
 });
 
 defineExpose({

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { HexoFileType } from "@/enums";
 import { fileStore } from "@/store";
 import { regexRules } from "@/utils";
 import type { FormInst, FormItemRule, FormRules } from "naive-ui";

@@ -1,12 +1,9 @@
 <script lang="ts" setup>
 import type { TooltipProps } from "naive-ui";
 import { siderPage } from "@/router";
-import { AlertCircle, LogoMarkdown } from "@vicons/ionicons5";
 import { themeColors } from "@/store";
 
 const router = useRouter();
-const layoutAboutRef = ref();
-const layoutHelpRef = ref();
 const data = reactive({
 	active: 0,
 	pageNavs: siderPage.map((item) => {
@@ -16,18 +13,6 @@ const data = reactive({
 			tips: item?.meta?.tips as string,
 		};
 	}),
-	helpNavs: [
-		{
-			icon: markRaw(LogoMarkdown),
-			tips: "Markdown 参考",
-			key: "markdown",
-		},
-		{
-			icon: markRaw(AlertCircle),
-			tips: "关于",
-			key: "about",
-		},
-	],
 });
 
 const handleCheckNav = (index: number) => {
@@ -39,14 +24,6 @@ const handleCheckNav = (index: number) => {
 		});
 	}
 };
-
-/* const handleCheckHelpNav = (item: any) => {
-	if (item.key === "about") {
-		layoutAboutRef.value.show();
-	} else if (item.key === "markdown") {
-		layoutHelpRef.value.show();
-	}
-}; */
 
 type TooltipThemeOverrides = NonNullable<TooltipProps["themeOverrides"]>;
 const tooltipThemeOverrides: TooltipThemeOverrides = {
@@ -71,19 +48,7 @@ const tooltipThemeOverrides: TooltipThemeOverrides = {
 				</n-tooltip>
 			</li>
 		</ul>
-		<!-- <ul class="layout-sider__item">
-			<li v-for="(item, index) in data.helpNavs" :key="index" class="layout-sider__item-nav" @click="handleCheckHelpNav(item)">
-				<n-tooltip placement="right" trigger="hover" :theme-overrides="tooltipThemeOverrides">
-					<template #trigger>
-						<n-icon size="22" :component="item.icon"></n-icon>
-					</template>
-					{{ item.tips }}
-				</n-tooltip>
-			</li>
-		</ul> -->
 	</div>
-	<LayoutAbout ref="layoutAboutRef"></LayoutAbout>
-	<LayoutHelp ref="layoutHelpRef"></LayoutHelp>
 </template>
 <style lang="less" scoped>
 .layout-sider {

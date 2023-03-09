@@ -1,4 +1,5 @@
 <script lang="ts">
+import { registerHook } from "@/core/hook";
 import { h } from "vue";
 const siblings = (ele: any, selector: string) => {
 	return [...ele.parentNode.children].filter((child) => {
@@ -59,6 +60,18 @@ export default {
 	},
 	mounted() {
 		this.init();
+		registerHook("TOC_LIST_CLICK", (e) => {
+			const root = this.$el.parentNode;
+			const warp = root.querySelector(".pre-wrap");
+			const trag = root.getElementById(e.id);
+			if (warp && trag) {
+				warp.scrollTo({
+					top: trag.offsetTop - trag.offsetHeight - 30,
+					left: 0,
+					behavior: "smooth",
+				});
+			}
+		});
 	},
 	methods: {
 		init() {

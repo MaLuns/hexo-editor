@@ -1,4 +1,7 @@
 .trm-publication {
+    max-width: 1024px;
+    margin   : 0 auto;
+
     >p:first-of-type {
         color  : var(--theme-color, #00283a) !important;
         opacity: 1 !important;
@@ -13,17 +16,43 @@
     }
 
     blockquote {
-        background-color: var(--theme-bg2-color, #f4f5f7);
-        box-shadow      : var(--box-shadow2, inset 0 0 4px -1px rgba(0, 0, 0, 0.15));
-        margin-bottom   : 1rem;
+        box-shadow      : var(--box-shadow2, 0 2px 4px -2px rgba(0, 0, 0, 0.15));
+        padding         : 0;
+        display         : block;
+        position        : relative;
+        background-color: var(--theme-bg-color, #fcfcfe);
+        color           : var(--theme-color, #00283a);
+        padding         : var(--card-padding, 40px);
+        border-radius   : var(--card-border-radius, 10px);
+        font-style      : italic;
+        font-size       : 16px;
+        font-weight     : 500;
+        margin          : 1rem 0;
 
-        &::before {
-            color: var(--primary, #afb42b)
+        &:before {
+            margin     : 0;
+            color      : var(--primary, #afb42b);
+            width      : 50px;
+            line-height: 55px;
+            content    : '"';
+            position   : absolute;
+            top        : 10px;
+            left       : 10px;
+            font-size  : 54px;
         }
 
-        &::after {
-            color: var(--primary, #afb42b)
+        &:after {
+            margin     : 0;
+            width      : 50px;
+            color      : var(--primary, #afb42b);
+            line-height: 55px;
+            content    : '"';
+            position   : absolute;
+            bottom     : -20px;
+            right      : 2px;
+            font-size  : 54px;
         }
+
     }
 
     img,

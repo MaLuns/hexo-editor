@@ -73,7 +73,7 @@ onMounted(() => {
 						<n-button class="close-btn" quaternary size="tiny" @click.stop="$emit('close', 'close', item.value)">
 							<template #icon>
 								<n-icon>
-									<Close />
+									<close />
 								</n-icon>
 							</template>
 						</n-button>
@@ -86,7 +86,7 @@ onMounted(() => {
 			<slot name="suffix"></slot>
 		</div>
 	</div>
-	<ContextMenu v-if="postTabsRef" :trigger="postTabsRef" :options="options" @command="handleCommand"></ContextMenu>
+	<context-menu v-if="postTabsRef" :trigger="postTabsRef" :options="options" @command="handleCommand"></context-menu>
 </template>
 <style lang="less" scoped>
 .post-tabs {

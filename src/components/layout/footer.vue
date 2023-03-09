@@ -4,13 +4,13 @@ import { configStore, themeColors } from "@/store";
 <template>
 	<div class="footer" @contextmenu.prevent>
 		<div class="footer-item">
-			<StatusBarMenu position="left"></StatusBarMenu>
+			<status-bar-menu position="left"></status-bar-menu>
 		</div>
 		<div class="footer-item">
-			<StatusBarMenu position="center"></StatusBarMenu>
+			<status-bar-menu position="center"></status-bar-menu>
 		</div>
 		<div class="footer-item">
-			<StatusBarMenu position="right"></StatusBarMenu>
+			<status-bar-menu position="right"></status-bar-menu>
 		</div>
 	</div>
 </template>

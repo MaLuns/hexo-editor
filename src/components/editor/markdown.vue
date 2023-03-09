@@ -3,8 +3,9 @@ import type * as monaco from "monaco-editor";
 import EditorMonaco from "./monaco.vue";
 import { configStore, fileStore, themeMode } from "@/store";
 import { debounce } from "@/utils";
-import { regPaste, singleCommandInit, uri } from "@/utils/editor";
+import { uri } from "@/utils/editor";
 import ctx from "@/core/context";
+import { triggerHook } from "@/core/hook";
 
 const emit = defineEmits(["update:modelValue", "save"]);
 const props = defineProps({
@@ -49,8 +50,12 @@ watch(
 );
 
 const handleReady = (e: { editor: monaco.editor.IStandaloneCodeEditor; monaco: any }) => {
-	regPaste(e.editor);
-	singleCommandInit(e.editor, ["wordWrap", "mouseWheelZoom"]);
+	/* regPaste(e.editor);
+	singleCommandInit(e.editor, ["wordWrap", "mouseWheelZoom"]); */
+	/* registerHook("TOC_LIST_CLICK", (toc) => {
+		e.editor.setScrollTop(200, 0);
+	}); */
+	triggerHook("MONACO_MARKDOWN_READY", e);
 };
 
 const addModel = (val: string, path: string): monaco.Uri => {
@@ -95,7 +100,7 @@ defineExpose({
 <template>
 	<div class="markdown-editor">
 		<div v-show="configStore.layout.isShowMarkdownEditor" class="markdown-editor__editor">
-			<EditorMonaco ref="editorMonacoRef" :value="props.modelValue" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></EditorMonaco>
+			<editor-monaco ref="editorMonacoRef" :value="props.modelValue" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></editor-monaco>
 		</div>
 		<div v-show="configStore.layout.isShowMarkdownPrew" class="markdown-editor__preview">
 			<editor-preview class="editor-preview" :theme="theme" :html="htmlText"></editor-preview>

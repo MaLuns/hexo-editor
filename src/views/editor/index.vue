@@ -107,31 +107,31 @@ init();
 </script>
 <template>
 	<main>
-		<div v-show="configStore.layout.isShowLayoutEditorAside" class="editor-aside">
+		<div v-show="configStore.layout.isShowLayoutEditorAside" class="editor-aside" @contextmenu.prevent>
 			<div class="editor-aside__header">
 				<n-button type="primary" secondary @click="showModal = true">
 					<template #icon>
 						<n-icon>
-							<DocumentTextOutline />
+							<document-text-outline />
 						</n-icon>
 					</template>
 					新增文章
 				</n-button>
 			</div>
-			<n-scrollbar style="max-height: calc(100% - 30px)">
-				<n-collapse class="demosss" arrow-placement="right" :default-expanded-names="['posts']">
+			<n-scrollbar class="file-panel__scroll">
+				<n-collapse class="file-panel" arrow-placement="right" :default-expanded-names="['posts']">
 					<n-collapse-item v-for="item in data.all" :key="item.key" :name="item.key">
 						<template #header> {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}） </template>
-						<PostList :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="init()"> </PostList>
+						<post-list :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="init()"> </post-list>
 					</n-collapse-item>
 				</n-collapse>
 			</n-scrollbar>
 		</div>
 		<div class="editor-container">
-			<PostEditor ref="postEditorRef" @select="data.current = $event"></PostEditor>
+			<post-editor ref="postEditorRef" @select="data.current = $event"></post-editor>
 		</div>
 	</main>
-	<AddPost v-model:show="showModal" @create="createPost"></AddPost>
+	<add-post v-model:show="showModal" @create="createPost"></add-post>
 </template>
 <style lang="less" scoped>
 main {
@@ -154,12 +154,14 @@ main {
 		}
 	}
 
-	.editor-container {
-		flex: 1;
-		overflow: hidden;
+	:deep(.file-panel__scroll) {
+		max-height: calc(100% - 54px);
+		.n-scrollbar-container {
+			max-height: 100%;
+		}
 	}
 
-	.demosss {
+	.file-panel {
 		:deep(.n-collapse-item__header),
 		:deep(.n-collapse-item) {
 			padding: 0 !important;
@@ -180,6 +182,11 @@ main {
 		:deep(.n-collapse-item__content-inner) {
 			padding: 0 !important;
 		}
+	}
+
+	.editor-container {
+		flex: 1;
+		overflow: hidden;
 	}
 }
 </style>

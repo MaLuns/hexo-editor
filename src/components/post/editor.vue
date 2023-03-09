@@ -164,14 +164,14 @@ defineExpose({
 <template>
 	<div class="post-editor">
 		<div class="post-editor__tabs">
-			<PostTabs v-model="data.tabValue" :list="list" @close="handleClose">
+			<post-tabs v-model="data.tabValue" :list="list" @close="handleClose">
 				<template #suffix>
-					<PostToc></PostToc>
+					<post-toc></post-toc>
 				</template>
-			</PostTabs>
+			</post-tabs>
 		</div>
 		<div class="post-editor__container">
-			<EditorMarkdown ref="editorMarkdownRef" v-model="modelValue" @save="handleSave"></EditorMarkdown>
+			<editor-markdown ref="editorMarkdownRef" v-model="modelValue" @save="handleSave"></editor-markdown>
 		</div>
 	</div>
 </template>

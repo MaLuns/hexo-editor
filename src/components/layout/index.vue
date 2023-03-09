@@ -5,7 +5,7 @@ import { configStore } from "@/store";
 	<div class="layout">
 		<div class="layout-main-container">
 			<div v-if="configStore.layout.isShowLayoutSider" class="layout-sider">
-				<LayoutSider></LayoutSider>
+				<layout-sider></layout-sider>
 			</div>
 			<div class="layout-main">
 				<router-view v-slot="{ Component }">
@@ -16,7 +16,7 @@ import { configStore } from "@/store";
 			</div>
 		</div>
 		<div class="layout-footer-container">
-			<LayoutFooter></LayoutFooter>
+			<layout-footer></layout-footer>
 		</div>
 	</div>
 </template>
