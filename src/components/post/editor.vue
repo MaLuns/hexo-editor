@@ -141,7 +141,7 @@ watch(
 	(tabValue) => {
 		const model = data.models[tabValue];
 		if (model) editorMarkdownRef.value!.setModel(model.uri);
-		emit("select", tabValue);
+		emit("select", model?.post);
 	}
 );
 
@@ -166,6 +166,10 @@ defineExpose({
 		<div class="post-editor__tabs">
 			<post-tabs v-model="data.tabValue" :list="list" @close="handleClose">
 				<template #suffix>
+					<template v-if="fileStore.post">
+						<post-info :post="fileStore.post"></post-info>
+						<n-divider vertical />
+					</template>
 					<post-toc></post-toc>
 				</template>
 			</post-tabs>

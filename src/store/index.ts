@@ -3,9 +3,8 @@ import { darkTheme } from "naive-ui";
 import { deepMerge } from "@/utils";
 import storage from "@/utils/storage";
 import * as monaco from "monaco-editor";
-
 import themes from "@/themes";
-import { loadEditorTheme } from "@/utils/editor";
+import { loadEditorTheme } from "@/plugins/editor-themes.ts";
 
 const defConfig: GlobalConfig = {
 	layout: {

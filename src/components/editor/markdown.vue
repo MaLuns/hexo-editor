@@ -3,7 +3,6 @@ import type * as monaco from "monaco-editor";
 import EditorMonaco from "./monaco.vue";
 import { configStore, fileStore, themeMode } from "@/store";
 import { debounce } from "@/utils";
-import { uri } from "@/utils/editor";
 import ctx from "@/core/context";
 import { triggerHook } from "@/core/hook";
 
@@ -36,7 +35,7 @@ watch(
 			renderMarkdown = () => "";
 		} else {
 			renderMarkdown = debounce(async (val: string) => {
-				htmlText.value = (await fileStore.fs?.transformImgUrl(ctx.markdown.renderer(val), props.path)) || "";
+				htmlText.value = (await fileStore.fs?.transformImgUrl(ctx.markdown.renderer(val), fileStore.post?.path || "")) || "";
 			}, val);
 		}
 	},
@@ -59,7 +58,7 @@ const handleReady = (e: { editor: monaco.editor.IStandaloneCodeEditor; monaco: a
 };
 
 const addModel = (val: string, path: string): monaco.Uri => {
-	const u = uri(path);
+	const u = ctx.editor.tools.uri(path);
 	const payload = editorMonacoRef.value!.getEditor();
 	const model = payload.monaco.editor.createModel(val, "md", u);
 	payload.editor.setModel(model);

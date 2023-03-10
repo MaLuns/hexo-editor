@@ -33,9 +33,15 @@ const init = () => {
 	});
 };
 
-const selectPost = (post: PostModel) => {
-	postEditorRef.value.add(post);
-	data.current = post.path;
+const selectPost = (post: PostModel, isAdd: boolean) => {
+	if (isAdd) postEditorRef.value.add(post);
+	if (post) {
+		data.current = post.path;
+		fileStore.post = post;
+	} else {
+		data.current = "";
+		fileStore.post = null;
+	}
 };
 
 const createPost = (newData: { type: HexoFileType; post: PostModel }) => {
@@ -122,13 +128,13 @@ init();
 				<n-collapse class="file-panel" arrow-placement="right" :default-expanded-names="['posts']">
 					<n-collapse-item v-for="item in data.all" :key="item.key" :name="item.key">
 						<template #header> {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}） </template>
-						<post-list :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="init()"> </post-list>
+						<post-list :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost($event, true)" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="init()"> </post-list>
 					</n-collapse-item>
 				</n-collapse>
 			</n-scrollbar>
 		</div>
 		<div class="editor-container">
-			<post-editor ref="postEditorRef" @select="data.current = $event"></post-editor>
+			<post-editor ref="postEditorRef" @select="selectPost($event, false)"></post-editor>
 		</div>
 	</main>
 	<add-post v-model:show="showModal" @create="createPost"></add-post>

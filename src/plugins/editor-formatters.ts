@@ -4,6 +4,7 @@ import prettier, { type Options } from "prettier";
 import parserMarkdown from "prettier/parser-markdown";
 import parserYaml from "prettier/parser-yaml";
 import parserHtml from "prettier/parser-html";
+import parserTypescript from "prettier/parser-typescript";
 
 const prettierOption: Options = {
 	arrowParens: "always",
@@ -23,7 +24,7 @@ const prettierOption: Options = {
 	useTabs: false,
 	vueIndentScriptAndStyle: false,
 	parser: "markdown",
-	plugins: [parserMarkdown, parserYaml, parserHtml],
+	plugins: [parserMarkdown, parserYaml, parserHtml, parserTypescript],
 };
 
 export default <Plugin>{

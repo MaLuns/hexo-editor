@@ -3,7 +3,7 @@ import * as monaco from "monaco-editor";
 import { language as markdown, conf as markdownConfig } from "monaco-editor/esm/vs/basic-languages/markdown/markdown";
 import { language as yaml, conf as yamlConf } from "monaco-editor/esm/vs/basic-languages/yaml/yaml";
 import { registerHook } from "./hook";
-import { strFormat } from "@/utils";
+import { isMacOS, strFormat } from "@/utils";
 
 monaco.languages.register({ id: "md" });
 monaco.languages.setMonarchTokensProvider("md", markdown);
@@ -138,6 +138,7 @@ export const tools = {
 		let range = new monaco.Range(selection.endLineNumber, selection.endColumn, selection.endLineNumber, selection.endColumn);
 		if (bool) {
 			range = new monaco.Range(selection.startLineNumber, selection.startColumn, selection.endLineNumber, selection.endColumn);
+			console.log(text, selectionText);
 			text = strFormat(text, selectionText);
 		}
 		editor.executeEdits("", [
@@ -233,4 +234,58 @@ export const removeDefaultAction = () => {
 	};
 
 	removeById(contextMenuEntry?.value, removableIds);
+};
+
+const getKeyLabel = (num: number) => {
+	const key = monaco.KeyCode[num];
+	if (key) return key.replace(/Key|Numpad|Digit/, "");
+	if (num === monaco.KeyMod.CtrlCmd) {
+		return isMacOS ? "⌘" : "Ctrl";
+	} else if (num === monaco.KeyMod.Shift) {
+		return isMacOS ? "⇧" : "Shift";
+	} else if (num === monaco.KeyMod.Alt) {
+		return isMacOS ? "⌥" : "Alt";
+	} else if (num === monaco.KeyMod.WinCtrl) {
+		return isMacOS ? "⌃" : "Ctrl";
+	}
+	return num;
+};
+
+/**
+ * 获取 KeyCode Label
+ * @param numbers
+ * @returns
+ */
+export const getKeysLabel = (numbers: number[]) => {
+	const labels = [];
+	const k: Array<string | number> = [];
+	numbers.forEach((num) => {
+		if (Array.isArray(num)) {
+			labels.push(getKeysLabel(num));
+		} else {
+			k.push(getKeyLabel(num));
+		}
+	});
+	if (k.length) labels.push(k.join("+"));
+
+	return labels.join(" | ");
+};
+
+/**
+ * 转换为快捷键
+ * @param numbers
+ */
+export const getKeysbinding = (numbers: number[]) => {
+	const keys: number[] = [];
+	let _num: number | undefined = undefined;
+	numbers.forEach((num) => {
+		if (Array.isArray(num)) {
+			keys.push(...getKeysbinding(num));
+		} else {
+			if (_num === undefined) _num = num;
+			else _num = _num | num;
+		}
+	});
+	if (_num !== undefined) keys.push(_num);
+	return keys;
 };

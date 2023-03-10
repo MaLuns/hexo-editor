@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
-import { DocumentsOutline, BookmarksOutline, OptionsOutline } from "@vicons/ionicons5";
-import HomeView from "../views/home/index.vue";
 import { fileStore } from "@/store";
+import { Files, Settings, Stack2 } from "@vicons/tabler";
+import HomeView from "../views/home/index.vue";
 
 export const siderPage: RouteRecordRaw[] = [
 	{
 		path: "",
 		name: "editer",
 		meta: {
-			icon: markRaw(DocumentsOutline),
+			icon: markRaw(Files),
 			tips: "文章管理",
 		},
 		component: () => import("../views/editor/index.vue"),
@@ -17,7 +17,7 @@ export const siderPage: RouteRecordRaw[] = [
 		path: "assets",
 		name: "assets",
 		meta: {
-			icon: markRaw(BookmarksOutline),
+			icon: markRaw(Stack2),
 			tips: "资源文件管理",
 		},
 		component: () => import("../views/assets/index.vue"),
@@ -26,7 +26,7 @@ export const siderPage: RouteRecordRaw[] = [
 		path: "config",
 		name: "config",
 		meta: {
-			icon: markRaw(OptionsOutline),
+			icon: markRaw(Settings),
 			tips: "配置管理",
 		},
 		component: () => import("../views/config/index.vue"),

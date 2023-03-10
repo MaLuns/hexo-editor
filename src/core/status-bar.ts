@@ -5,7 +5,7 @@ export type MenuItem =
 			type: "normal";
 			subTitle?: string;
 			disabled?: boolean;
-			hidden?: boolean;
+			hidden?: boolean | ComputedRef<boolean> | Ref<boolean>;
 			checked?: boolean | ComputedRef<boolean> | Ref<boolean>;
 			onClick?: (item: MenuItem, menu: Menu) => void;
 	  }
@@ -19,7 +19,7 @@ export interface Menu {
 	title?: string | Component | Ref<string>;
 	tips?: string; // not available for vue component title
 	icon?: Component; // not available for vue component title
-	hidden?: boolean;
+	hidden?: boolean | ComputedRef<boolean> | Ref<boolean>;
 	position: "left" | "right" | "center";
 	order?: number;
 	list?: MenuItem[];

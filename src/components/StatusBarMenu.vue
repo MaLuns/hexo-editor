@@ -30,45 +30,48 @@ const list = computed(() => {
 });
 
 const handleItemClick = (item: MenuItem & { type: "normal" }, menu: Menu) => {
-	if (item.disabled) {
-		return;
-	}
+	if (item.disabled) return;
 	item.onClick && item.onClick(item, menu);
 };
 
-const isHas = (val: any): boolean => (isRef(val) ? val.value : val);
+const geVal = (val: any): boolean => (isRef(val) ? val.value : val);
+const isHide = (val: any): boolean => !(geVal(val) === true);
 </script>
 <template>
-	<div v-for="item in list" :key="item.id" class="status-button" :title="item.tips" @click="item.onClick && item.onClick(item)" @mousedown="item.onMousedown && item.onMousedown(item)">
-		<n-icon v-if="item.icon" :size="size" :component="item.icon"></n-icon>
-		<div v-if="item.titleType !== 0" class="status-button__title">
-			<template v-if="item.titleType === 1">
-				{{ (item.title as Ref).value }}
-			</template>
-			<template v-else-if="item.titleType === 2">
-				<component :is="item.title"></component>
-			</template>
-			<template v-else>
-				{{ item.title }}
+	<template v-for="item in list">
+		<div v-if="isHide(item.hidden)" :key="item.id" class="status-button" :title="item.tips" @click="item.onClick && item.onClick(item)" @mousedown="item.onMousedown && item.onMousedown(item)">
+			<n-icon v-if="item.icon" :size="size" :component="item.icon"></n-icon>
+			<div v-if="item.titleType !== 0" class="status-button__title">
+				<template v-if="item.titleType === 1">
+					{{ (item.title as Ref).value }}
+				</template>
+				<template v-else-if="item.titleType === 2">
+					<component :is="item.title"></component>
+				</template>
+				<template v-else>
+					{{ item.title }}
+				</template>
+			</div>
+			<template v-if="item.list && item.list.length">
+				<ul class="list" :class="{[props.position]:props.position,'has-checked': item.list.some((x: any) => x.type === 'normal' && x.checked)}">
+					<!-- <n-scrollbar style="max-height: 300px"> -->
+					<template v-for="(menuItem, index) in item.list" :key="index">
+						<li v-if="menuItem.type === 'separator'" class="separator"></li>
+						<li v-else class="list-item" @click="handleItemClick(menuItem, item)">
+							<n-icon v-if="geVal(menuItem.checked)" class="checked-icon" size="14">
+								<CheckmarkDoneSharp />
+							</n-icon>
+							<div class="list-item__title">{{ menuItem.title }}</div>
+							<div v-if="menuItem.subTitle" class="list-item__sub-title">
+								{{ menuItem.subTitle }}
+							</div>
+						</li>
+					</template>
+					<!-- </n-scrollbar> -->
+				</ul>
 			</template>
 		</div>
-		<template v-if="item.list && item.list.length">
-			<ul class="list" :class="{[props.position]:props.position,'has-checked': item.list.some((x: any) => x.type === 'normal' && x.checked)}">
-				<template v-for="(menuItem, index) in item.list" :key="index">
-					<li v-if="menuItem.type === 'separator'" class="separator"></li>
-					<li v-else class="list-item" @click="handleItemClick(menuItem, item)">
-						<n-icon v-if="isHas(menuItem.checked)" class="checked-icon" size="14">
-							<CheckmarkDoneSharp />
-						</n-icon>
-						<div class="list-item__title">{{ menuItem.title }}</div>
-						<div v-if="menuItem.subTitle" class="list-item__sub-title">
-							{{ menuItem.subTitle }}
-						</div>
-					</li>
-				</template>
-			</ul>
-		</template>
-	</div>
+	</template>
 </template>
 <style lang="less" scoped>
 .status-button {
@@ -93,7 +96,6 @@ const isHas = (val: any): boolean => (isRef(val) ? val.value : val);
 		margin: 0;
 		background-color: v-bind("themeColors.footer.bgColor");
 		width: max-content;
-		line-height: 2;
 		min-width: 70px;
 		display: none;
 		left: 0;
@@ -108,7 +110,7 @@ const isHas = (val: any): boolean => (isRef(val) ? val.value : val);
 
 		&.has-checked {
 			.list-item {
-				padding: 0 12px 0 28px;
+				padding: 8px 10px 8px 28px;
 			}
 		}
 
@@ -120,14 +122,14 @@ const isHas = (val: any): boolean => (isRef(val) ? val.value : val);
 		}
 
 		&-item {
-			padding: 4px 12px;
+			padding: 8px 10px;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 
 			&__sub-title {
-				opacity: 0.8;
-				margin-left: 12px;
+				opacity: 0.6;
+				margin-left: 1rem;
 			}
 
 			&:hover {

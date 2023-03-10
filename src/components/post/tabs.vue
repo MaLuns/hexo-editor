@@ -101,6 +101,7 @@ onMounted(() => {
 		padding: 0 10px;
 		display: flex;
 		align-items: center;
+		background-color: v-bind("themeColors.sider.bgColor");
 	}
 
 	.post-tabs__scroll-content {
@@ -130,6 +131,7 @@ onMounted(() => {
 					}
 				}
 			}
+
 			.post-tabs__tab-wrapper {
 				cursor: pointer;
 				display: flex;

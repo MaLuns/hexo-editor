@@ -26,9 +26,11 @@ export default <Plugin>{
 				id: "status-bar-document-info",
 				position: "right",
 				title: title,
+				hidden: computed(() => !Boolean(ctx.store.fileStore.post)),
 				onClick() {
-					/* ctx.editor.focus();
-					ctx.editor.getAction("editor.action.gotoLine").run(); */
+					const editor = ctx.editor.getEditor();
+					editor?.focus();
+					editor?.getAction("editor.action.gotoLine")?.run();
 				},
 			};
 		});

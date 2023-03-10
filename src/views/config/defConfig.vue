@@ -28,10 +28,10 @@
 						<n-select v-model:value="configStore.editorOption.lineNumbers" :options="lineNumberOptions" class="w-100" />
 					</n-form-item>
 					<n-form-item label="自动保存" path="autoSave">
-						<n-select v-model:value="configStore.autoSave" :options="timeOptions" class="w-100" />
+						<n-select v-model:value="configStore.autoSave" :options="saveTimeOptions" class="w-100" />
 					</n-form-item>
 					<n-form-item label="自动渲染" path="autoRender">
-						<n-select v-model:value="configStore.autoRender" :options="timeOptions" class="w-100" />
+						<n-select v-model:value="configStore.autoRender" :options="renderTimeOptions" class="w-100" />
 					</n-form-item>
 					<n-form-item label="显示小地图" path="minimap">
 						<n-switch v-model:value="configStore.editorOption.minimap.enabled" />
@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { themes, loadEditorTheme } from "@/utils/editor";
+import { loadEditorTheme, themes } from "@/plugins/editor-themes.ts";
 import { configStore } from "@/store";
 
 const themeOptions = [
@@ -106,14 +106,24 @@ const wordWrapOptions = [
 	{ label: "Bounded", value: "bounded" },
 ];
 
-const timeOptions = [
+const saveTimeOptions = [
 	{ label: "关闭", value: 0 },
-	{ label: "0.5s", value: 500 },
+	{ label: "1s", value: 1000 },
 	{ label: "2s", value: 2000 },
 	{ label: "4s", value: 4000 },
 	{ label: "8s", value: 8000 },
 	{ label: "30s", value: 30000 },
 	{ label: "60s", value: 60000 },
+];
+
+const renderTimeOptions = [
+	{ label: "关闭", value: 0 },
+	{ label: "0.2s", value: 200 },
+	{ label: "0.5s", value: 500 },
+	{ label: "0.7s", value: 700 },
+	{ label: "1s", value: 1000 },
+	{ label: "1.5s", value: 1500 },
+	{ label: "2s", value: 2000 },
 ];
 </script>
 <style lang="less" scoped>

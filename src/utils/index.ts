@@ -2,6 +2,9 @@ export const regexRules = {
 	fileName: /^[^\\/:*?"<>|\s]+$/i,
 };
 
+export const isMacOS = /macintosh|mac os x/i.test(navigator.userAgent);
+export const isWindows = /win64|win32|wow64|wow32/i.test(navigator.userAgent);
+
 /**
  * 时间格式化
  * @param date

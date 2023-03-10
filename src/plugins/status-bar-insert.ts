@@ -10,31 +10,8 @@ export default <Plugin>{
 				position: "left",
 				title: "插入",
 				icon: CodePlus,
-				list: [
-					/* {
-						id: "status-bar-insert",
-						type: "normal",
-						title: "插入当前时间",
-					},
-					{
-						id: "status-bar-insert",
-						type: "normal",
-						title: "插入当前时间",
-					},
-					{
-						type: "separator",
-					},
-					{
-						id: "status-bar-insert.time",
-						type: "normal",
-						title: "插入当前时间",
-					},
-					{
-						id: "status-bar-insert.date",
-						type: "normal",
-						title: "插入当前日期",
-					}, */
-				],
+				hidden: computed(() => !Boolean(ctx.store.fileStore.post)),
+				list: [],
 			};
 		});
 	},

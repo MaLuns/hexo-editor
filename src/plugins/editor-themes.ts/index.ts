@@ -1,6 +1,6 @@
 /* import { configStore } from "@/store"; */
 import * as monaco from "monaco-editor";
-import themelist from "./themelist.json";
+import themelist from "./themes/themelist.json";
 
 const catchs: { [k: string]: boolean } = {
 	vs: true,

@@ -9,6 +9,7 @@ const siblings = (ele: any, selector: string) => {
 		return child !== ele;
 	});
 };
+const preWarpWef = ref<HTMLDivElement>();
 
 export default {
 	props: {
@@ -45,7 +46,10 @@ export default {
 				: null,
 			h(
 				"div",
-				{ class: ["pre-wrap", props.theme] },
+				{
+					class: ["pre-wrap", props.theme],
+					ref: preWarpWef,
+				},
 				h(props.tag, {
 					class: [props.preClass, props.theme],
 					innerHTML: props.html,
@@ -61,15 +65,16 @@ export default {
 	mounted() {
 		this.init();
 		registerHook("TOC_LIST_CLICK", (e) => {
-			const root = this.$el.parentNode;
-			const warp = root.querySelector(".pre-wrap");
-			const trag = root.getElementById(e.id);
-			if (warp && trag) {
-				warp.scrollTo({
-					top: trag.offsetTop - trag.offsetHeight - 30,
-					left: 0,
-					behavior: "smooth",
-				});
+			if (preWarpWef.value) {
+				const root = preWarpWef.value;
+				const trag = root.querySelector<HTMLElement>(`#${e.id}`);
+				if (trag) {
+					root.scrollTo({
+						top: trag.offsetTop - trag.offsetHeight - 30,
+						left: 0,
+						behavior: "smooth",
+					});
+				}
 			}
 		});
 	},

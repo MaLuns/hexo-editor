@@ -16,8 +16,6 @@ export default <Plugin>{
 					const items = e.clipboardData!.items;
 					for (let i = 0; i < items.length; i++) {
 						const fileType = items[i].type;
-						console.log(fileType);
-
 						if (fileType.indexOf("image") !== -1) {
 							e.preventDefault();
 							e.stopPropagation();
@@ -25,7 +23,7 @@ export default <Plugin>{
 							const assetPath = await ctx.store.fileStore.fs?.uploadImage(items[i].getAsFile()!, ctx.store.fileStore.post!.path);
 							ctx.editor.tools.insert(editor, `![Img](${assetPath})\n`);
 						} else if (fileType.indexOf("text")) {
-							console.log(items);
+							//TODO  处理文本转换
 						}
 					}
 				},

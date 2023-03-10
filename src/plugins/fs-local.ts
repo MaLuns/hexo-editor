@@ -21,7 +21,7 @@ const parsePost = async (file: FileSystemFileHandle) => {
 		title: fmData.title,
 		date: fmData.date,
 		raw: rawText,
-		md: fmData._content,
+		md: configStore.hideFrontMatter ? fmData._content : rawText,
 		frontmatter: {
 			...fmData,
 		},

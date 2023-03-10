@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { themeColors } from "@/store";
-import { DocumentText, Bug, ArrowUndoCircle, Send, RefreshSharp } from "@vicons/ionicons5";
+import { Bug, ArrowUndoCircle, Send, RefreshSharp } from "@vicons/ionicons5";
+import { ChartArcs } from "@vicons/tabler";
 import { NAvatar, NIcon, NText, NTime } from "naive-ui";
 
 const emit = defineEmits(["selectPost", "publish", "unpublish", "delete", "refresh"]);
@@ -77,9 +78,8 @@ const data = reactive({
 
 let currentPost: PostModel | null = null;
 
-const renderCustomHeader = () => {
-	/* h(NTime, { time: currentPost?.date }) */
-	return h(
+const renderCustomHeader = () =>
+	h(
 		"div",
 		{
 			style: "display: flex; align-items: center; padding: 8px 12px;",
@@ -89,14 +89,16 @@ const renderCustomHeader = () => {
 				NAvatar,
 				{
 					round: true,
-					style: "margin-right: 12px;",
+					style: "margin-right: 12px;background-color: #705697;",
 				},
-				h(NIcon, {}, h(DocumentText))
+				h(NIcon, null, h(ChartArcs))
 			),
-			h("div", null, [h("div", null, [h(NText, { depth: 2 }, { default: () => currentPost?.title })]), h("div", { style: "font-size: 12px;" }, [h(NText, { depth: 3 }, currentPost?.path)])]),
+			h("div", null, [
+				h("div", null, h(NText, { depth: 2 }, { default: () => currentPost?.title })), //
+				h("div", { style: "font-size: 12px;" }, h(NText, { depth: 3 }, currentPost?.path)),
+			]),
 		]
 	);
-};
 
 const handleContextMenu = (e: MouseEvent) => {
 	e.preventDefault();
@@ -129,7 +131,7 @@ const handleMouseenter = (post: PostModel) => {
 	currentPost = post;
 };
 
-const handleSelect = (key: "publish" | "unpublish" | "delete") => {
+const handleSelect = (key: "publish" | "unpublish" | "delete" | "refresh") => {
 	showDropdownRef.value = false;
 	emit(key, currentPost);
 };

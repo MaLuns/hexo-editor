@@ -27,11 +27,9 @@ const handleCheckNav = (index: number) => {
 
 type TooltipThemeOverrides = NonNullable<TooltipProps["themeOverrides"]>;
 const tooltipThemeOverrides: TooltipThemeOverrides = {
-	color: "#fff",
-	textColor: "#000",
 	peers: {
 		Popover: {
-			spaceArrow: "20px",
+			spaceArrow: "22px",
 		},
 	},
 };
@@ -42,7 +40,7 @@ const tooltipThemeOverrides: TooltipThemeOverrides = {
 			<li v-for="(item, index) in data.pageNavs" :key="index" class="layout-sider__item-nav" :class="{ active: data.active === index }" @click="handleCheckNav(index)">
 				<n-tooltip placement="right" trigger="hover" :theme-overrides="tooltipThemeOverrides">
 					<template #trigger>
-						<n-icon size="22" :component="item.icon"> </n-icon>
+						<n-icon size="26" :component="item.icon"> </n-icon>
 					</template>
 					{{ item.tips }}
 				</n-tooltip>

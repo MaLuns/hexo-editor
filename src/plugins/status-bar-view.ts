@@ -13,27 +13,6 @@ export default <Plugin>{
 				icon: LayoutBoard,
 				list: [
 					{
-						id: "status-bar-view.linenumbers",
-						title: "显示行号",
-						type: "normal",
-						checked: computed(() => configStore.editorOption.lineNumbers === "on"),
-						onClick: () => {
-							configStore.editorOption.lineNumbers = configStore.editorOption.lineNumbers === "off" ? "on" : "off";
-						},
-					},
-					{
-						id: "status-bar-view.wordwrap",
-						title: "文本换行",
-						type: "normal",
-						checked: computed(() => configStore.editorOption.wordWrap === "on"),
-						onClick: () => {
-							configStore.editorOption.wordWrap = configStore.editorOption.wordWrap === "off" ? "on" : "off";
-						},
-					},
-					{
-						type: "separator",
-					},
-					{
 						id: "status-bar-view.isshowlayouteditoraside",
 						title: "显示侧栏",
 						type: "normal",
