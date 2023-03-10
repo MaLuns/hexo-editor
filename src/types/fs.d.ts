@@ -54,3 +54,12 @@ declare interface PostOrPageInfoModel {
 
 	[k: string]: any;
 }
+
+/**
+ * FS 操作结果
+ */
+declare interface FsResult<T> {
+	state: boolean;
+	message?: string;
+	data?: T;
+}

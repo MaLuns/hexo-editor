@@ -5,7 +5,7 @@ import { FileCode } from "@vicons/tabler";
 <template>
 	<n-popover scrollable placement="bottom-end">
 		<template #trigger>
-			<n-icon size="22" style="cursor: pointer">
+			<n-icon size="20" style="cursor: pointer">
 				<file-code></file-code>
 			</n-icon>
 		</template>

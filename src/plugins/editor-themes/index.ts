@@ -1,4 +1,3 @@
-/* import { configStore } from "@/store"; */
 import * as monaco from "monaco-editor";
 import themelist from "./themes/themelist.json";
 
@@ -24,7 +23,7 @@ export const themes = ((list) => {
 })(themelist);
 
 // 执行批量替换操作
-const importModules = import.meta.glob("./*.json");
+const importModules = import.meta.glob("./themes/*.json");
 const keys = Object.keys(importModules);
 for (const path of keys) {
 	// 裁剪字符串方式得到路径中的文件名（无扩展名）

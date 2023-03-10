@@ -104,10 +104,10 @@ const handleClose = async (type: string, val: string) => {
 	}
 };
 
-const handleSave = () => {
+const handleSave = async () => {
 	const post = data.models[data.tabValue];
 	if (post) {
-		const res = fileStore.fs?.savePost({
+		const res = await fileStore.fs?.savePost({
 			...post.post,
 			md: post.text,
 		});
@@ -175,7 +175,8 @@ defineExpose({
 			</post-tabs>
 		</div>
 		<div class="post-editor__container">
-			<editor-markdown ref="editorMarkdownRef" v-model="modelValue" @save="handleSave"></editor-markdown>
+			<editor-markdown v-show="list.length" ref="editorMarkdownRef" v-model="modelValue" @save="handleSave"></editor-markdown>
+			<div v-show="!list.length"></div>
 		</div>
 	</div>
 </template>

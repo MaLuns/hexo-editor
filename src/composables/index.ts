@@ -108,36 +108,54 @@ export const useAutoScroll = (target: HTMLElement, type: "x" | "y") => {
 	let scrollTo: Function = () => {};
 
 	if (parent) {
-		const parentWidth = parent.clientWidth;
-		const parentHeight = parent.clientHeight;
-		let t = 0;
+		let t = 0; //当前偏移位置
 
+		/**
+		 * 设置偏移
+		 * @param el 父容器
+		 * @param num 偏移位置
+		 */
 		const setTranslate = (el: HTMLElement, num: number) => {
+			const parentWidth = parent.clientWidth; // 滚动容器-宽度
+			const parentHeight = parent.clientHeight; // 滚动容器-高度
 			const w = el.clientWidth;
 			const h = el.clientHeight;
 
+			// x 轴
 			if (type === "x") {
 				const max = Math.max(w - parentWidth, 0);
 				t = Math.min(Math.max(0, num), max);
 				left.value = t === 0;
 				right.value = t === max;
-				target.style.transform = `translateX(-${t}px)`;
+				el.style.transform = `translateX(-${t}px)`;
 			} else {
+				// y 轴
 				const max = Math.max(h - parentHeight, 0);
 				t = Math.min(Math.max(0, num), h - parentHeight);
 				top.value = t === 0;
 				bottom.value = t === max;
-				target.style.transform = `translateY(-${t}px)`;
+				el.style.transform = `translateY(-${t}px)`;
 			}
 		};
 
 		scrollTo = (select: string) => {
+			const parentWidth = parent.clientWidth; // 滚动容器-宽度
+			const parentHeight = parent.clientHeight; // 滚动容器-高度
+			const w = target.clientWidth;
+			const h = target.clientHeight;
+
 			const toEl = target.querySelector(select) as HTMLElement;
 			if (toEl) {
+				// 节点 偏移位置
 				const l = type === "x" ? toEl.offsetLeft : toEl.offsetTop;
+				// 可视区域-结束位置
 				const region = t + (type === "x" ? parentWidth : parentHeight);
-				if (l > t && l < region) return;
+				// 可偏移最大长度
+				const max = type === "x" ? Math.max(w - parentWidth, 0) : Math.max(h - parentHeight, 0);
+				// 节点在可是区域内
+				console.log(l, t, region, max);
 
+				if (l > t && l < region && l < max) return;
 				setTranslate(target, l);
 			}
 		};

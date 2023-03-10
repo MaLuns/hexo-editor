@@ -62,12 +62,12 @@ export default abstract class AbstractFileSystem {
 	/**
 	 *  发布文章
 	 */
-	abstract publishPost(path: string): Promise<boolean>;
+	abstract publishPost(path: string): Promise<FsResult<string>>;
 
 	/**
 	 *  取消发布
 	 */
-	abstract unpublishPost(path: string): Promise<boolean>;
+	abstract unpublishPost(path: string): Promise<FsResult<string>>;
 
 	/**
 	 * 判断路径是否存在

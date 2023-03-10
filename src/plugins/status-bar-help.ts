@@ -1,11 +1,8 @@
 import type { Plugin } from "@/core/plugin";
-import { createDiscreteApi, NButton, NDivider } from "naive-ui";
+import { NButton, NDivider } from "naive-ui";
 import { InfoSquare } from "@vicons/tabler";
-
 import { author, version, homepage } from "../../package.json";
 import logo from "@/assets/logo.svg";
-
-const dialog = createDiscreteApi(["dialog"]);
 
 export default <Plugin>{
 	name: "status-bar-help",
@@ -28,7 +25,7 @@ export default <Plugin>{
 						title: "关于 Hexo-Editor",
 						type: "normal",
 						onClick: () => {
-							dialog.dialog.create({
+							ctx.discrete.dialog.create({
 								showIcon: false,
 								closable: false,
 								autoFocus: false,

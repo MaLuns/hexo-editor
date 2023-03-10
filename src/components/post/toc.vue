@@ -18,7 +18,7 @@ const toggleFix = () => {
 <template>
 	<n-popover style="max-height: 320px; min-width: 200px" scrollable :content-style="{ padding: '10px 0' }" :show="showPopover" :on-clickoutside="toggleShow">
 		<template #trigger>
-			<n-icon size="22" style="cursor: pointer" @click="toggleShow">
+			<n-icon size="20" style="cursor: pointer" @click="toggleShow">
 				<list-sharp></list-sharp>
 			</n-icon>
 		</template>

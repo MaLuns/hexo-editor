@@ -4,7 +4,7 @@ import { deepMerge } from "@/utils";
 import storage from "@/utils/storage";
 import * as monaco from "monaco-editor";
 import themes from "@/themes";
-import { loadEditorTheme } from "@/plugins/editor-themes.ts";
+import { loadEditorTheme } from "@/plugins/editor-themes";
 
 const defConfig: GlobalConfig = {
 	layout: {

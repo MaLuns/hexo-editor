@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { loadEditorTheme, themes } from "@/plugins/editor-themes.ts";
+import { loadEditorTheme, themes } from "@/plugins/editor-themes";
 import { configStore } from "@/store";
 
 const themeOptions = [

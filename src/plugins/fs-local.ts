@@ -143,6 +143,11 @@ class LocalFileSystem extends AbstractFileSystem {
 	 * @param path
 	 */
 	async _getHandle(path: string): Promise<FileSystemDirectoryHandle | null>;
+	/**
+	 * 跟据路径返回 FileSystemHandle （不会自动创建）
+	 * @param path
+	 * @param isFile
+	 */
 	async _getHandle(path: string, isFile: boolean): Promise<FileSystemFileHandle | null>;
 	async _getHandle(path: string, isFile?: boolean): Promise<FileSystemDirectoryHandle | FileSystemFileHandle | null> {
 		if (this._root) {
@@ -453,14 +458,17 @@ class LocalFileSystem extends AbstractFileSystem {
 		}
 	}
 
-	async publishPost(path: string): Promise<boolean> {
-		let flag = true;
+	async publishPost(path: string): Promise<FsResult<string>> {
+		const result = {
+			state: true,
+			data: "",
+		};
 
 		const sourceFile = await this._getHandle(path, true);
 		const postDir = await this._getPostDirHandle();
 
 		if (sourceFile && postDir) {
-			flag = flag && (await conpyFile(sourceFile, postDir));
+			result.state = await conpyFile(sourceFile, postDir);
 
 			const bool = await this._isPostAssetFolder();
 			const draftDir = await this._getDraftsDirHandle();
@@ -473,27 +481,31 @@ class LocalFileSystem extends AbstractFileSystem {
 				// 如果存在资源文件夹
 				if (draftAssetsDir) {
 					const postAssetsDir = await postDir.getDirectoryHandle(dirName, { create: true });
-					flag = flag && (await copyDirectory(draftAssetsDir, postAssetsDir));
+					result.state = result.state && (await copyDirectory(draftAssetsDir, postAssetsDir));
 
-					if (flag) draftDir?.removeEntry(dirName, { recursive: true });
+					if (result.state) draftDir?.removeEntry(dirName, { recursive: true });
 				}
 			}
 
-			if (flag) draftDir?.removeEntry(fileName, { recursive: false });
-			return flag;
+			if (result.state) draftDir?.removeEntry(fileName, { recursive: false });
+			result.data = await this.getFullPathByAdd(fileName, HexoFileType.post);
+			return result;
 		} else {
-			return false;
+			result.state = false;
+			return result;
 		}
 	}
 
-	async unpublishPost(path: string): Promise<boolean> {
-		let flag = true;
-
+	async unpublishPost(path: string): Promise<FsResult<string>> {
+		const result = {
+			state: true,
+			data: "",
+		};
 		const sourceFile = await this._getHandle(path, true);
 		const draftDir = await this._getDraftsDirHandle();
 
 		if (sourceFile && draftDir) {
-			flag = flag && (await conpyFile(sourceFile, draftDir));
+			result.state = result.state && (await conpyFile(sourceFile, draftDir));
 
 			const bool = await this._isPostAssetFolder();
 			const postDir = await this._getPostDirHandle();
@@ -506,16 +518,18 @@ class LocalFileSystem extends AbstractFileSystem {
 				// 如果存在资源文件夹
 				if (postAssetsDir) {
 					const draftAssetsDir = await draftDir.getDirectoryHandle(dirName, { create: true });
-					flag = flag && (await copyDirectory(postAssetsDir, draftAssetsDir));
+					result.state = result.state && (await copyDirectory(postAssetsDir, draftAssetsDir));
 
-					if (flag) postDir?.removeEntry(dirName, { recursive: true });
+					if (result.state) postDir?.removeEntry(dirName, { recursive: true });
 				}
 			}
 
-			if (flag) postDir?.removeEntry(fileName, { recursive: false });
-			return flag;
+			if (result.state) postDir?.removeEntry(fileName, { recursive: false });
+			result.data = await this.getFullPathByAdd(fileName, HexoFileType.draft);
+			return result;
 		} else {
-			return false;
+			result.state = false;
+			return result;
 		}
 	}
 

@@ -59,6 +59,7 @@ const createPost = (newData: { type: HexoFileType; post: PostModel }) => {
 };
 
 const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpublishPost") => {
+	const filterData = (key: "drafts" | "posts" | "pages", path: string) => (data[key] = data[key].filter((item) => item.path !== path));
 	const getType = (path: string) => {
 		if (path.includes("_drafts")) {
 			return "drafts";
@@ -68,7 +69,7 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 			return "pages";
 		}
 	};
-	const filterData = (key: "drafts" | "posts" | "pages", path: string) => (data[key] = data[key].filter((item) => item.path !== path));
+
 	const messages = {
 		deleteFile: {
 			success: "删除成功！",
@@ -76,37 +77,52 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 			fun: (post: PostModel) => {
 				const key = getType(post.path);
 				filterData(key, post.path);
+				postEditorRef.value.remove(post.path);
 			},
 		},
 		publishPost: {
 			success: "发布成功！",
 			error: "发布失败！",
-			fun: (post: PostModel) => {
+			fun(post: PostModel, newPath: string) {
 				filterData("drafts", post.path);
-				fileStore.fs?.getPostDirectory().then((res) => {
-					data.posts = res;
-				});
+				post.path = newPath;
+				data.posts.unshift(post);
 			},
 		},
 		unpublishPost: {
 			success: "取消发布成功！",
 			error: "取消发布失败！",
-			fun: (post: PostModel) => {
+			fun(post: PostModel, newPath: string) {
 				filterData("posts", post.path);
-				fileStore.fs?.getDraftDirectory().then((res) => {
-					data.drafts = res;
-				});
+				post.path = newPath;
+				data.drafts.unshift(post);
 			},
 		},
 	};
-	fileStore.fs![key](post.path).then((res) => {
-		if (res) {
-			message.info(messages[key].success);
-			messages[key].fun(post);
-		} else {
-			message.error(messages[key].error);
-		}
-	});
+
+	switch (key) {
+		case "deleteFile":
+			fileStore.fs?.deleteFile(post.path).then((res) => {
+				if (res) {
+					message.info(messages[key].success);
+					messages[key].fun(post);
+				} else {
+					message.error(messages[key].error);
+				}
+			});
+			break;
+		case "publishPost":
+		case "unpublishPost":
+			fileStore.fs![key](post.path).then((res) => {
+				if (res.state) {
+					message.info(messages[key].success);
+					messages[key].fun(post, res.data!);
+				} else {
+					message.error(messages[key].error);
+				}
+			});
+			break;
+	}
 };
 
 init();

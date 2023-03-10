@@ -4,8 +4,10 @@ import * as store from "@/store";
 import * as markdown from "@/core/markdown";
 import * as editor from "@/core/editor";
 import fs from "@/core/file-system";
+import discrete from "@/core/discrete";
 
 const ctx = Object.freeze({
+	discrete,
 	editor,
 	fs,
 	hook,
