@@ -8,10 +8,6 @@ const emit = defineEmits(["change", "save", "ready"]);
 const editContainerRef = ref();
 const containerHeight = ref("0px");
 const props = defineProps({
-	value: {
-		type: String,
-		default: "",
-	},
 	language: {
 		type: String,
 		default: "markdown",

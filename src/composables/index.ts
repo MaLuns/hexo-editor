@@ -152,9 +152,7 @@ export const useAutoScroll = (target: HTMLElement, type: "x" | "y") => {
 				const region = t + (type === "x" ? parentWidth : parentHeight);
 				// 可偏移最大长度
 				const max = type === "x" ? Math.max(w - parentWidth, 0) : Math.max(h - parentHeight, 0);
-				// 节点在可是区域内
-				console.log(l, t, region, max);
-
+				// 节点在可视区域内
 				if (l > t && l < region && l < max) return;
 				setTranslate(target, l);
 			}

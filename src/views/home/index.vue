@@ -64,7 +64,7 @@ const selectHistory = async (key: string | number, option: DropdownOption) => {
 };
 
 const openEditor = async (fs: AbstractFileSystem) => {
-	const config = await fs.getHexoConfig();
+	const { config } = await fs.getHexoConfig();
 	if (config) {
 		fileStore.setFileSystem(fs);
 		route.push({ name: "editer" });

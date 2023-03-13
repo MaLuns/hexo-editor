@@ -69,7 +69,7 @@ onMounted(() => {
 						<slot name="tab" v-bind="item">{{ item.label }} </slot>
 					</div>
 					<div class="opt__wrapper">
-						<span v-if="item.state === 1" class="save-tag"></span>
+						<state-tag v-if="item.state === 1" state="warning"></state-tag>
 						<n-button class="close-btn" quaternary size="tiny" @click.stop="$emit('close', 'close', item.value)">
 							<template #icon>
 								<n-icon>
@@ -118,12 +118,12 @@ onMounted(() => {
 				display: flex;
 				justify-content: center;
 
-				.save-tag + .close-btn {
+				.state-tag + .close-btn {
 					display: none;
 				}
 
 				&:hover {
-					.save-tag {
+					.state-tag {
 						display: none;
 					}
 					.close-btn {
@@ -174,17 +174,6 @@ onMounted(() => {
 			flex-grow: 1;
 			background-color: v-bind("themeColors.post.tabs.panBgColor");
 		}
-	}
-
-	.save-tag {
-		display: inline-block;
-		width: 10px;
-		height: 10px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		background-color: #e2bf5d;
-		border-radius: 50%;
 	}
 }
 </style>

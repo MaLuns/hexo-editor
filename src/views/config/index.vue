@@ -1,25 +1,32 @@
 <script lang="ts" setup>
 import DefConfig from "./defConfig.vue";
+import HexoConfig from "./hexoConfig.vue";
 </script>
 <template>
-	<div style="padding: 10px">
+	<div class="config-page">
 		<n-tabs type="segment" :bar-width="28">
-			<n-tab-pane class="tab-pane" name="chap1" tab="常用配置">
-				<def-config></def-config>
+			<n-tab-pane class="tab-pane" name="chap1" tab="编辑器配置" display-directive="show:lazy">
+				<n-scrollbar>
+					<def-config></def-config>
+				</n-scrollbar>
 			</n-tab-pane>
-			<n-tab-pane class="tab-pane" name="chap2" tab="Hexo 配置">
-				<editor-monaco></editor-monaco>
-			</n-tab-pane>
-			<n-tab-pane class="tab-pane" name="chap3" tab="主题配置">
-				<div style="height: 500px">
-					<editor-monaco language="yaml"></editor-monaco>
-				</div>
+			<n-tab-pane class="tab-pane" name="chap2" tab="Hexo 应用配置" display-directive="show:lazy">
+				<hexo-config></hexo-config>
 			</n-tab-pane>
 		</n-tabs>
 	</div>
 </template>
-<!-- <style lang="less" scoped>
-.tab-pane {
-	padding: 0;
+<style lang="less" scoped>
+.config-page {
+	padding: 10px;
+	height: 100%;
+	box-sizing: border-box;
+	.n-tabs {
+		height: 100%;
+	}
+
+	.n-tab-pane {
+		height: calc(100% - 50px);
+	}
 }
-</style> -->
+</style>

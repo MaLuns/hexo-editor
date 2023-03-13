@@ -49,11 +49,6 @@ watch(
 );
 
 const handleReady = (e: { editor: monaco.editor.IStandaloneCodeEditor; monaco: any }) => {
-	/* regPaste(e.editor);
-	singleCommandInit(e.editor, ["wordWrap", "mouseWheelZoom"]); */
-	/* registerHook("TOC_LIST_CLICK", (toc) => {
-		e.editor.setScrollTop(200, 0);
-	}); */
 	triggerHook("MONACO_MARKDOWN_READY", e);
 };
 
@@ -99,7 +94,7 @@ defineExpose({
 <template>
 	<div class="markdown-editor">
 		<div v-show="configStore.layout.isShowMarkdownEditor" class="markdown-editor__editor">
-			<editor-monaco ref="editorMonacoRef" :value="props.modelValue" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></editor-monaco>
+			<editor-monaco ref="editorMonacoRef" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></editor-monaco>
 		</div>
 		<div v-show="configStore.layout.isShowMarkdownPrew" class="markdown-editor__preview">
 			<editor-preview class="editor-preview" :theme="theme" :html="htmlText"></editor-preview>

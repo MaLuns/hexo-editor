@@ -12,4 +12,4 @@ import editorMd from "@/plugins/editor-md";
 import editorFormatters from "@/plugins/editor-formatters";
 import editorKeyboard from "@/plugins/editor-keyboard";
 
-export default [statusBarView, statusBarInsert, statusBarDocumentInfo, statusBarHelp, statusBarTheme, statusBarRenderTiem, markdownTag, markdownToc, editorPaste, editorMd, editorFormatters, editorKeyboard, fsLocal];
+export default [statusBarView, statusBarInsert, statusBarDocumentInfo, statusBarTheme, statusBarHelp, statusBarRenderTiem, markdownTag, markdownToc, editorPaste, editorMd, editorFormatters, editorKeyboard, fsLocal];

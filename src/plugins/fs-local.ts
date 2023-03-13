@@ -135,7 +135,9 @@ class LocalFileSystem extends AbstractFileSystem {
 	_count = 0;
 	_root: FileSystemDirectoryHandle | undefined;
 	_hexo_config: YamlConfig | undefined;
+	_hexo_config_raw: string | undefined;
 	_hexo_theme_config: YamlConfig | undefined;
+	_hexo_theme_config_raw: string | undefined;
 	_cache_img: { [k: string]: string } = {};
 
 	/**
@@ -179,7 +181,7 @@ class LocalFileSystem extends AbstractFileSystem {
 	 * @returns
 	 */
 	async _getPostDirHandle(): Promise<FileSystemDirectoryHandle | null> {
-		const config = await this.getHexoConfig();
+		const { config } = await this.getHexoConfig();
 		const path = (config?.source || "source") + "/_posts";
 		return this._getHandle(path);
 	}
@@ -189,7 +191,7 @@ class LocalFileSystem extends AbstractFileSystem {
 	 * @returns
 	 */
 	async _getDraftsDirHandle(): Promise<FileSystemDirectoryHandle | null> {
-		const config = await this.getHexoConfig();
+		const { config } = await this.getHexoConfig();
 		const path = (config?.source || "source") + "/_drafts";
 		return this._getHandle(path);
 	}
@@ -199,9 +201,39 @@ class LocalFileSystem extends AbstractFileSystem {
 	 * @returns
 	 */
 	async _isPostAssetFolder(): Promise<boolean> {
-		const config = await this.getHexoConfig();
+		const { config } = await this.getHexoConfig();
 		if (!config) return false;
 		return Boolean(config.post_asset_folder);
+	}
+
+	/**
+	 * 读取配置信息
+	 * @param path
+	 * @param type
+	 * @returns
+	 */
+	async _getConfig(path: string, type: "hexo" | "theme"): Promise<{ raw: string | undefined; path: string; config: YamlConfig }> {
+		try {
+			const configKey = type === "hexo" ? "_hexo_config" : "_hexo_theme_config";
+			const rawKey = type === "hexo" ? "_hexo_config_raw" : "_hexo_theme_config_raw";
+
+			if (this[configKey]) {
+				return { path, raw: this[rawKey], config: this[configKey]! };
+			} else {
+				const configFileHandle = await this._getHandle(path, true).catch(() => null);
+				if (!configFileHandle) {
+					window.$message.warning(`未找到 ${path} 文件`);
+					return { path, raw: undefined, config: {} };
+				}
+				const hexoConfigText = await configFileHandle.getFile().then((res) => res.text());
+				this[rawKey] = hexoConfigText;
+				this[configKey] = yaml.load(hexoConfigText) as YamlConfig;
+				return { path, raw: this[rawKey], config: this[configKey]! };
+			}
+		} catch (error) {
+			window.$message.warning("Hexo 配置文件读取失败");
+			return { path, raw: undefined, config: {} };
+		}
 	}
 
 	async getRootsDirectory(handle?: FileSystemDirectoryHandle): Promise<RootDirModel | undefined> {
@@ -243,46 +275,50 @@ class LocalFileSystem extends AbstractFileSystem {
 		});
 	}
 
-	async getHexoConfig(): Promise<YamlConfig | undefined> {
-		try {
-			if (this._hexo_config) {
-				return this._hexo_config;
-			} else {
-				const config = await this._root?.getFileHandle("_config.yml", { create: false }).catch(() => null);
-				if (!config) {
-					window.$message.warning(`未找到 _config.yml 文件`);
-					return;
-				}
-				const hexoConfigText = await config.getFile().then((res) => res.text());
-				this._hexo_config = yaml.load(hexoConfigText) as YamlConfig;
-				return this._hexo_config;
+	async getHexoConfig(): Promise<{ raw: string | undefined; path: string; config: YamlConfig }> {
+		return this._getConfig("_config.yml", "hexo");
+	}
+
+	async getThemeConfig(): Promise<{ raw: string | undefined; path: string; config: YamlConfig }> {
+		const config = await this.getHexoConfig();
+		const themeName = config.config.theme;
+		if (themeName) {
+			let configPath = `_config.${themeName}.yml`;
+			let isExist = await this.isPathExist(configPath);
+			if (!isExist) {
+				configPath = `themes/${themeName}/_config.yml`;
+				isExist = await this.isPathExist(configPath);
 			}
-		} catch (error) {
-			window.$message.warning("Hexo 配置文件读取失败");
+			if (isExist) {
+				return await this._getConfig(configPath, "theme");
+			} else {
+				window.$message.warning("未找到主题配置文件");
+				return { path: "", raw: undefined, config: {} };
+			}
+		} else {
+			window.$message.warning("主题配置文件读取失败");
+			return { path: "", raw: undefined, config: {} };
 		}
 	}
 
-	async getThemeConfig(path: string): Promise<YamlConfig | undefined> {
+	async updateFile(path: string, text: string): Promise<boolean> {
 		try {
-			if (this._hexo_theme_config) {
-				return this._hexo_theme_config;
+			const fileHandle = await this._getHandle(path, true);
+			if (fileHandle) {
+				const writer = await fileHandle.createWritable({ keepExistingData: false });
+				await writer.write(text);
+				await writer.close();
+				return true;
 			} else {
-				const config = await this._root?.getFileHandle(path, { create: false }).catch(() => null);
-				if (!config) {
-					window.$message.warning(`未找到 ${path} 文件`);
-					return;
-				}
-				const hexoConfigText = await config.getFile().then((res) => res.text());
-				this._hexo_theme_config = yaml.load(hexoConfigText) as YamlConfig;
-				return this._hexo_theme_config;
+				return false;
 			}
 		} catch (error) {
-			window.$message.warning("主题配置文件获取失败");
+			return false;
 		}
 	}
 
 	async getPageFiles(): Promise<PostModel[]> {
-		const hexoThemeConfig = await this.getHexoConfig();
+		const { config } = await this.getHexoConfig();
 		let posts: PostModel[] = [];
 
 		const getPage = async (dir: FileSystemDirectoryHandle, path: string) => {
@@ -303,10 +339,10 @@ class LocalFileSystem extends AbstractFileSystem {
 			return posts;
 		};
 
-		if (hexoThemeConfig) {
-			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(hexoThemeConfig.source_dir, { create: true });
+		if (config) {
+			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(config.source_dir, { create: true });
 			if (sourceDirectoryHandle) {
-				posts = await getPage(sourceDirectoryHandle, hexoThemeConfig.source_dir);
+				posts = await getPage(sourceDirectoryHandle, config.source_dir);
 			}
 		}
 
@@ -319,19 +355,17 @@ class LocalFileSystem extends AbstractFileSystem {
 	 * @returns
 	 */
 	async _getPostsByType(type: "post" | "draft"): Promise<PostModel[]> {
-		const hexoThemeConfig = await this.getHexoConfig();
 		const posts: PostModel[] = [];
-
-		if (hexoThemeConfig) {
-			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(hexoThemeConfig.source_dir, { create: true });
+		const { config } = await this.getHexoConfig();
+		if (config) {
+			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(config.source_dir, { create: true });
 			const name = type === "post" ? "_posts" : "_drafts";
 			const postDirectoryHandle = await sourceDirectoryHandle?.getDirectoryHandle(name, { create: true });
-			// eslint-disable-next-line no-unsafe-optional-chaining
+
 			for await (const [, value] of postDirectoryHandle!.entries()) {
-				/* const [, value] = data as [string, FileSystemDirectoryHandle | FileSystemFileHandle]; */
 				if (value.kind === "file" && value.name.endsWith(".md")) {
 					const post = await parsePost(value);
-					post.path = `${hexoThemeConfig.source_dir}/${name}/${value.name}`;
+					post.path = `${config.source_dir}/${name}/${value.name}`;
 					posts.push(post);
 				}
 			}
@@ -357,7 +391,7 @@ class LocalFileSystem extends AbstractFileSystem {
 		if (bool) {
 			assetsDir = path.replace(".md", "/");
 		} else {
-			const config = await this.getHexoConfig();
+			const { config } = await this.getHexoConfig();
 			const sourceDir = config?.source || "source";
 			assetsDir = configStore.imgStorageDir || `${sourceDir}/images/`;
 			imgPath = `${assetsDir}/${fileName}`;
@@ -436,23 +470,15 @@ class LocalFileSystem extends AbstractFileSystem {
 
 	async savePost(post: PostModel): Promise<boolean> {
 		try {
-			const fileHandle = await this._getHandle(post.path, true);
-			if (fileHandle) {
-				const postText = fm.stringify(
-					{
-						...post.frontmatter,
-						title: post.title,
-						_content: post.md,
-					},
-					yamlDumpOpt
-				);
-
-				const writer = await fileHandle.createWritable({ keepExistingData: false });
-				await writer.write(postText);
-				await writer.close();
-				return true;
-			}
-			return false;
+			const postText = fm.stringify(
+				{
+					...post.frontmatter,
+					title: post.title,
+					_content: post.md,
+				},
+				yamlDumpOpt
+			);
+			return await this.updateFile(post.path, postText);
 		} catch (error) {
 			return false;
 		}
@@ -538,7 +564,7 @@ class LocalFileSystem extends AbstractFileSystem {
 	}
 
 	async getFullPathByAdd(name: string, type: HexoFileType): Promise<string> {
-		const config = await this.getHexoConfig();
+		const { config } = await this.getHexoConfig();
 		let path = (config?.source || "source") + "/";
 		switch (type) {
 			case HexoFileType.post:
@@ -560,7 +586,7 @@ class LocalFileSystem extends AbstractFileSystem {
 		const imgs: { [k: string]: string } = {};
 		if (srcs) {
 			const bool = await this._isPostAssetFolder();
-			const config = await this.getHexoConfig();
+			const { config } = await this.getHexoConfig();
 			const sourceDir = config?.source || "source";
 
 			for (let index = 0; index < srcs.length; index++) {
