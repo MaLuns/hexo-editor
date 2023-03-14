@@ -59,6 +59,7 @@
 			<n-grid-item>
 				<n-card style="height: 100%">
 					<template #header> <h4 class="m-0">其他</h4> </template>
+					<n-alert type="warning" style="margin-bottom: 20px"> 部分配置修改后，需要重新打开才生效 </n-alert>
 					<n-form-item label="Front-Matter" path="date">
 						<n-switch v-model:value="configStore.hideFrontMatter">
 							<template #checked> 隐藏 Front-Matter </template>

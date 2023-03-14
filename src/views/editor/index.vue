@@ -21,16 +21,10 @@ const data = reactive({
 	],
 });
 
-const init = () => {
-	fileStore.fs?.getDraftDirectory().then((res) => {
-		data.drafts = res;
-	});
-	fileStore.fs?.getPostDirectory().then((res) => {
-		data.posts = res;
-	});
-	fileStore.fs?.getPageFiles().then((res) => {
-		data.pages = res;
-	});
+const init = async () => {
+	data.drafts = await fileStore.fs!.getDraftDirectory();
+	data.posts = await fileStore.fs!.getPostDirectory();
+	data.pages = await fileStore.fs!.getPageFiles();
 };
 
 const selectPost = (post: PostModel, isAdd: boolean) => {
@@ -58,7 +52,7 @@ const createPost = (newData: { type: HexoFileType; post: PostModel }) => {
 	}
 };
 
-const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpublishPost") => {
+const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpublishPost" | "refresh") => {
 	const filterData = (key: "drafts" | "posts" | "pages", path: string) => (data[key] = data[key].filter((item) => item.path !== path));
 	const getType = (path: string) => {
 		if (path.includes("_drafts")) {
@@ -122,6 +116,11 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 				}
 			});
 			break;
+		case "refresh":
+			init().then(() => {
+				postEditorRef.value.update([...data.drafts, ...data.posts, ...data.pages]);
+			});
+			break;
 	}
 };
 
@@ -144,7 +143,7 @@ init();
 				<n-collapse class="file-panel" arrow-placement="right" :default-expanded-names="['posts']">
 					<n-collapse-item v-for="item in data.all" :key="item.key" :name="item.key">
 						<template #header> {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}） </template>
-						<post-list :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost($event, true)" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="init()"> </post-list>
+						<post-list :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost($event, true)" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="handlePost($event, 'refresh')"> </post-list>
 					</n-collapse-item>
 				</n-collapse>
 			</n-scrollbar>

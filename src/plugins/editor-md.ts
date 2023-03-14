@@ -45,7 +45,15 @@ export default <Plugin>{
 					editor.getAction("editor.action.formatDocument")?.run();
 				},
 			});
-
+			ctx.editor.registerSingleAction(e.editor, {
+				id: "plugin.editor.restore",
+				label: "恢复原文档",
+				keybindings: [monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyZ],
+				contextMenuGroupId: "format",
+				run(editor) {
+					ctx.hook.triggerHook("RESTORE_DEFAULT_DOCUMENT", editor);
+				},
+			});
 			list.forEach((item, index) => {
 				ctx.editor.registerSingleAction(e.editor, {
 					id: `plugin.editor.insert-date-tiem.${index}`,

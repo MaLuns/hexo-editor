@@ -85,7 +85,13 @@ const removeModel = (uri: monaco.Uri) => {
 	}
 };
 
+const getModel = (uri: monaco.Uri) => {
+	const payload = editorMonacoRef.value!.getEditor();
+	return payload.monaco.editor.getModel(uri);
+};
+
 defineExpose({
+	getModel,
 	addModel,
 	setModel,
 	removeModel,

@@ -11,8 +11,11 @@ declare type LabelVal = {
 };
 
 declare type HookTypes = {
+	// 编辑器初始化
 	MONACO_READY: { editor: Monaco.editor.IStandaloneCodeEditor; monaco: typeof Monaco };
+	// MD 编辑器初始化
 	MONACO_MARKDOWN_READY: { editor: Monaco.editor.IStandaloneCodeEditor; monaco: typeof Monaco };
+	// 编辑器光标位置发生变化
 	MONACO_EDITOR_CURSOR_POSITION: {
 		line: number;
 		column: number;
@@ -22,10 +25,16 @@ declare type HookTypes = {
 		selectedLines: number;
 		selectionCount: number;
 	};
+	// 编辑器组件激活
 	MONACO_ACTIVATE: Monaco.editor.IStandaloneCodeEditor | null;
+	// MD 渲染前
 	MARKDOWN_RENDER_BEFORE: string;
+	// MD 渲染后
 	MARKDOWN_RENDER_AFTER: { text: string; html: string };
+	// 目录列表点击事件
 	TOC_LIST_CLICK: TocNode;
+	// 恢复文档
+	RESTORE_DEFAULT_DOCUMENT: Monaco.editor.IStandaloneCodeEditor;
 };
 
 declare interface LayoutConfig {

@@ -85,7 +85,7 @@ const defaultConfig: marked.MarkedOptions = {
 type Filter = {
 	name: string;
 	type: "before" | "after";
-	run: (text: string | { text: string; html: string }) => string;
+	run: (text: { text: string; html?: string }) => string;
 };
 
 const filters: {
@@ -125,7 +125,7 @@ export const onlyRenderer = (text: string, option?: any) => {
 export const renderer = (text: string, option?: any) => {
 	triggerHook("MARKDOWN_RENDER_BEFORE", text);
 	text = tags.render(text);
-	text = filters.before.reduce((t, current) => current.run(t), text);
+	text = filters.before.reduce((t, current) => current.run({ text: t }), text);
 
 	let html = marked(text, Object.assign(defaultConfig, option)) as unknown as string;
 

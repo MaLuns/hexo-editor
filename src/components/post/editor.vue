@@ -2,6 +2,7 @@
 import type { Uri } from "monaco-editor";
 import EditorMarkdown from "@/components/editor/markdown.vue";
 import { fileStore } from "@/store";
+import { registerHook } from "@/core/hook";
 
 type models = {
 	[k: string]: {
@@ -12,6 +13,7 @@ type models = {
 	};
 };
 
+const notification = useNotification();
 const dialog = useDialog();
 const emit = defineEmits(["select"]);
 const editorMarkdownRef = ref<InstanceType<typeof EditorMarkdown>>();
@@ -136,6 +138,31 @@ const add = (post: PostModel) => {
 
 const remove = (path: string) => handleClose("close", path);
 
+const update = (posts: PostModel[]) => {
+	posts.forEach((item) => {
+		const model = data.models[item.path];
+		if (model) {
+			// 新旧文件发生变更
+			if (model.raw !== item.md) {
+				// 原文未改动，更新编辑器内容
+				if (model.text == model.raw) {
+					model.text = item.md;
+					const editorModel = editorMarkdownRef.value?.getModel(model.uri);
+					editorModel?.setValue(item.md);
+				} else {
+					// 原文发生改动
+					notification.warning({
+						title: "提示",
+						meta: `文件 ${item.name} 已发生变更。`,
+					});
+				}
+			}
+			model.raw = item.md;
+			model.post = item;
+		}
+	});
+};
+
 watch(
 	() => data.tabValue,
 	(tabValue) => {
@@ -156,9 +183,16 @@ const modelValue = computed({
 	},
 });
 
+registerHook("RESTORE_DEFAULT_DOCUMENT", (e) => {
+	const model = data.models[data.tabValue];
+	model.text = model.raw;
+	e.setValue(model.text);
+});
+
 defineExpose({
 	add,
 	remove,
+	update,
 });
 </script>
 <template>

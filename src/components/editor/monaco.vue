@@ -122,7 +122,6 @@ onMounted(() => {
 
 		setTimeout(() => {
 			emit("ready", { editor: monacoEditor, monaco: monaco });
-			triggerHook("MONACO_ACTIVATE", { editor: monacoEditor, monaco: monaco });
 			triggerHook("MONACO_ACTIVATE", monacoEditor);
 		}, 500);
 	});

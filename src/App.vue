@@ -23,7 +23,9 @@ const dark: GlobalThemeOverrides = {
 	<n-config-provider :theme="themeMode" :theme-overrides="themeMode ? dark : light" :locale="zhCN" :date-locale="dateZhCN">
 		<n-dialog-provider>
 			<n-message-provider>
-				<RouterView />
+				<n-notification-provider placement="bottom-right">
+					<RouterView />
+				</n-notification-provider>
 			</n-message-provider>
 		</n-dialog-provider>
 		<n-global-style />
