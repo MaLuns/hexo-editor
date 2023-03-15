@@ -454,12 +454,14 @@ class LocalFileSystem extends AbstractFileSystem {
 
 	async savePost(post: PostModel): Promise<boolean> {
 		try {
-			const postText = hexo.stringifyMd({
-				date: post.date,
-				title: post.title,
-				...post.frontmatter,
-				_content: post.md,
-			});
+			const postText = configStore.hideFrontMatter
+				? hexo.stringifyMd({
+						date: post.date,
+						title: post.title,
+						...post.frontmatter,
+						_content: post.md,
+				  })
+				: post.md;
 			return await this.updateFile(post.path, postText);
 		} catch (error) {
 			return false;
