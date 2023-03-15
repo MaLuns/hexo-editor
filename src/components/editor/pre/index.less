@@ -14,7 +14,7 @@
 }
 
 .pre-wrap {
-    .var-primary(@primary: #afb42b; @primary-weak: #c0ca33) {
+    .var-primary(@primary: #705697; @primary-weak: #9c7ace) {
         --primary        : @primary;
         --primary-70     : fade(@primary, 70%);
         --primary-50     : fade(@primary, 50%);
@@ -148,12 +148,6 @@
         }
     }
 
-    overflow-y      : auto;
-    overflow-x      : hidden;
-    height          : calc(100% - 20px);
-    padding         : 20px;
-    margin          : 10px;
-    font-weight     : 500;
     color           : var(--body-color, #7b7b7d);
     background-color: var(--theme-bg-color, #fcfcfe);
 }
@@ -237,5 +231,4 @@ p {
     margin: 0
 }
 
-@import "./highlight.less";
 @import "./md.less";

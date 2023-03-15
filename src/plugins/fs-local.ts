@@ -3,6 +3,7 @@ import * as hexo from "@/core/hexo";
 import AbstractFileSystem from "@/core/file-system/abstract-file-system";
 import { FileStoreTypeEnum, HexoFileType } from "@/enums";
 import { configStore } from "@/store";
+import { regexRules } from "@/utils";
 
 /**
  * 读取文件信息
@@ -563,7 +564,7 @@ class LocalFileSystem extends AbstractFileSystem {
 
 			for (let index = 0; index < srcs.length; index++) {
 				const src = srcs[index];
-				if (!/^(#|\/\/|http(s)?:)/.test(src)) {
+				if (!regexRules.url.test(src)) {
 					if (bool && !/$[\\\/]/.test(src)) {
 						imgs[src] = await this.getImageUrl(path.replace(".md", "/") + src);
 					}

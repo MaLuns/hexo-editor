@@ -73,6 +73,10 @@ declare interface GlobalConfig {
 	language: "zh_cn" | "en";
 	// 预览样式
 	preStyle: string;
+	// 预览标签
+	preTag: string;
+	// 预览标签类
+	preClass: string;
 	// 编辑器样式
 	editorLightTheme: string;
 	// 编辑器样式

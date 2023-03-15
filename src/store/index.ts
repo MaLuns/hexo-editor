@@ -19,6 +19,8 @@ const defConfig: GlobalConfig = {
 	theme: "light",
 	language: "zh_cn",
 	preStyle: "",
+	preTag: "",
+	preClass: "",
 	editorLightTheme: "vs",
 	editorDartTheme: "vs-dark",
 	editorOption: {
@@ -34,7 +36,7 @@ const defConfig: GlobalConfig = {
 	},
 	autoSave: 0,
 	autoRender: 2000,
-	hideFrontMatter: true,
+	hideFrontMatter: false,
 	imgStorageDir: "source/images/",
 	pictureBed: "",
 };

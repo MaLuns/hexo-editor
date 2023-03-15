@@ -1,7 +1,8 @@
 <script lang="ts">
 import { registerHook } from "@/core/hook";
-import { throttle } from "@/utils";
+import { regexRules, throttle } from "@/utils";
 import { h } from "vue";
+import defaultCss from "./pre/index.less?inline";
 
 const siblings = (ele: any, selector: string) => {
 	return [...ele.parentNode.children].filter((child) => {
@@ -25,21 +26,21 @@ export default {
 			type: String,
 			default: "",
 		},
-		links: {
-			type: Array,
-			default: () => [],
-		},
 		theme: {
 			type: String,
 			default: "light",
 		},
-		tag: {
+		preStyle: {
 			type: String,
-			default: "div",
+			default: "",
+		},
+		preTag: {
+			type: String,
+			default: "",
 		},
 		preClass: {
 			type: String,
-			default: "trm-publication",
+			default: "",
 		},
 	},
 	setup(props) {
@@ -69,16 +70,23 @@ export default {
 			preWarpWef.value && preWarpWef.value.removeEventListener("scroll", scrollFun);
 		});
 
+		const style = computed(() => {
+			if (regexRules.url.test(props.preStyle)) {
+				return h("link", { rel: "stylesheet", href: props.preStyle });
+			}
+			if (props.preStyle) {
+				return h("style", null, props.preStyle);
+			}
+			return h("style", null, defaultCss);
+		});
+
 		return () => [
-			props.links.length ? props.links.map((href) => h("link", { rel: "stylesheet", href })) : null,
+			style.value,
 			h(
 				"div",
-				{
-					class: ["pre-wrap", props.theme],
-					ref: preWarpWef,
-				},
-				h(props.tag, {
-					class: [props.preClass, props.theme],
+				{ class: ["pre-wrap", props.theme], ref: preWarpWef },
+				h(props.preTag || "div", {
+					class: [props.preClass || "trm-publication", props.theme],
 					innerHTML: props.html,
 				})
 			),
@@ -131,5 +139,15 @@ export default {
 };
 </script>
 <style lang="less">
-@import url(./pre/index.less);
+.pre-wrap {
+	box-sizing: border-box;
+	overflow-y: auto;
+	overflow-x: hidden;
+	height: calc(100% - 20px);
+	padding: 20px;
+	margin: 10px;
+	font-weight: 500;
+}
+
+@import "./pre/highlight.less";
 </style>

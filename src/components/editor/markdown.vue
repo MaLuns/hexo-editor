@@ -107,7 +107,7 @@ defineExpose({
 			<editor-monaco ref="editorMonacoRef" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></editor-monaco>
 		</div>
 		<div v-show="configStore.layout.isShowMarkdownPrew" class="markdown-editor__preview">
-			<editor-preview class="editor-preview" :theme="theme" :html="htmlText" :view-id="viewId"></editor-preview>
+			<editor-preview class="editor-preview" :theme="theme" :html="htmlText" :pre-style="configStore.preStyle" :pre-tag="configStore.preTag" :pre-class="configStore.preClass" :view-id="viewId"></editor-preview>
 		</div>
 	</div>
 </template>

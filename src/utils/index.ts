@@ -1,5 +1,6 @@
 export const regexRules = {
 	fileName: /^[^\\/:*?"<>|\s]+$/i,
+	url: /^(\/\/|http(s)?:)/,
 };
 
 export const isMacOS = /macintosh|mac os x/i.test(navigator.userAgent);
