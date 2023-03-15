@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import type * as monaco from "monaco-editor";
+import ctx from "@/core/context";
 import EditorMonaco from "./monaco.vue";
 import { configStore, fileStore, themeMode } from "@/store";
 import { debounce } from "@/utils";
-import ctx from "@/core/context";
 import { triggerHook } from "@/core/hook";
 
 const emit = defineEmits(["update:modelValue", "save"]);
@@ -25,6 +25,8 @@ const props = defineProps({
 const editorMonacoRef = ref<InstanceType<typeof EditorMonaco>>();
 const htmlText = ref("");
 const theme = computed(() => (themeMode.value ? "dark" : "light"));
+const viewId = ref("");
+// 缓存编辑器状态
 const catchStates = new Map<string | undefined, monaco.editor.ICodeEditorViewState | null>();
 
 let renderMarkdown: (val: string) => void;
@@ -53,11 +55,12 @@ const handleReady = (e: { editor: monaco.editor.IStandaloneCodeEditor; monaco: a
 };
 
 const addModel = (val: string, path: string): monaco.Uri => {
-	const u = ctx.editor.tools.uri(path);
+	const uri = ctx.editor.tools.uri(path);
 	const payload = editorMonacoRef.value!.getEditor();
-	const model = payload.monaco.editor.createModel(val, "md", u);
+	const model = payload.monaco.editor.createModel(val, "md", uri);
 	payload.editor.setModel(model);
-	return u;
+	viewId.value = uri.path;
+	return uri;
 };
 
 const setModel = (uri: monaco.Uri) => {
@@ -71,6 +74,7 @@ const setModel = (uri: monaco.Uri) => {
 	const model = payload.monaco.editor.getModel(uri);
 	const newState = catchStates.get(model?.uri.toString());
 	payload.editor.setModel(model);
+	viewId.value = uri.path;
 	if (newState) {
 		payload.editor.restoreViewState(newState);
 	}
@@ -103,7 +107,7 @@ defineExpose({
 			<editor-monaco ref="editorMonacoRef" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></editor-monaco>
 		</div>
 		<div v-show="configStore.layout.isShowMarkdownPrew" class="markdown-editor__preview">
-			<editor-preview class="editor-preview" :theme="theme" :html="htmlText"></editor-preview>
+			<editor-preview class="editor-preview" :theme="theme" :html="htmlText" :view-id="viewId"></editor-preview>
 		</div>
 	</div>
 </template>

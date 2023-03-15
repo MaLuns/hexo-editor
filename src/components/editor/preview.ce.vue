@@ -1,6 +1,8 @@
 <script lang="ts">
 import { registerHook } from "@/core/hook";
+import { throttle } from "@/utils";
 import { h } from "vue";
+
 const siblings = (ele: any, selector: string) => {
 	return [...ele.parentNode.children].filter((child) => {
 		if (selector) {
@@ -9,10 +11,16 @@ const siblings = (ele: any, selector: string) => {
 		return child !== ele;
 	});
 };
+
 const preWarpWef = ref<HTMLDivElement>();
+const catchScroll: { [k: string]: number } = {};
 
 export default {
 	props: {
+		viewId: {
+			type: String,
+			default: "",
+		},
 		html: {
 			type: String,
 			default: "",
@@ -35,15 +43,34 @@ export default {
 		},
 	},
 	setup(props) {
+		const scrollFun = throttle(function () {
+			catchScroll[props.viewId] = preWarpWef.value!.scrollTop;
+		}, 300);
+
+		onMounted(() => {
+			preWarpWef.value && preWarpWef.value.addEventListener("scroll", scrollFun);
+
+			registerHook("TOC_LIST_CLICK", (e) => {
+				if (preWarpWef.value) {
+					const root = preWarpWef.value;
+					const trag = root.querySelector<HTMLElement>(`#${e.id}`);
+					if (trag) {
+						root.scrollTo({
+							top: trag.offsetTop - trag.offsetHeight - 30,
+							left: 0,
+							behavior: "smooth",
+						});
+					}
+				}
+			});
+		});
+
+		onUnmounted(() => {
+			preWarpWef.value && preWarpWef.value.removeEventListener("scroll", scrollFun);
+		});
+
 		return () => [
-			props.links.length
-				? props.links.map((href) =>
-						h("link", {
-							rel: "stylesheet",
-							href,
-						})
-				  )
-				: null,
+			props.links.length ? props.links.map((href) => h("link", { rel: "stylesheet", href })) : null,
 			h(
 				"div",
 				{
@@ -64,22 +91,16 @@ export default {
 	},
 	mounted() {
 		this.init();
-		registerHook("TOC_LIST_CLICK", (e) => {
-			if (preWarpWef.value) {
-				const root = preWarpWef.value;
-				const trag = root.querySelector<HTMLElement>(`#${e.id}`);
-				if (trag) {
-					root.scrollTo({
-						top: trag.offsetTop - trag.offsetHeight - 30,
-						left: 0,
-						behavior: "smooth",
-					});
-				}
-			}
-		});
 	},
 	methods: {
 		init() {
+			if (preWarpWef.value) {
+				preWarpWef.value.scrollTo({
+					top: catchScroll[this.viewId] || 0,
+					left: 0,
+					behavior: "auto",
+				});
+			}
 			this.$nextTick(() => {
 				this.InitTabs();
 			});
