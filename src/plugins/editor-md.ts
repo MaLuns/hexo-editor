@@ -10,7 +10,7 @@ export default <Plugin>{
 
 		const list = [
 			{
-				title: "插入当前日期",
+				title: "插入当前时间",
 				keybinding: [monaco.KeyMod.Shift, monaco.KeyMod.Alt, monaco.KeyCode.KeyQ],
 				run() {
 					const editor = ctx.editor.getEditor();
@@ -18,7 +18,7 @@ export default <Plugin>{
 				},
 			},
 			{
-				title: "插入当前时间",
+				title: "插入当前日期",
 				keybinding: [monaco.KeyMod.Shift, monaco.KeyMod.Alt, monaco.KeyCode.KeyW],
 				run() {
 					const editor = ctx.editor.getEditor();
@@ -26,7 +26,7 @@ export default <Plugin>{
 				},
 			},
 			{
-				title: "插入当前时间",
+				title: "插入完整日期",
 				keybinding: [monaco.KeyMod.Shift, monaco.KeyMod.Alt, monaco.KeyCode.KeyE],
 				run() {
 					const editor = ctx.editor.getEditor();
@@ -45,6 +45,7 @@ export default <Plugin>{
 					editor.getAction("editor.action.formatDocument")?.run();
 				},
 			});
+
 			ctx.editor.registerSingleAction(e.editor, {
 				id: "plugin.editor.restore",
 				label: "恢复原文档",
@@ -54,6 +55,7 @@ export default <Plugin>{
 					ctx.hook.triggerHook("RESTORE_DEFAULT_DOCUMENT", editor);
 				},
 			});
+
 			list.forEach((item, index) => {
 				ctx.editor.registerSingleAction(e.editor, {
 					id: `plugin.editor.insert-date-tiem.${index}`,

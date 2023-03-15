@@ -41,7 +41,7 @@ const switchModel = async (type: "hexo" | "theme") => {
 	if (model) return setModel(uri);
 
 	const config = type === "hexo" ? await ctx.store.fileStore.fs?.getHexoConfig() : await ctx.store.fileStore.fs?.getThemeConfig();
-	console.log(config);
+
 	if (config && config.raw) {
 		payload.monaco.editor.createModel(config.raw, "yaml", uri);
 		data[type].raw = data[type].val = config.raw;

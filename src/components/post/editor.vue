@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Uri } from "monaco-editor";
 import EditorMarkdown from "@/components/editor/markdown.vue";
-import { fileStore } from "@/store";
+import { fileStore, configStore } from "@/store";
 import { registerHook } from "@/core/hook";
 
 type models = {
@@ -200,8 +200,8 @@ defineExpose({
 		<div class="post-editor__tabs">
 			<post-tabs v-model="data.tabValue" :list="list" @close="handleClose">
 				<template #suffix>
-					<template v-if="fileStore.post">
-						<post-info :post="fileStore.post"></post-info>
+					<template v-if="configStore.hideFrontMatter && fileStore.post">
+						<post-info :post="fileStore.post" @save="handleSave"></post-info>
 						<n-divider vertical />
 					</template>
 					<post-toc></post-toc>

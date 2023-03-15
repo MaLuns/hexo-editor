@@ -1,9 +1,6 @@
 import type { Plugin } from "@/core/plugin";
-
-import yaml from "js-yaml";
-import fm from "@/utils/front-matter";
+import * as hexo from "@/core/hexo";
 import AbstractFileSystem from "@/core/file-system/abstract-file-system";
-import { formatDate } from "@/utils";
 import { FileStoreTypeEnum, HexoFileType } from "@/enums";
 import { configStore } from "@/store";
 
@@ -14,12 +11,12 @@ import { configStore } from "@/store";
  */
 const parsePost = async (file: FileSystemFileHandle) => {
 	const rawText = await file.getFile().then((res) => res.text());
-	const fmData = fm.parse(rawText);
+	const { title, date, ...fmData } = hexo.parseMd(rawText);
 	const post: PostModel = {
 		name: file.name,
 		path: file.name,
-		title: fmData.title,
-		date: fmData.date,
+		title: title,
+		date: date,
 		raw: rawText,
 		md: configStore.hideFrontMatter ? fmData._content : rawText,
 		frontmatter: {
@@ -119,20 +116,7 @@ const conpyFile = async (sourceFile: FileSystemFileHandle, targetDir: FileSystem
 	}
 };
 
-/**
- * Yaml DumpOptions
- */
-const yamlDumpOpt = {
-	lineWidth: 2000,
-	styles: {
-		"!!bool": "lowercase",
-		"!!null": "empty",
-	},
-	prefixSeparator: true,
-};
-
 class LocalFileSystem extends AbstractFileSystem {
-	_count = 0;
 	_root: FileSystemDirectoryHandle | undefined;
 	_hexo_config: YamlConfig | undefined;
 	_hexo_config_raw: string | undefined;
@@ -182,7 +166,7 @@ class LocalFileSystem extends AbstractFileSystem {
 	 */
 	async _getPostDirHandle(): Promise<FileSystemDirectoryHandle | null> {
 		const { config } = await this.getHexoConfig();
-		const path = (config?.source || "source") + "/_posts";
+		const path = hexo.getSourcePath(config?.source, "/_posts");
 		return this._getHandle(path);
 	}
 
@@ -192,7 +176,7 @@ class LocalFileSystem extends AbstractFileSystem {
 	 */
 	async _getDraftsDirHandle(): Promise<FileSystemDirectoryHandle | null> {
 		const { config } = await this.getHexoConfig();
-		const path = (config?.source || "source") + "/_drafts";
+		const path = hexo.getSourcePath(config?.source, "/_drafts");
 		return this._getHandle(path);
 	}
 
@@ -227,7 +211,7 @@ class LocalFileSystem extends AbstractFileSystem {
 				}
 				const hexoConfigText = await configFileHandle.getFile().then((res) => res.text());
 				this[rawKey] = hexoConfigText;
-				this[configKey] = yaml.load(hexoConfigText) as YamlConfig;
+				this[configKey] = hexo.parseYaml(hexoConfigText);
 				return { path, raw: this[rawKey], config: this[configKey]! };
 			}
 		} catch (error) {
@@ -384,7 +368,7 @@ class LocalFileSystem extends AbstractFileSystem {
 
 	async uploadImage(file: File, path: string): Promise<string> {
 		const bool = await this._isPostAssetFolder();
-		const fileName = `img_${formatDate(new Date(), "YYYYMMDDhhmmss")}_${++this._count}.${file.name.split(".")[1]}`;
+		const fileName = `${hexo.getImageName()}.${file.name.split(".")[1]}`;
 		let assetsDir = "";
 		let imgPath = fileName;
 
@@ -392,7 +376,7 @@ class LocalFileSystem extends AbstractFileSystem {
 			assetsDir = path.replace(".md", "/");
 		} else {
 			const { config } = await this.getHexoConfig();
-			const sourceDir = config?.source || "source";
+			const sourceDir = hexo.getSourcePath(config?.source);
 			assetsDir = configStore.imgStorageDir || `${sourceDir}/images/`;
 			imgPath = `${assetsDir}/${fileName}`;
 		}
@@ -429,7 +413,7 @@ class LocalFileSystem extends AbstractFileSystem {
 				handle = await (<FileSystemDirectoryHandle>handle).getFileHandle("index.md", { create: true }).catch(() => null);
 			}
 
-			const frontmatter = fm.stringify(res, yamlDumpOpt);
+			const frontmatter = hexo.stringifyMd(res);
 
 			const writer = await (<FileSystemFileHandle>handle).createWritable({ keepExistingData: false });
 			await writer.write(frontmatter);
@@ -470,14 +454,12 @@ class LocalFileSystem extends AbstractFileSystem {
 
 	async savePost(post: PostModel): Promise<boolean> {
 		try {
-			const postText = fm.stringify(
-				{
-					...post.frontmatter,
-					title: post.title,
-					_content: post.md,
-				},
-				yamlDumpOpt
-			);
+			const postText = hexo.stringifyMd({
+				date: post.date,
+				title: post.title,
+				...post.frontmatter,
+				_content: post.md,
+			});
 			return await this.updateFile(post.path, postText);
 		} catch (error) {
 			return false;
@@ -565,19 +547,7 @@ class LocalFileSystem extends AbstractFileSystem {
 
 	async getFullPathByAdd(name: string, type: HexoFileType): Promise<string> {
 		const { config } = await this.getHexoConfig();
-		let path = (config?.source || "source") + "/";
-		switch (type) {
-			case HexoFileType.post:
-				path += `_posts/${name}${name.endsWith(".md") ? "" : ".md"}`;
-				break;
-			case HexoFileType.draft:
-				path += `_drafts/${name}${name.endsWith(".md") ? "" : ".md"}`;
-				break;
-			case HexoFileType.page:
-				path += name + "/";
-				break;
-		}
-		return path;
+		return hexo.getFullPath(name, type, config?.source);
 	}
 
 	async transformImgUrl(text: string, path: string): Promise<string> {
@@ -587,7 +557,7 @@ class LocalFileSystem extends AbstractFileSystem {
 		if (srcs) {
 			const bool = await this._isPostAssetFolder();
 			const { config } = await this.getHexoConfig();
-			const sourceDir = config?.source || "source";
+			const sourceDir = hexo.getSourcePath(config?.source);
 
 			for (let index = 0; index < srcs.length; index++) {
 				const src = srcs[index];

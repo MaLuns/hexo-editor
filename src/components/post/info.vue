@@ -1,31 +1,56 @@
 <script lang="ts" setup>
 import { fileStore } from "@/store";
-import { FileCode } from "@vicons/tabler";
+import { FileCode, DeviceFloppy } from "@vicons/tabler";
+defineEmits(["save"]);
+onMounted(() => {
+	console.log(fileStore.post);
+});
+
+const datetime = computed({
+	get: () => {
+		return fileStore.post?.date.getTime();
+	},
+	set: (val) => {
+		if (fileStore.post?.date && val) {
+			fileStore.post.date = new Date(val);
+		}
+	},
+});
 </script>
 <template>
-	<n-popover scrollable placement="bottom-end">
+	<n-popover scrollable placement="bottom-end" :width="300">
 		<template #trigger>
 			<n-icon size="20" style="cursor: pointer">
 				<file-code></file-code>
 			</n-icon>
 		</template>
 		<div v-if="fileStore.post">
-			<n-form size="small" label-placement="left" require-mark-placement="right-hanging" :show-feedback="false">
-				<n-form-item label="标题">
+			<n-form label-placement="left" label-width="auto" :show-feedback="false">
+				<n-form-item label="文章标题">
 					<n-input v-model:value="fileStore.post.title"></n-input>
 				</n-form-item>
-				<n-form-item label="日期">
-					<n-date-picker type="datetime" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%"></n-date-picker>
+				<n-form-item label="创建日期">
+					<n-date-picker v-model:value="datetime" type="datetime" style="width: 100%"></n-date-picker>
 				</n-form-item>
 				<n-form-item label="描述">
 					<n-input v-model:value="fileStore.post.frontmatter.description"></n-input>
 				</n-form-item>
 				<n-form-item label="分类">
-					<n-input v-model:value="fileStore.post.frontmatter.categories"></n-input>
+					<n-dynamic-tags v-model:value="fileStore.post.frontmatter.categories" />
 				</n-form-item>
 				<n-form-item label="标签">
-					<n-input v-model:value="fileStore.post.frontmatter.tags"></n-input>
+					<n-dynamic-tags v-model:value="fileStore.post.frontmatter.tags" :color="{}" />
 				</n-form-item>
+				<div style="display: flex; justify-content: center">
+					<n-button strong secondary type="success" style="width: 100%" @click="$emit('save')">
+						<template #icon>
+							<n-icon>
+								<DeviceFloppy />
+							</n-icon>
+						</template>
+						保存
+					</n-button>
+				</div>
 			</n-form>
 		</div>
 		<div v-else>未找到文件信息</div>
