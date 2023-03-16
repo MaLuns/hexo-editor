@@ -6,7 +6,7 @@ const themeColors: ThemeVars = {
 	},
 	post: {
 		tabs: {
-			tabBgColor: "#3e3e3e",
+			tabBgColor: "#323232",
 			tabColor: "",
 			panBgColor: "#282828",
 			suffixBgColor: "#2d2730",

@@ -222,7 +222,6 @@ defineExpose({
 	overflow: hidden;
 	.post-editor__tabs {
 		height: 35px;
-		/* background-color: red; */
 		flex-shrink: 0;
 	}
 

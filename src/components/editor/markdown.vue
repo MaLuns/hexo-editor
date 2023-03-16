@@ -103,24 +103,31 @@ defineExpose({
 </script>
 <template>
 	<div class="markdown-editor">
-		<div v-show="configStore.layout.isShowMarkdownEditor" class="markdown-editor__editor">
-			<editor-monaco ref="editorMonacoRef" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></editor-monaco>
-		</div>
-		<div v-show="configStore.layout.isShowMarkdownPrew" class="markdown-editor__preview">
-			<editor-preview class="editor-preview" :theme="theme" :html="htmlText" :pre-style="configStore.preStyle" :pre-tag="configStore.preTag" :pre-class="configStore.preClass" :view-id="viewId"></editor-preview>
-		</div>
+		<split-pane type="horizontal" :left-hide="!configStore.layout.isShowMarkdownEditor" :right-hide="!configStore.layout.isShowMarkdownPrew">
+			<template #left>
+				<div class="markdown-editor__editor">
+					<editor-monaco ref="editorMonacoRef" language="md" @save="$emit('save')" @change="emit('update:modelValue', $event)" @ready="handleReady"></editor-monaco>
+				</div>
+			</template>
+			<template #right>
+				<div class="markdown-editor__preview">
+					<editor-preview class="editor-preview" :theme="theme" :html="htmlText" :pre-style="configStore.preStyle" :pre-tag="configStore.preTag" :pre-class="configStore.preClass" :view-id="viewId"></editor-preview>
+				</div>
+			</template>
+		</split-pane>
 	</div>
 </template>
 <style lang="less" scoped>
 .markdown-editor {
-	display: flex;
+	/* display: flex; */
 	height: 100%;
 
 	.markdown-editor__editor,
 	.markdown-editor__preview {
-		flex: 1;
+		height: 100%;
+		/* flex: 1;
 		flex-shrink: 0;
-		width: 50%;
+		width: 50%; */
 	}
 
 	.editor-preview {
