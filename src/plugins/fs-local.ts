@@ -245,7 +245,7 @@ class LocalFileSystem extends AbstractFileSystem {
 						resolve(undefined);
 					}
 				} else {
-					const directoryHandle: FileSystemDirectoryHandle = await window.showDirectoryPicker();
+					const directoryHandle: FileSystemDirectoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
 					this._root = directoryHandle;
 					resolve({
 						name: directoryHandle.name,

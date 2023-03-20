@@ -1,11 +1,12 @@
 import type AbstractFileSystem from "@/core/file-system/abstract-file-system";
 import { darkTheme } from "naive-ui";
 import { deepMerge } from "@/utils";
+import { getMonaco } from "@/core/editor";
 import storage from "@/utils/storage";
-import * as monaco from "monaco-editor";
 import themes from "@/themes";
 import { loadEditorTheme } from "@/plugins/editor-themes";
 
+const monaco = getMonaco();
 const defConfig: GlobalConfig = {
 	layout: {
 		layoutSiderWidth: "54px",
@@ -35,7 +36,7 @@ const defConfig: GlobalConfig = {
 		mouseWheelZoom: true,
 	},
 	autoSave: 0,
-	autoRender: 2000,
+	autoRender: 200,
 	hideFrontMatter: false,
 	imgStorageDir: "source/images/",
 	pictureBed: "",

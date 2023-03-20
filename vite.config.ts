@@ -9,6 +9,15 @@ import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 // https://vitejs.dev/config/
 
 export default defineConfig({
+	build: {
+		rollupOptions: {
+			output: {
+				manualChunks: (e) => {
+					if (e.includes("/node_modules/monaco-editor/")) return "monaco";
+				},
+			},
+		},
+	},
 	plugins: [
 		vue({
 			template: {

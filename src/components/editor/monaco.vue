@@ -1,10 +1,12 @@
 <script lang="ts" setup>
+import { getMonaco } from "@/core/editor";
 import { triggerHook } from "@/core/hook";
 import { editorTheme, configStore } from "@/store";
 import { debounce } from "@/utils";
-import * as monaco from "monaco-editor";
-const emit = defineEmits(["change", "save", "ready"]);
+import type * as Monaco from "monaco-editor";
 
+const emit = defineEmits(["change", "save", "ready"]);
+const monaco = getMonaco();
 const editContainerRef = ref();
 const containerHeight = ref("0px");
 const props = defineProps({
@@ -13,7 +15,7 @@ const props = defineProps({
 		default: "markdown",
 	},
 	config: {
-		type: Object as PropType<monaco.editor.IStandaloneEditorConstructionOptions>,
+		type: Object as PropType<Monaco.editor.IStandaloneEditorConstructionOptions>,
 		default: () => {},
 	},
 	height: {
@@ -26,7 +28,7 @@ const props = defineProps({
 	},
 });
 
-const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
+const def_config: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	theme: editorTheme.value,
 	automaticLayout: true,
 	selectOnLineNumbers: true,
@@ -56,7 +58,7 @@ const def_config: monaco.editor.IStandaloneEditorConstructionOptions = {
 	fontFamily: configStore.editorOption.fontFamily || undefined,
 };
 
-let monacoEditor: monaco.editor.IStandaloneCodeEditor;
+let monacoEditor: Monaco.editor.IStandaloneCodeEditor;
 let autoSave = () => {};
 
 watch(
