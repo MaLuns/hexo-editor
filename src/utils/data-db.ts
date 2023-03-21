@@ -10,11 +10,9 @@ export default class IDB<T> {
 			request.onupgradeneeded = () => {
 				const db = request.result;
 				if (!db.objectStoreNames.contains(this.storeName)) {
-					const store = db.createObjectStore(this.storeName, {
+					db.createObjectStore(this.storeName, {
 						keyPath: this.keyPath ?? undefined,
 					});
-
-					store.createIndex("", "");
 				}
 				this.db = db;
 			};

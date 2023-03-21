@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import DefConfig from "./defConfig.vue";
-import HexoConfig from "./hexoConfig.vue";
+import DefConfig from "./def-config.vue";
+import HexoConfig from "./hexo-config.vue";
 </script>
 <template>
 	<div class="config-page">

@@ -2,7 +2,7 @@
 import { HexoFileType } from "@/enums";
 import { fileStore, configStore, themeColors } from "@/store";
 import { DocumentTextOutline } from "@vicons/ionicons5";
-import AddPost from "./addPost.vue";
+import AddPost from "./add-post.vue";
 
 const message = useMessage();
 const postEditorRef = ref();
