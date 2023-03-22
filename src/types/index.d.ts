@@ -1,8 +1,8 @@
 declare interface FileStoreModel {
 	id?: string;
 	name: string;
-	type: FileStoreTypeEnum;
-	value: FileStoreModel.type extends "Local" ? FileSystemDirectoryHandle : string;
+	type: any;
+	value: FileStoreModel.type extends "LocalFileSystem" ? FileSystemDirectoryHandle : string;
 }
 
 declare type LabelVal = {
@@ -10,6 +10,9 @@ declare type LabelVal = {
 	value: any;
 };
 
+/**
+ * Hook 类型
+ */
 declare type HookTypes = {
 	// 编辑器初始化
 	MONACO_READY: { editor: Monaco.editor.IStandaloneCodeEditor; monaco: typeof Monaco };
@@ -37,6 +40,9 @@ declare type HookTypes = {
 	RESTORE_DEFAULT_DOCUMENT: Monaco.editor.IStandaloneCodeEditor;
 };
 
+/**
+ * 布局配置
+ */
 declare interface LayoutConfig {
 	layoutSiderWidth: string;
 	layoutFooterBar: string;
@@ -47,6 +53,9 @@ declare interface LayoutConfig {
 	isShowMarkdownPrew: boolean;
 }
 
+/**
+ * 编辑器配置
+ */
 declare interface EditorOptions {
 	// 行号
 	lineNumbers: "on" | "off" | "relative" | "interval";
@@ -65,7 +74,11 @@ declare interface EditorOptions {
 	mouseWheelZoom: boolean;
 }
 
+/**
+ * 全局配置
+ */
 declare interface GlobalConfig {
+	// 布局
 	layout: LayoutConfig;
 	// 主题
 	theme: "light" | "dark" | "system";
@@ -89,13 +102,17 @@ declare interface GlobalConfig {
 	autoRender: number;
 	// 隐藏 Front-Matter
 	hideFrontMatter: boolean;
+	// 图片存储方式
+	imgStorageType: "Local";
 	// 上传图片存放地址
 	imgStorageDir: string;
 	// 图床
 	pictureBed: string;
 }
 
-// 主题颜色变量
+/**
+ * 主题颜色变量
+ */
 declare interface ThemeVars {
 	sider: {
 		bgColor: string;
@@ -127,7 +144,9 @@ declare interface ThemeVars {
 	};
 }
 
-// TOC
+/**
+ * 文章目录
+ */
 declare interface TocNode {
 	id: string;
 	level: number;

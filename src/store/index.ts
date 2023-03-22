@@ -5,43 +5,13 @@ import { getMonaco } from "@/core/editor";
 import storage from "@/utils/storage";
 import themes from "@/themes";
 import { loadEditorTheme } from "@/plugins/editor-themes";
+import defConfig from "./config";
 
 const monaco = getMonaco();
-const defConfig: GlobalConfig = {
-	layout: {
-		layoutSiderWidth: "54px",
-		layoutFooterBar: "22px",
-		editorAsideWidth: "280px",
-		isShowLayoutSider: true,
-		isShowLayoutEditorAside: true,
-		isShowMarkdownEditor: true,
-		isShowMarkdownPrew: true,
-	},
-	theme: "light",
-	language: "zh_cn",
-	preStyle: "",
-	preTag: "",
-	preClass: "",
-	editorLightTheme: "vs",
-	editorDartTheme: "vs-dark",
-	editorOption: {
-		lineNumbers: "off",
-		minimap: {
-			enabled: true,
-			renderCharacters: false,
-		},
-		fontSize: 14,
-		fontFamily: undefined,
-		wordWrap: "on",
-		mouseWheelZoom: true,
-	},
-	autoSave: 0,
-	autoRender: 200,
-	hideFrontMatter: false,
-	imgStorageDir: "source/images/",
-	pictureBed: "",
-};
 
+/**
+ * FileSystem
+ */
 export const fileStore = reactive({
 	fs: <AbstractFileSystem | null>null,
 	post: <PostModel | null>null,
@@ -51,19 +21,30 @@ export const fileStore = reactive({
 	},
 });
 
-// 全局配置
+/**
+ * 全局配置
+ */
 export const configStore = reactive(<GlobalConfig>deepMerge(defConfig, storage.getItem("config", {})));
 
+/**
+ * Naive UI 主题类型
+ */
 export const themeMode = computed(() => {
 	if (configStore.theme === "system") return window.matchMedia("(prefers-color-scheme: light)").matches ? null : darkTheme;
 	return configStore.theme === "light" ? null : darkTheme;
 });
 
+/**
+ * 编辑器主题
+ */
 export const editorTheme = computed(() => {
 	if (configStore.theme === "system") return window.matchMedia("(prefers-color-scheme: light)").matches ? configStore.editorLightTheme : configStore.editorDartTheme;
 	return configStore.theme === "light" ? configStore.editorLightTheme : configStore.editorDartTheme;
 });
 
+/**
+ * 自定义主题颜色
+ */
 export const themeColors = computed(() => (themeMode.value ? themes[1] : themes[0]));
 
 watch(

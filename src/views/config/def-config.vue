@@ -72,12 +72,13 @@
 							<template #unchecked> 显示 Front-Matter </template>
 						</n-switch>
 					</n-form-item>
+					<n-form-item label="图片存储方式" path="date">
+						<!-- <n-switch /> -->
+						<n-select v-model:value="configStore.imgStorageType" :options="imgStorageTypeOptions" class="w-100" />
+					</n-form-item>
 					<n-form-item label="图片存放目录" path="imgStorageDir">
 						<n-input v-model:value="configStore.imgStorageDir" />
 					</n-form-item>
-					<!-- <n-form-item label="图床" path="date">
-						<n-switch />
-					</n-form-item> -->
 				</n-card>
 			</n-grid-item>
 		</n-grid>
@@ -105,6 +106,8 @@ const lineNumberOptions = [
 	{ label: "Relative", value: "relative" },
 	{ label: "Interval", value: "interval" },
 ];
+
+const imgStorageTypeOptions = [{ label: "本地", value: "Local" }];
 
 const wordWrapOptions = [
 	{ label: "On", value: "on" },

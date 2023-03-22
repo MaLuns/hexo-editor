@@ -2,23 +2,25 @@
 import { configStore } from "@/store";
 </script>
 <template>
-	<div class="layout">
-		<div class="layout-main-container">
-			<div v-if="configStore.layout.isShowLayoutSider" class="layout-sider">
-				<layout-sider></layout-sider>
+	<search-bar>
+		<div class="layout">
+			<div class="layout-main-container">
+				<div v-if="configStore.layout.isShowLayoutSider" class="layout-sider">
+					<layout-sider></layout-sider>
+				</div>
+				<div class="layout-main">
+					<router-view v-slot="{ Component }">
+						<keep-alive>
+							<component :is="Component" />
+						</keep-alive>
+					</router-view>
+				</div>
 			</div>
-			<div class="layout-main">
-				<router-view v-slot="{ Component }">
-					<keep-alive>
-						<component :is="Component" />
-					</keep-alive>
-				</router-view>
+			<div class="layout-footer-container">
+				<layout-footer></layout-footer>
 			</div>
 		</div>
-		<div class="layout-footer-container">
-			<layout-footer></layout-footer>
-		</div>
-	</div>
+	</search-bar>
 </template>
 <style lang="less" scoped>
 .layout {

@@ -3,7 +3,7 @@ import * as hexo from "@/core/hexo";
 import AbstractFileSystem from "@/core/file-system/abstract-file-system";
 import { FileStoreTypeEnum, HexoFileType } from "@/enums";
 import { configStore } from "@/store";
-import { regexRules } from "@/utils";
+import { formatDataSize, regexRules } from "@/utils";
 
 /**
  * 读取文件信息
@@ -102,8 +102,8 @@ const copyDirectory = async (sourceDir: FileSystemDirectoryHandle, targetDir: Fi
 
 /**
  * 复制文件到指定目录
- * @param sourceFile
- * @param targetFile
+ * @param sourceFile 复制文件
+ * @param targetDir 目标目录
  */
 const conpyFile = async (sourceFile: FileSystemFileHandle, targetDir: FileSystemDirectoryHandle) => {
 	try {
@@ -115,6 +115,29 @@ const conpyFile = async (sourceFile: FileSystemFileHandle, targetDir: FileSystem
 	} catch (error) {
 		return false;
 	}
+};
+
+/**
+ * 遍历目录
+ * @param dirs
+ * @param rules
+ * @param processor
+ */
+const findFile = async <T>(dirs: FileSystemDirectoryHandle, path?: string, rules?: (file: FileSystemDirectoryHandle | FileSystemFileHandle) => boolean, processor?: (file: FileSystemFileHandle, path: string) => Promise<T>): Promise<T[]> => {
+	const files: T[] = [];
+	if (path === undefined) path = "";
+	if (!rules) rules = () => true;
+	if (!processor) processor = async (file) => <T>(<unknown>file);
+	for await (const [, value] of dirs.entries()) {
+		if (value && rules(value)) {
+			if (value.kind === "directory") {
+				files.push(...(await findFile<T>(value, path + "/" + value.name, rules, processor)));
+			} else {
+				files.push(await processor(value, path));
+			}
+		}
+	}
+	return files;
 };
 
 class LocalFileSystem extends AbstractFileSystem {
@@ -167,7 +190,7 @@ class LocalFileSystem extends AbstractFileSystem {
 	 */
 	async _getPostDirHandle(): Promise<FileSystemDirectoryHandle | null> {
 		const { config } = await this.getHexoConfig();
-		const path = hexo.getSourcePath(config?.source, "/_posts");
+		const path = hexo.getSourcePath(config?.source_dir, "/_posts");
 		return this._getHandle(path);
 	}
 
@@ -177,7 +200,7 @@ class LocalFileSystem extends AbstractFileSystem {
 	 */
 	async _getDraftsDirHandle(): Promise<FileSystemDirectoryHandle | null> {
 		const { config } = await this.getHexoConfig();
-		const path = hexo.getSourcePath(config?.source, "/_drafts");
+		const path = hexo.getSourcePath(config?.source_dir, "/_drafts");
 		return this._getHandle(path);
 	}
 
@@ -219,6 +242,31 @@ class LocalFileSystem extends AbstractFileSystem {
 			window.$message.warning("Hexo 配置文件读取失败");
 			return { path, raw: undefined, config: {} };
 		}
+	}
+
+	/**
+	 * 获取文章列表
+	 * @param type
+	 * @returns
+	 */
+	async _getPostsByType(type: "post" | "draft"): Promise<PostModel[]> {
+		const posts: PostModel[] = [];
+		const { config } = await this.getHexoConfig();
+		if (config) {
+			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(config.source_dir, { create: true });
+			const name = type === "post" ? "_posts" : "_drafts";
+			const postDirectoryHandle = await sourceDirectoryHandle?.getDirectoryHandle(name, { create: true });
+
+			for await (const [, value] of postDirectoryHandle!.entries()) {
+				if (value.kind === "file" && value.name.endsWith(".md")) {
+					const post = await parsePost(value);
+					post.path = `${config.source_dir}/${name}/${value.name}`;
+					posts.push(post);
+				}
+			}
+		}
+		posts.sort((a, b) => b.date.getTime() - a.date.getTime());
+		return posts;
 	}
 
 	async getRootsDirectory(handle?: FileSystemDirectoryHandle): Promise<RootDirModel | undefined> {
@@ -325,37 +373,12 @@ class LocalFileSystem extends AbstractFileSystem {
 		};
 
 		if (config) {
-			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(config.source_dir, { create: true });
+			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(config.source_dir, { create: false });
 			if (sourceDirectoryHandle) {
 				posts = await getPage(sourceDirectoryHandle, config.source_dir);
 			}
 		}
 
-		return posts;
-	}
-
-	/**
-	 * 获取文章列表
-	 * @param type
-	 * @returns
-	 */
-	async _getPostsByType(type: "post" | "draft"): Promise<PostModel[]> {
-		const posts: PostModel[] = [];
-		const { config } = await this.getHexoConfig();
-		if (config) {
-			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(config.source_dir, { create: true });
-			const name = type === "post" ? "_posts" : "_drafts";
-			const postDirectoryHandle = await sourceDirectoryHandle?.getDirectoryHandle(name, { create: true });
-
-			for await (const [, value] of postDirectoryHandle!.entries()) {
-				if (value.kind === "file" && value.name.endsWith(".md")) {
-					const post = await parsePost(value);
-					post.path = `${config.source_dir}/${name}/${value.name}`;
-					posts.push(post);
-				}
-			}
-		}
-		posts.sort((a, b) => b.date.getTime() - a.date.getTime());
 		return posts;
 	}
 
@@ -365,6 +388,41 @@ class LocalFileSystem extends AbstractFileSystem {
 
 	async getDraftDirectory(): Promise<PostModel[]> {
 		return this._getPostsByType("draft");
+	}
+
+	async getAssetsDirectory(): Promise<ImageModel[]> {
+		const assets: ImageModel[] = [];
+		const { config } = await this.getHexoConfig();
+		if (config) {
+			const sourceDir = hexo.getSourcePath(config?.source_dir);
+			const sourceDirectoryHandle = await this._root?.getDirectoryHandle(sourceDir, { create: false });
+			if (sourceDirectoryHandle) {
+				assets.push(
+					...(await findFile<ImageModel>(
+						sourceDirectoryHandle,
+						sourceDir,
+						(file) => {
+							if (file.kind === "directory") {
+								return file.name !== "_data";
+							} else {
+								return regexRules.image.test(file.name);
+							}
+						},
+						async (file, path) => {
+							const img = await file.getFile();
+							const url = URL.createObjectURL(img);
+							return {
+								size: formatDataSize(img.size, 2),
+								name: file.name,
+								path: path + "/" + file.name,
+								url,
+							};
+						}
+					))
+				);
+			}
+		}
+		return assets;
 	}
 
 	async uploadImage(file: File, path: string): Promise<string> {
@@ -377,7 +435,7 @@ class LocalFileSystem extends AbstractFileSystem {
 			assetsDir = path.replace(".md", "/");
 		} else {
 			const { config } = await this.getHexoConfig();
-			const sourceDir = hexo.getSourcePath(config?.source);
+			const sourceDir = hexo.getSourcePath(config?.source_dir);
 			assetsDir = configStore.imgStorageDir || `${sourceDir}/images/`;
 			imgPath = `${assetsDir}/${fileName}`;
 		}
@@ -550,7 +608,7 @@ class LocalFileSystem extends AbstractFileSystem {
 
 	async getFullPathByAdd(name: string, type: HexoFileType): Promise<string> {
 		const { config } = await this.getHexoConfig();
-		return hexo.getFullPath(name, type, config?.source);
+		return hexo.getFullPath(name, type, config?.source_dir);
 	}
 
 	async transformImgUrl(text: string, path: string): Promise<string> {
@@ -560,7 +618,7 @@ class LocalFileSystem extends AbstractFileSystem {
 		if (srcs) {
 			const bool = await this._isPostAssetFolder();
 			const { config } = await this.getHexoConfig();
-			const sourceDir = hexo.getSourcePath(config?.source);
+			const sourceDir = hexo.getSourcePath(config?.source_dir);
 
 			for (let index = 0; index < srcs.length; index++) {
 				const src = srcs[index];

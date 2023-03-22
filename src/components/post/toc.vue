@@ -1,7 +1,12 @@
 <script lang="ts" setup>
-import { fileStore } from "@/store";
 import { ListSharp } from "@vicons/ionicons5";
 import { Pinned } from "@vicons/tabler";
+
+interface Props {
+	list: TocNode[];
+}
+
+defineProps<Props>();
 
 const showPopover = ref(false);
 const isFix = ref(false);
@@ -31,7 +36,7 @@ const toggleFix = () => {
 			</n-avatar>
 		</div>
 		<div style="margin-top: 30px">
-			<post-toc-item v-if="fileStore.tocs.length" :list="fileStore.tocs"></post-toc-item>
+			<post-toc-item v-if="$props.list.length" :list="$props.list"></post-toc-item>
 			<div v-else style="padding: 10px 10px 0">无目录列表</div>
 		</div>
 	</n-popover>

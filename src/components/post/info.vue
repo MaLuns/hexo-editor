@@ -2,9 +2,6 @@
 import { fileStore } from "@/store";
 import { FileCode, DeviceFloppy } from "@vicons/tabler";
 defineEmits(["save"]);
-onMounted(() => {
-	console.log(fileStore.post);
-});
 
 const datetime = computed({
 	get: () => {

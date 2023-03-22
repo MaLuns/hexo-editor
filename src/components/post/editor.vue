@@ -204,7 +204,7 @@ defineExpose({
 						<post-info :post="fileStore.post" @save="handleSave"></post-info>
 						<n-divider vertical />
 					</template>
-					<post-toc></post-toc>
+					<post-toc :list="fileStore.tocs"></post-toc>
 				</template>
 			</post-tabs>
 		</div>

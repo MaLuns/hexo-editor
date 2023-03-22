@@ -1,5 +1,4 @@
 import type { MessageReactive } from "naive-ui";
-
 /**
  * 加载状态
  * @returns
@@ -174,4 +173,12 @@ export const useAutoScroll = (target: HTMLElement, type: "x" | "y") => {
 		right,
 		scrollTo,
 	};
+};
+
+export const useSearchBar = (): { open: Function; close: Function } => {
+	const api = inject("search-bar", null);
+	if (api === null) {
+		throw new Error(`[search-bar]: No outer <search-bar /> founded.`);
+	}
+	return api;
 };

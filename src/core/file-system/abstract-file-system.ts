@@ -40,6 +40,11 @@ export default abstract class AbstractFileSystem {
 	abstract getDraftDirectory(): Promise<PostModel[]>;
 
 	/**
+	 *  获取资源文件
+	 */
+	abstract getAssetsDirectory(): Promise<ImageModel[]>;
+
+	/**
 	 *  上传图片
 	 */
 	abstract uploadImage(file: File, path: string): Promise<string>;

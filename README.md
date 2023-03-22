@@ -23,16 +23,16 @@
 ## 功能 | Feature
 
 - [x] 文章增删改和预览
-- [x] 发布和草稿
+- [x] 发布草稿、下架发布
 - [x] Markdown 编辑预览
 - [x] front-matters 编辑
 - [x] 图片粘贴、Markdown 语法提示、解析 HTML
 - [x] 主题切换
-- [ ] 内容搜索
+- [x] 静态资源管理
+- [ ] 搜索文章内容
 - [ ] 支持图床
-- [ ] 静态资源管理
 - [ ] Markdown 同步滚动
-- [ ] 使用 Github
+- [ ] 使用 Github 仓库
 - [ ] 更多
 
 ## 贡献 | Contribute

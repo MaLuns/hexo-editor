@@ -261,18 +261,18 @@ const handleDelete = (item: FileStoreModel, index: number) => {
 				color: #ffffff;
 				list-style: none;
 				margin: 0;
-				padding: 0 0 0 40px;
+				padding: 16px 0 0 40px;
 				width: 300px;
 				display: inline-block;
-				vertical-align: middle;
+				vertical-align: top;
 
 				.recently-opened-title {
 					font-size: 16px;
 					font-weight: bold;
+					margin-bottom: 10px;
 				}
 
 				.recently-opened-item {
-					margin-top: 10px;
 					cursor: pointer;
 					padding: 10px 20px;
 					display: flex;

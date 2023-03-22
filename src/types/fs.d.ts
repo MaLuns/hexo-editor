@@ -56,6 +56,20 @@ declare interface PostOrPageInfoModel {
 }
 
 /**
+ * 图片信息
+ */
+declare interface ImageModel {
+	// 图片名称
+	name: string;
+	// 图片相对路径
+	path: string;
+	// 图片地址
+	url: string;
+	// 大小
+	size: string;
+}
+
+/**
  * FS 操作结果
  */
 declare interface FsResult<T> {

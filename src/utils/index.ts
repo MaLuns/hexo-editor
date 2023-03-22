@@ -1,4 +1,5 @@
 export const regexRules = {
+	image: /\.(jpg|jpeg|png|gif|bmp|tif|tiff|psd|webp|svg|svgz)$/i,
 	fileName: /^[^\\/:*?"<>|\s]+$/i,
 	url: /^(\/\/|http(s)?:)/,
 };
@@ -148,3 +149,41 @@ export const isObject = (obj: any): boolean => Object.prototype.toString.call(ob
  * @returns
  */
 export const strFormat = (str: string, ...vals: any[]): string => vals.reduce((s, v, i) => s.replace(new RegExp("\\{" + i + "\\}", "g"), v), str);
+
+/**
+ * Size 转换
+ * @param size
+ * @param unit
+ * @param decimalPlaces
+ * @returns
+ */
+export const formatDataSize = (size: number, decimalPlaces: number = 2): string => {
+	const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+	const index = units.findIndex((_, index) => {
+		return size > Math.pow(1024, index + 1) && size < Math.pow(1024, index + 2);
+	});
+	if (index > -1) {
+		const convertedSize = size / Math.pow(1024, index + 1);
+		return convertedSize.toFixed(decimalPlaces) + units[index + 1];
+	} else {
+		return size + "B";
+	}
+};
+
+/* const formatDataSize = (size, decimalPlaces = 2) => {
+	const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+	const index = units.findIndex((item, index) => {
+		console.log(index, Math.pow(1024, index + 1), Math.pow(1024, index + 2));
+
+		return size > Math.pow(1024, index + 1) && size < Math.pow(1024, index + 2);
+	});
+	if (index > -1) {
+		const convertedSize = size / Math.pow(1024, index + 1);
+		console.log(convertedSize, index);
+
+		return convertedSize.toFixed(decimalPlaces) + units[index + 1];
+	} else {
+		return size + "B";
+	}
+};
+ */
