@@ -11,7 +11,8 @@ import editorPaste from "@/plugins/editor-paste";
 import editorMd from "@/plugins/editor-md";
 import editorFormatters from "@/plugins/editor-formatters";
 import editorKeyboard from "@/plugins/editor-keyboard";
-import markdownFrontMatter from "./markdown-front-matter";
+import markdownFrontMatter from "@/plugins/markdown-front-matter";
+import command from "@/plugins/command";
 
 export default [
 	statusBarView, //
@@ -20,6 +21,7 @@ export default [
 	statusBarTheme,
 	statusBarHelp,
 	statusBarRenderTiem,
+	command,
 	markdownTag,
 	markdownToc,
 	markdownFrontMatter,

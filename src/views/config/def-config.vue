@@ -1,3 +1,6 @@
+<script lang="ts" setup>
+import { styleConfig, editorConfig, otherConfig } from "@/utils/config";
+</script>
 <template>
 	<n-form ref="formRef" label-width="120" label-placement="left" require-mark-placement="right-hanging" :show-feedback="false">
 		<n-alert type="warning" style="margin-bottom: 10px"> 部分配置修改后，需要重新打开才生效 </n-alert>
@@ -5,139 +8,26 @@
 			<n-grid-item>
 				<n-card style="height: 100%">
 					<template #header> <h4 class="m-0">外观</h4> </template>
-					<n-form-item label="主题" path="theme">
-						<n-select v-model:value="configStore.theme" :options="themeOptions" class="w-100" />
-					</n-form-item>
-					<n-form-item label="语言" path="language">
-						<n-select v-model:value="configStore.language" :options="languageOptions" class="w-100" />
-					</n-form-item>
-					<n-form-item label="编辑器主题(亮)" path="date">
-						<n-select v-model:value="configStore.editorLightTheme" :options="themes[0]" class="w-200" @on-update:value="loadEditorTheme('light', $event)" />
-					</n-form-item>
-					<n-form-item label="编辑器主题(暗)" path="date">
-						<n-select v-model:value="configStore.editorDartTheme" :options="themes[1]" class="w-200" @on-update:value="loadEditorTheme('dark', $event)" />
-					</n-form-item>
-					<n-form-item label="预览样式" path="preStyle">
-						<n-input v-model:value="configStore.preStyle" type="textarea" placeholder="自定义预览的样式" />
-					</n-form-item>
-					<n-form-item label="预览标签" path="preTag">
-						<n-input v-model:value="configStore.preTag" placeholder="自定义预览标签，配合自定义样式使用"></n-input>
-					</n-form-item>
-					<n-form-item label="预览标签类" path="preClass">
-						<n-input v-model:value="configStore.preClass" placeholder="自定义预览标签样式类，配合自定义样式使用"></n-input>
-					</n-form-item>
+					<from-dynamic :config="styleConfig"></from-dynamic>
 				</n-card>
 			</n-grid-item>
 			<n-grid-item>
 				<n-card style="height: 100%">
 					<template #header> <h4 class="m-0">编辑器</h4> </template>
-					<n-form-item label="行号" path="lineNumbers">
-						<n-select v-model:value="configStore.editorOption.lineNumbers" :options="lineNumberOptions" class="w-100" />
-					</n-form-item>
-					<n-form-item label="自动保存" path="autoSave">
-						<n-select v-model:value="configStore.autoSave" :options="saveTimeOptions" class="w-100" />
-					</n-form-item>
-					<n-form-item label="自动渲染" path="autoRender">
-						<n-select v-model:value="configStore.autoRender" :options="renderTimeOptions" class="w-100" />
-					</n-form-item>
-					<n-form-item label="显示小地图" path="minimap">
-						<n-switch v-model:value="configStore.editorOption.minimap.enabled" />
-					</n-form-item>
-					<n-form-item label="小地图样式" path="minimap">
-						<n-switch v-model:value="configStore.editorOption.minimap.renderCharacters">
-							<template #checked> 显示文字 </template>
-							<template #unchecked> 显示块 </template>
-						</n-switch>
-					</n-form-item>
-					<n-form-item label="换行显示" path="wordWrap">
-						<n-select v-model:value="configStore.editorOption.wordWrap" :options="wordWrapOptions" class="w-100" />
-					</n-form-item>
-					<n-form-item label="鼠标滚轮缩放" path="date">
-						<n-switch v-model:value="configStore.editorOption.mouseWheelZoom" />
-					</n-form-item>
-					<n-form-item label="字体大小" path="fontSize">
-						<n-slider v-model:value="configStore.editorOption.fontSize" :step="2" :min="12" :max="30" />
-					</n-form-item>
-					<n-form-item label="字体" path="font">
-						<n-input v-model:value="configStore.editorOption.fontFamily" placeholder="e.g., 'Courier New', monospace"></n-input>
-					</n-form-item>
+					<from-dynamic :config="editorConfig"></from-dynamic>
 				</n-card>
 			</n-grid-item>
 			<n-grid-item>
 				<n-card style="height: 100%">
 					<template #header> <h4 class="m-0">其他</h4> </template>
-					<n-form-item label="Front-Matter" path="date">
-						<n-switch v-model:value="configStore.hideFrontMatter">
-							<template #checked> 隐藏 Front-Matter </template>
-							<template #unchecked> 显示 Front-Matter </template>
-						</n-switch>
-					</n-form-item>
-					<n-form-item label="图片存储方式" path="date">
-						<!-- <n-switch /> -->
-						<n-select v-model:value="configStore.imgStorageType" :options="imgStorageTypeOptions" class="w-100" />
-					</n-form-item>
-					<n-form-item label="图片存放目录" path="imgStorageDir">
-						<n-input v-model:value="configStore.imgStorageDir" />
-					</n-form-item>
+					<from-dynamic :config="otherConfig"></from-dynamic>
 				</n-card>
 			</n-grid-item>
 		</n-grid>
 	</n-form>
 </template>
-
-<script lang="ts" setup>
-import { loadEditorTheme, themes } from "@/plugins/editor-themes";
-import { configStore } from "@/store";
-
-const themeOptions = [
-	{ label: "亮白", value: "light" },
-	{ label: "暗黑", value: "dark" },
-	{ label: "跟随系统", value: "system" },
-];
-
-const languageOptions = [
-	{ label: "中文", value: "zh_cn" },
-	{ label: "English", value: "en" },
-];
-
-const lineNumberOptions = [
-	{ label: "On", value: "on" },
-	{ label: "Off", value: "off" },
-	{ label: "Relative", value: "relative" },
-	{ label: "Interval", value: "interval" },
-];
-
-const imgStorageTypeOptions = [{ label: "本地", value: "Local" }];
-
-const wordWrapOptions = [
-	{ label: "On", value: "on" },
-	{ label: "Off", value: "off" },
-	{ label: "WordWrapColumn", value: "wordWrapColumn" },
-	{ label: "Bounded", value: "bounded" },
-];
-
-const saveTimeOptions = [
-	{ label: "关闭", value: 0 },
-	{ label: "1s", value: 1000 },
-	{ label: "2s", value: 2000 },
-	{ label: "4s", value: 4000 },
-	{ label: "8s", value: 8000 },
-	{ label: "30s", value: 30000 },
-	{ label: "60s", value: 60000 },
-];
-
-const renderTimeOptions = [
-	{ label: "关闭", value: 0 },
-	{ label: "0.2s", value: 200 },
-	{ label: "0.5s", value: 500 },
-	{ label: "0.7s", value: 700 },
-	{ label: "1s", value: 1000 },
-	{ label: "1.5s", value: 1500 },
-	{ label: "2s", value: 2000 },
-];
-</script>
 <style lang="less" scoped>
-.n-form-item {
+:deep(.n-form-item) {
 	margin-bottom: 10px;
 }
 </style>

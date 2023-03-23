@@ -153,3 +153,38 @@ declare interface TocNode {
 	text: string;
 	children: TocNode[];
 }
+
+/**
+ * 命令面板
+ */
+declare interface CommandPalette {
+	title: string;
+	key: string;
+	icon?: string;
+	desc?: string;
+	keybinding?: number[];
+	/**
+	 * 预览 command
+	 */
+	select?: (t: CommandPalette) => void;
+	/**
+	 * 执行 command
+	 */
+	handle?: (t: CommandPalette) => void;
+	children?: CommandPalette[];
+}
+
+declare type Flat<T extends Record<string, any>, P extends string = ""> = {
+	[K in keyof T as T[K] extends Record<string, any> ? keyof Flat<T[K], `${P}${K}.`> : `${P}${K}`]: never;
+};
+
+declare interface FromConfig {
+	title: string;
+	key: keyof Flat<GlobalConfig>;
+	type: "input" | "select" | "slider" | "switch";
+	isCommand?: boolean;
+	attr?: {
+		options?: LabelVal[];
+		[k: string]: any;
+	};
+}

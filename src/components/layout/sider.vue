@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TooltipProps } from "naive-ui";
+/* import type { TooltipProps } from "naive-ui"; */
 import { siderPage } from "@/router";
 import { themeColors } from "@/store";
 
@@ -25,25 +25,25 @@ const handleCheckNav = (index: number) => {
 	}
 };
 
-type TooltipThemeOverrides = NonNullable<TooltipProps["themeOverrides"]>;
+/* type TooltipThemeOverrides = NonNullable<TooltipProps["themeOverrides"]>;
 const tooltipThemeOverrides: TooltipThemeOverrides = {
 	peers: {
 		Popover: {
 			spaceArrow: "22px",
 		},
 	},
-};
+}; */
 </script>
 <template>
 	<div class="layout-sider">
 		<ul class="layout-sider__item">
 			<li v-for="(item, index) in data.pageNavs" :key="index" class="layout-sider__item-nav" :class="{ active: data.active === index }" @click="handleCheckNav(index)">
-				<n-tooltip placement="right" trigger="hover" :theme-overrides="tooltipThemeOverrides">
-					<template #trigger>
-						<n-icon size="26" :component="item.icon"> </n-icon>
-					</template>
+				<!-- <n-tooltip placement="right" trigger="hover" :theme-overrides="tooltipThemeOverrides">
+					<template #trigger> -->
+				<n-icon size="26" :component="item.icon"> </n-icon>
+				<!-- 	</template>
 					{{ item.tips }}
-				</n-tooltip>
+				</n-tooltip> -->
 			</li>
 		</ul>
 	</div>

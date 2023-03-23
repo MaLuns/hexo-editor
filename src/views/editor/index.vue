@@ -2,6 +2,7 @@
 import { HexoFileType } from "@/enums";
 import { fileStore, configStore, themeColors } from "@/store";
 import { DocumentTextOutline } from "@vicons/ionicons5";
+import ctx from "@/core/context";
 import AddPost from "./add-post.vue";
 
 const message = useMessage();
@@ -25,6 +26,24 @@ const init = async () => {
 	data.drafts = await fileStore.fs!.getDraftDirectory();
 	data.posts = await fileStore.fs!.getPostDirectory();
 	data.pages = await fileStore.fs!.getPageFiles();
+
+	ctx.commnad.registerCommand(
+		{
+			title: "文章列表",
+			key: "post",
+			desc: `${data.pages.length + data.drafts.length + data.posts.length} 篇`,
+			children: [...data.drafts, ...data.posts, ...data.pages].map((item) => {
+				return {
+					title: item.title,
+					key: item.path,
+					handle() {
+						selectPost(item, true);
+					},
+				};
+			}),
+		},
+		true
+	);
 };
 
 const selectPost = (post: PostModel, isAdd: boolean) => {

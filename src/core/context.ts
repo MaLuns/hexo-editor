@@ -4,10 +4,12 @@ import * as store from "@/store";
 import * as markdown from "@/core/markdown";
 import * as editor from "@/core/editor";
 import * as hexo from "@/core/hexo";
+import * as commnad from "@/core/command";
 import fs from "@/core/file-system";
 import discrete from "@/core/discrete";
 
 const ctx = Object.freeze({
+	commnad,
 	discrete,
 	editor,
 	fs,

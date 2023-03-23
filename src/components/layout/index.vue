@@ -2,7 +2,7 @@
 import { configStore } from "@/store";
 </script>
 <template>
-	<search-bar>
+	<command-palette-bar>
 		<div class="layout">
 			<div class="layout-main-container">
 				<div v-if="configStore.layout.isShowLayoutSider" class="layout-sider">
@@ -20,7 +20,7 @@ import { configStore } from "@/store";
 				<layout-footer></layout-footer>
 			</div>
 		</div>
-	</search-bar>
+	</command-palette-bar>
 </template>
 <style lang="less" scoped>
 .layout {

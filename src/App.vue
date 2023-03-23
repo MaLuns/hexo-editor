@@ -4,7 +4,7 @@ import { themeMode } from "@/store";
 const light: GlobalThemeOverrides = {
 	common: {
 		primaryColor: "#7018A0FF",
-		primaryColorHover: "#8850C8FF",
+		primaryColorHover: "#8850C8AA",
 		primaryColorPressed: "#590C7AFF",
 		primaryColorSuppl: "#8D36ADFF",
 	},

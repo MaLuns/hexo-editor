@@ -46,7 +46,15 @@ export default <Plugin>{
 				});
 			});
 		});
-
+		list.forEach((item) => {
+			const command: CommandPalette = {
+				title: item.title,
+				key: item.id,
+				desc: ctx.editor.getKeysLabel(item.keybinding),
+				handle: item.onClick,
+			};
+			ctx.commnad.registerCommand(command);
+		});
 		ctx.statusBar.tapMenus((menus) => {
 			menus["status-bar-view"]?.list?.unshift(
 				...list.map((item) => {

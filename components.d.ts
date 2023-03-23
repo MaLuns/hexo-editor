@@ -7,10 +7,13 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    CommandPaletteBar: typeof import('./src/components/CommandPaletteBar.vue')['default']
     ContextMenu: typeof import('./src/components/ContextMenu.vue')['default']
     EditorMarkdown: typeof import('./src/components/editor/markdown.vue')['default']
     EditorMonaco: typeof import('./src/components/editor/monaco.vue')['default']
     'EditorPreview.ce': typeof import('./src/components/editor/preview.ce.vue')['default']
+    From: typeof import('./src/components/From.vue')['default']
+    FromDynamic: typeof import('./src/components/FromDynamic.vue')['default']
     Layout: typeof import('./src/components/layout/index.vue')['default']
     LayoutFooter: typeof import('./src/components/layout/footer.vue')['default']
     LayoutHelp: typeof import('./src/components/layout/help.vue')['default']
