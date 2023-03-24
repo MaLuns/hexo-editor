@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { useThemeVars, type InputInst, type ScrollbarInst } from "naive-ui";
 import { getCommands } from "@/core/command";
+import { ReturnUpBack } from "@vicons/ionicons5";
+
 const emit = defineEmits(["palette"]);
 const themeVars = useThemeVars();
 const show = ref<boolean>(false);
@@ -8,7 +10,7 @@ const init = ref<boolean>(false);
 
 const commandList: CommandPalette[] = getCommands();
 
-const checkKeys = ref([commandList[0].key]);
+const checkIds = ref([commandList[0].id]);
 const inputInstRef = ref<InputInst | null>(null);
 const scrollbarRef = ref<ScrollbarInst | null>(null);
 const searchVal = ref<string>();
@@ -16,27 +18,27 @@ const searchVal = ref<string>();
 // 获取当前层级列表
 const getCurrentList = () => {
 	let list = commandList;
-	let len = checkKeys.value.length - 1;
+	let len = checkIds.value.length - 1;
 	len > 0 &&
-		checkKeys.value.forEach((item, index) => {
+		checkIds.value.forEach((item, index) => {
 			if (index >= len) return;
-			list = commandList.find((p) => p.key === item)?.children || [];
+			list = commandList.find((p) => p.id === item)?.children || [];
 		});
 	return list;
 };
 
 // 获取当前命令
 const getCurrentCommand = () => {
-	const key = checkKeys.value[checkKeys.value.length - 1];
-	return currentFilterList.value.find((item) => item.key === key);
+	const id = checkIds.value[checkIds.value.length - 1];
+	return currentFilterList.value.find((item) => item.id === id);
 };
 
 // 当前选择面板路径
 const getCurrentLabel = computed(() => {
 	const str: string[] = [];
 	let list = commandList;
-	checkKeys.value.forEach((key) => {
-		const command = list.find((item) => item.key === key);
+	checkIds.value.forEach((id) => {
+		const command = list.find((item) => item.id === id);
 		if (command) str.push(command.title);
 		if (command?.children) list = command.children;
 	});
@@ -50,9 +52,9 @@ const currentFilterList = computed(() => {
 	return searchStr ? list.filter((item) => item.title.includes(searchStr)) : list;
 });
 
-const open = () => {
+const open = (ids?: string[]) => {
 	searchVal.value = "";
-	checkKeys.value = [commandList[0].key];
+	checkIds.value = ids ? ids : [commandList[0].id];
 	init.value = true;
 	show.value = true;
 	nextTick(() => {
@@ -64,18 +66,23 @@ const close = () => (show.value = false);
 const toggle = () => (show.value = !show.value);
 
 // 设置当前选中项
-const setSelect = (index: number) => {
-	checkKeys.value[checkKeys.value.length - 1] = currentFilterList.value[index].key;
+const setSelect = (index: number, behavior?: "smooth" | undefined) => {
+	checkIds.value[checkIds.value.length - 1] = currentFilterList.value[index].id;
 	scrollbarRef.value?.scrollTo({
 		top: index * 41,
-		behavior: "smooth",
+		behavior,
 	});
 };
 
 // 返回上一层
 const handleGoBack = () => {
-	if (checkKeys.value.length > 1) {
-		checkKeys.value.pop();
+	if (checkIds.value.length > 1) {
+		checkIds.value.pop();
+		nextTick(() => {
+			const id = checkIds.value[checkIds.value.length - 1];
+			const index = currentFilterList.value.findIndex((item) => item.id === id);
+			setSelect(index);
+		});
 	} else {
 		close();
 	}
@@ -86,14 +93,14 @@ const handleSelectCommand = (item: CommandPalette | undefined) => {
 	if (item) {
 		if (item.children) {
 			searchVal.value = "";
-			checkKeys.value[checkKeys.value.length - 1] = item.key;
-			checkKeys.value.push(item.children[0].key);
+			checkIds.value[checkIds.value.length - 1] = item.id;
+			checkIds.value.push(item.children[0].id);
 			setSelect(0);
 			item.select && item.select(item);
 		} else {
 			close();
 			if (item.handle) item.handle(item);
-			else emit("palette", item.key);
+			else emit("palette", item.id);
 		}
 	}
 };
@@ -105,14 +112,15 @@ const handleBlur = () => {
 	}
 };
 
+// 面板内按键响应
 const handleKeyDown = (e: KeyboardEvent) => {
 	if (e.defaultPrevented) {
 		return;
 	}
 	let handled = true;
 
-	const key = checkKeys.value[checkKeys.value.length - 1];
-	let lastIndex = currentFilterList.value.findIndex((item) => item.key === key);
+	const id = checkIds.value[checkIds.value.length - 1];
+	let lastIndex = currentFilterList.value.findIndex((item) => item.id === id);
 
 	switch (e.code) {
 		case "Escape":
@@ -123,11 +131,11 @@ const handleKeyDown = (e: KeyboardEvent) => {
 			break;
 		case "ArrowUp":
 			lastIndex = lastIndex - 1 < 0 ? currentFilterList.value.length - 1 : lastIndex - 1;
-			setSelect(lastIndex);
+			setSelect(lastIndex, "smooth");
 			break;
 		case "ArrowDown":
 			lastIndex = lastIndex + 1 > currentFilterList.value.length - 1 ? 0 : lastIndex + 1;
-			setSelect(lastIndex);
+			setSelect(lastIndex, "smooth");
 			break;
 		default:
 			handled = false;
@@ -141,6 +149,7 @@ provide("command-palette-bar", {
 	open,
 	close,
 	toggle,
+	show,
 });
 </script>
 <template>
@@ -153,13 +162,9 @@ provide("command-palette-bar", {
 					<div class="command-wrapper">
 						<div class="command-header">
 							<n-input ref="inputInstRef" v-model:value="searchVal" :placeholder="getCurrentLabel" clearable autofocus size="large" style="--n-height: 50px" :on-blur="handleBlur">
-								<template v-if="checkKeys.length > 1" #suffix>
+								<template v-if="checkIds.length > 1" #suffix>
 									<kbd class="command-palette-commands-key" style="cursor: pointer; padding: 6px 12px; width: auto; font-size: 12px; font-weight: bold" @click="handleGoBack">
-										<svg width="15" height="15" aria-label="Enter key" role="img">
-											<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2">
-												<path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path>
-											</g>
-										</svg>
+										<n-icon :component="ReturnUpBack" :size="16"></n-icon>
 										<span style="margin-left: 4px"> Backspace </span>
 									</kbd>
 								</template>
@@ -168,10 +173,17 @@ provide("command-palette-bar", {
 						<div class="command-body">
 							<n-scrollbar ref="scrollbarRef" class="custom-scorll">
 								<n-list v-if="currentFilterList.length" hoverable :show-divider="false">
-									<n-list-item v-for="item in currentFilterList" :key="item.key" :class="{ active: item.key === checkKeys[checkKeys.length - 1] }" @click="handleSelectCommand(item)">
+									<n-list-item v-for="item in currentFilterList" :key="item.id" :class="{ active: item.id === checkIds[checkIds.length - 1] }" @click="handleSelectCommand(item)">
 										<n-thing>
-											<template #header> {{ item.title }} </template>
-											<template v-if="item.desc" #header-extra> {{ item.desc }} </template>
+											<template #header>
+												<span>{{ item.title }}</span>
+												<span v-if="item.desc" class="title-desc">{{ item.desc }}</span>
+											</template>
+											<template v-if="item.keybindLabel" #header-extra>
+												<kbd v-for="key in item.keybindLabel" :key="key" class="command-palette-commands-key">
+													{{ key }}
+												</kbd>
+											</template>
 										</n-thing>
 									</n-list-item>
 								</n-list>
@@ -263,7 +275,7 @@ provide("command-palette-bar", {
 				background-color: v-bind("themeVars.primaryColor");
 				color: #eee;
 				:deep(.n-thing-header) {
-					.n-thing-header__extra,
+					/* .n-thing-header__extra, */
 					.n-thing-header__title {
 						color: #eee;
 					}
@@ -278,9 +290,20 @@ provide("command-palette-bar", {
 				margin-bottom: 0;
 				.n-thing-header__title {
 					font-size: v-bind("themeVars.fontSizeSmall");
+					display: flex;
+					justify-content: space-between;
+					width: 100%;
+					.title-desc {
+						font-size: 10px;
+						opacity: 0.9;
+					}
 				}
 				.n-thing-header__extra {
 					font-size: v-bind("themeVars.fontSizeMini");
+					display: flex;
+					.command-palette-commands-key {
+						padding: 2px 4px;
+					}
 				}
 			}
 		}

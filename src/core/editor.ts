@@ -1,9 +1,33 @@
-import * as actions from "monaco-editor/esm/vs/platform/actions/common/actions";
 import * as monaco from "monaco-editor";
+import * as actions from "monaco-editor/esm/vs/platform/actions/common/actions";
 import { language as markdown, conf as markdownConfig } from "monaco-editor/esm/vs/basic-languages/markdown/markdown";
 import { language as yaml, conf as yamlConf } from "monaco-editor/esm/vs/basic-languages/yaml/yaml";
 import { registerHook } from "./hook";
 import { isMacOS, strFormat } from "@/utils";
+
+import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
+import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
+import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
+import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+
+self.MonacoEnvironment = {
+	getWorker(_, label) {
+		if (label === "json") {
+			return new jsonWorker();
+		}
+		if (label === "css" || label === "scss" || label === "less") {
+			return new cssWorker();
+		}
+		if (label === "html" || label === "handlebars" || label === "razor") {
+			return new htmlWorker();
+		}
+		if (label === "typescript" || label === "javascript") {
+			return new tsWorker();
+		}
+		return new editorWorker();
+	},
+};
 
 /* import metadata from "monaco-editor/esm/metadata";
 const prefix = "monaco-editor/esm/";
@@ -98,15 +122,42 @@ const components = {
 	scheme: "web-hexo-editor",
 };
 
-let editor: monaco.editor.IStandaloneCodeEditor | null;
+// 屏蔽默认快捷键
+monaco.editor.addKeybindingRules([
+	{
+		keybinding: monaco.KeyCode.F1,
+		command: null,
+	},
+]);
 
+// 当前页面编辑器
+let editor: monaco.editor.IStandaloneCodeEditor | null;
 registerHook("MONACO_ACTIVATE", function (e) {
 	editor = e;
 });
 
+/**
+ * 获取 monaco
+ * @returns
+ */
 export const getMonaco = () => monaco;
+/**
+ * 获取当前页面中编辑器（暂不支持多个）
+ * @returns
+ */
 export const getEditor = () => editor;
 
+/**
+ * 快捷键
+ */
+export const KCM = {
+	code: monaco.KeyCode,
+	mod: monaco.KeyMod,
+};
+
+/**
+ * Editor 编辑器操作方法
+ */
 export const tools = {
 	/**
 	 *  生成 Uri
@@ -180,10 +231,15 @@ export const tools = {
 	},
 };
 
+/**
+ * 增加 Markdown 语法提示
+ * @param items
+ * @returns
+ */
 export const addSimpleCompletionItem = (items: SimpleCompletionItem[]) => mdSimpleCompletionItem.unshift(...items);
 
 /**
- * 注册 Command
+ * 注册编辑器 Command
  * @param editor
  * @param command
  */
@@ -194,7 +250,7 @@ export const registerSingleCommand = (editor: monaco.editor.IStandaloneCodeEdito
 export const registerCommand = () => {};
 
 /**
- * 注册 Action
+ * 注册编辑器 Action
  * @param editor
  * @param action
  */
@@ -202,6 +258,10 @@ export const registerSingleAction = (editor: monaco.editor.IStandaloneCodeEditor
 	editor.addAction(action);
 };
 
+/**
+ * 注册全局 Action
+ * @param action
+ */
 export const registerAction = (action: monaco.editor.IActionDescriptor) => {
 	monaco.editor.addEditorAction(action);
 };
@@ -256,27 +316,29 @@ const getKeyLabel = (num: number) => {
 	} else if (num === monaco.KeyMod.Alt) {
 		return isMacOS ? "⌥" : "Alt";
 	} else if (num === monaco.KeyMod.WinCtrl) {
-		return isMacOS ? "⌃" : "Ctrl";
+		return isMacOS ? "\u2303" : "Ctrl";
 	}
-	return num;
+	return num.toString();
 };
 
 /**
  * 获取 KeyCode Label
  * @param numbers
+ * @param separator
  * @returns
  */
-export const getKeysLabel = (numbers: number[]) => {
+export const getKeysLabel = (numbers: number[], separator?: string) => {
+	separator = separator || "+";
 	const labels = [];
-	const k: Array<string | number> = [];
+	const k: string[] = [];
 	numbers.forEach((num) => {
 		if (Array.isArray(num)) {
-			labels.push(getKeysLabel(num));
+			labels.push(getKeysLabel(num, separator));
 		} else {
 			k.push(getKeyLabel(num));
 		}
 	});
-	if (k.length) labels.push(k.join("+"));
+	if (k.length) labels.push(k.join(separator));
 
 	return labels.join(" | ");
 };

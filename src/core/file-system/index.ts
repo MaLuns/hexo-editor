@@ -9,10 +9,20 @@ class ConcreteFactory {
 		[k in FileStoreTypeEnum]?: Instance;
 	} = {};
 
+	/**
+	 *  注册 FileSystem 类型
+	 * @param key FS 类型
+	 * @param i  FS类
+	 */
 	public static register(key: FileStoreTypeEnum, i: Instance) {
 		ConcreteFactory.instances[key] = i;
 	}
 
+	/**
+	 * 获取 FileSystem 实例
+	 * @param key FS 类型
+	 * @returns
+	 */
 	public static getInstance(key: FileStoreTypeEnum): AbstractFileSystem {
 		if (!ConcreteFactory.singletons[key]) {
 			const instance = ConcreteFactory.instances[key]!;

@@ -175,8 +175,12 @@ export const useAutoScroll = (target: HTMLElement, type: "x" | "y") => {
 	};
 };
 
-export const useSearchBar = (): { open: Function; close: Function } => {
-	const api = inject("search-bar", null);
+/**
+ * 获取命令面板
+ * @returns
+ */
+export const useCommandPaletteBar = (): { open: Function; close: Function; show: Ref<boolean> } => {
+	const api = inject("command-palette-bar", null);
 	if (api === null) {
 		throw new Error(`[search-bar]: No outer <search-bar /> founded.`);
 	}

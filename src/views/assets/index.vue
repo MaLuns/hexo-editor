@@ -87,7 +87,7 @@ init();
 				</n-button>
 			</template>
 			<div>
-				<n-button style="float: right" size="small" @click="handleCancel('all')"> 清空勾选 </n-button>
+				<n-button style="float: right; margin-bottom: 4px" size="small" @click="handleCancel('all')"> 清空勾选 </n-button>
 				<n-scrollbar style="max-height: 400px">
 					<div v-for="item in data.selects" :key="item" class="checklist-item">
 						<span>{{ item }}</span>

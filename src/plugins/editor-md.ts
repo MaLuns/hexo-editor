@@ -1,5 +1,4 @@
 import type { Plugin } from "@/core/plugin";
-import type { MenuItem } from "@/core/status-bar";
 import { formatDate } from "@/utils";
 import markdown from "@/assets/markdown.json";
 
@@ -8,7 +7,7 @@ export default <Plugin>{
 	register(ctx) {
 		const monaco = ctx.editor.getMonaco();
 
-		const list = [
+		const insertList = [
 			{
 				title: "插入当前时间",
 				keybinding: [monaco.KeyMod.Shift, monaco.KeyMod.Alt, monaco.KeyCode.KeyQ],
@@ -56,7 +55,7 @@ export default <Plugin>{
 				},
 			});
 
-			list.forEach((item, index) => {
+			insertList.forEach((item, index) => {
 				ctx.editor.registerSingleAction(e.editor, {
 					id: `plugin.editor.insert-date-tiem.${index}`,
 					label: item.title,
@@ -81,7 +80,7 @@ export default <Plugin>{
 
 		ctx.statusBar.tapMenus((menus) => {
 			menus["status-bar-insert"]?.list?.push(
-				...list.map((item, index) => {
+				...insertList.map<StatusMenuItem>((item, index) => {
 					return {
 						id: `plugin.editor.markdown.${index}`,
 						type: "normal",
@@ -90,12 +89,10 @@ export default <Plugin>{
 						onClick() {
 							item.run();
 						},
-					} as MenuItem;
+					};
 				}),
-				{
-					type: "separator",
-				},
-				...markdown.map((item, index) => {
+				{ type: "separator" },
+				...markdown.map<StatusMenuItem>((item, index) => {
 					return {
 						id: `plugin.editor.markdown.${index}`,
 						type: "normal",
@@ -104,7 +101,7 @@ export default <Plugin>{
 							const editor = ctx.editor.getEditor();
 							editor && ctx.editor.tools.insert(editor, item.value);
 						},
-					} as MenuItem;
+					};
 				})
 			);
 		});

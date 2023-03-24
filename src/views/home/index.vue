@@ -5,7 +5,7 @@ import { LogoGithub, GitBranch, FileTrayFull, CloseSharp } from "@vicons/ionicon
 import { fileStore } from "@/store";
 import { FileStoreTypeEnum } from "@/enums";
 import DataDB from "@/utils/data-db";
-import ctx from "@/core/context";
+import FileSystem from "@/core/file-system";
 
 const route = useRouter();
 window.$message = useMessage();
@@ -33,9 +33,9 @@ db.getAll().then((res) => {
 	});
 });
 
-const openLocalFile = async (type: FileStoreTypeEnum) => {
+const handleOpenLocalFile = async (type: FileStoreTypeEnum) => {
 	if (type === FileStoreTypeEnum.Local) {
-		const fs = ctx.fs.getInstance(FileStoreTypeEnum.Local);
+		const fs = FileSystem.getInstance(FileStoreTypeEnum.Local);
 		const root = await fs.getRootsDirectory();
 		if (root) {
 			const item = data.list.find((item) => (item.name === root.name && item.type === FileStoreTypeEnum.Local ? (root.value as FileSystemDirectoryHandle).isSameEntry(item.value) : false));
@@ -52,9 +52,9 @@ const openLocalFile = async (type: FileStoreTypeEnum) => {
 	}
 };
 
-const selectHistory = async (item: FileStoreModel) => {
+const handleSelectHistory = async (item: FileStoreModel) => {
 	if (item.type === FileStoreTypeEnum.Local) {
-		let fs = ctx.fs.getInstance(FileStoreTypeEnum.Local);
+		let fs = FileSystem.getInstance(FileStoreTypeEnum.Local);
 		if (await fs.getRootsDirectory(item.value as FileSystemDirectoryHandle)) {
 			openEditor(fs);
 		}
@@ -112,10 +112,10 @@ const handleDelete = (item: FileStoreModel, index: number) => {
 			<div class="banner-content">
 				<h1>Online Hexo Editor</h1>
 				<p>Hexo Editor is a web editor for hexo blog platform. Can you manage and edit your article information online.</p>
-				<div class="btn" @click="openLocalFile(FileStoreTypeEnum.Local)">Open Hexo directory</div>
+				<div class="btn" @click="handleOpenLocalFile(FileStoreTypeEnum.Local)">Open Hexo directory</div>
 				<ul v-if="data.list.length" class="recently-opened">
 					<div class="recently-opened-title">Recently opened</div>
-					<li v-for="(item, index) in data.list" :key="item.key" class="recently-opened-item" @click="selectHistory(item)">
+					<li v-for="(item, index) in data.list" :key="item.key" class="recently-opened-item" @click="handleSelectHistory(item)">
 						<span> / {{ item.label }}</span>
 						<n-icon :size="20" :component="CloseSharp" class="close-icon" @click.stop="handleDelete(item, index)"></n-icon>
 					</li>

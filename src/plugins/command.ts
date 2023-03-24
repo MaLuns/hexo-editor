@@ -8,17 +8,17 @@ export default <Plugin>{
 			if (item.isCommand) {
 				const command: CommandPalette = {
 					title: item.title,
-					key: item.key,
+					id: item.key,
 				};
 
 				if (item.type === "select") {
 					command.children = item.attr!.options!.map<CommandPalette>((opt) => {
 						return {
 							title: opt.label,
-							key: opt.value,
+							id: opt.value,
 							handle: (t) => {
 								if (item.attr && item.attr["on-update:value"]) {
-									item.attr["on-update:value"](t.key);
+									item.attr["on-update:value"](t.id);
 								}
 							},
 						};

@@ -1,5 +1,4 @@
 import type { Plugin } from "@/core/plugin";
-import type { MenuItem } from "@/core/status-bar";
 
 export default <Plugin>{
 	name: "editor-keyboard",
@@ -7,7 +6,7 @@ export default <Plugin>{
 		const configStore = ctx.store.configStore;
 		const monaco = ctx.editor.getMonaco();
 
-		const list = [
+		const keyboardList = [
 			{
 				id: "status-bar-view.mouse-wheel-zoom",
 				title: "滚轮缩放",
@@ -15,15 +14,17 @@ export default <Plugin>{
 				checked: computed(() => configStore.editorOption.mouseWheelZoom),
 				onClick: () => {
 					configStore.editorOption.mouseWheelZoom = !configStore.editorOption.mouseWheelZoom;
+					ctx.discrete.message.info(`${configStore.editorOption.mouseWheelZoom ? "开启" : "关闭"}滚轮缩放`);
 				},
 			},
 			{
 				id: "status-bar-view.linenumbers",
 				title: "显示行号",
-				keybinding: [monaco.KeyMod.Alt, monaco.KeyCode.KeyL],
+				keybinding: [monaco.KeyMod.Alt, monaco.KeyCode.KeyJ],
 				checked: computed(() => configStore.editorOption.lineNumbers === "on"),
 				onClick: () => {
 					configStore.editorOption.lineNumbers = configStore.editorOption.lineNumbers === "off" ? "on" : "off";
+					ctx.discrete.message.info(`${configStore.editorOption.lineNumbers === "on" ? "显示" : "隐藏"}行号`);
 				},
 			},
 			{
@@ -34,35 +35,37 @@ export default <Plugin>{
 				checked: computed(() => configStore.editorOption.wordWrap === "on"),
 				onClick: () => {
 					configStore.editorOption.wordWrap = configStore.editorOption.wordWrap === "off" ? "on" : "off";
+					ctx.discrete.message.info(`${configStore.editorOption.wordWrap === "on" ? "强制" : "取消"}文本换行`);
 				},
 			},
 		];
 
-		ctx.hook.registerHook("MONACO_MARKDOWN_READY", function (e) {
-			list.forEach((item) => {
+		/* ctx.hook.registerHook("MONACO_MARKDOWN_READY", function (e) {
+			keyboardList.forEach((item) => {
 				ctx.editor.registerSingleCommand(e.editor, {
 					keybinding: ctx.editor.getKeysbinding(item.keybinding)[0],
 					handler: item.onClick,
 				});
 			});
-		});
-		list.forEach((item) => {
+		}); */
+		keyboardList.forEach((item) => {
 			const command: CommandPalette = {
+				id: item.id,
 				title: item.title,
-				key: item.id,
-				desc: ctx.editor.getKeysLabel(item.keybinding),
+				keybindLabel: ctx.editor.getKeysLabel(item.keybinding, "|").split("|"),
+				keybinding: ctx.editor.getKeysbinding(item.keybinding),
 				handle: item.onClick,
 			};
 			ctx.commnad.registerCommand(command);
 		});
 		ctx.statusBar.tapMenus((menus) => {
 			menus["status-bar-view"]?.list?.unshift(
-				...list.map((item) => {
+				...keyboardList.map((item) => {
 					return {
 						type: "normal",
 						...item,
-						subTitle: ctx.editor.getKeysLabel(item.keybinding),
-					} as MenuItem;
+						subTitle: ctx.editor.getKeysLabel(item.keybinding, "+"),
+					} as StatusMenuItem;
 				}),
 				{
 					type: "separator",

@@ -5,6 +5,10 @@ import { DocumentTextOutline } from "@vicons/ionicons5";
 import ctx from "@/core/context";
 import AddPost from "./add-post.vue";
 
+import { useCommandPaletteBar } from "@/composables";
+
+const cp = useCommandPaletteBar();
+
 const message = useMessage();
 const postEditorRef = ref();
 const showModal = ref(false);
@@ -29,15 +33,15 @@ const init = async () => {
 
 	ctx.commnad.registerCommand(
 		{
+			id: "post",
 			title: "文章列表",
-			key: "post",
 			desc: `${data.pages.length + data.drafts.length + data.posts.length} 篇`,
 			children: [...data.drafts, ...data.posts, ...data.pages].map((item) => {
 				return {
+					id: item.path,
 					title: item.title,
-					key: item.path,
 					handle() {
-						selectPost(item, true);
+						handleSelectPost(item, true);
 					},
 				};
 			}),
@@ -46,7 +50,12 @@ const init = async () => {
 	);
 };
 
-const selectPost = (post: PostModel, isAdd: boolean) => {
+/**
+ * 选择文章
+ * @param post
+ * @param isAdd 是否新增
+ */
+const handleSelectPost = (post: PostModel, isAdd: boolean) => {
 	if (isAdd) postEditorRef.value.add(post);
 	if (post) {
 		data.current = post.path;
@@ -57,7 +66,7 @@ const selectPost = (post: PostModel, isAdd: boolean) => {
 	}
 };
 
-const createPost = (newData: { type: HexoFileType; post: PostModel }) => {
+const handleCreatePost = (newData: { type: HexoFileType; post: PostModel }) => {
 	switch (newData.type) {
 		case HexoFileType.post:
 			data.posts.unshift(newData.post);
@@ -71,6 +80,11 @@ const createPost = (newData: { type: HexoFileType; post: PostModel }) => {
 	}
 };
 
+/**
+ * 文章列表-菜单事件
+ * @param post
+ * @param key
+ */
 const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpublishPost" | "refresh") => {
 	const filterData = (key: "drafts" | "posts" | "pages", path: string) => (data[key] = data[key].filter((item) => item.path !== path));
 	const getType = (path: string) => {
@@ -143,6 +157,30 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 	}
 };
 
+// 监听按键事件
+const handleKeyDown = (e: KeyboardEvent) => {
+	if (e.code === "F1") {
+		if (!cp.show.value) cp.open();
+		e.preventDefault();
+	}
+	if (e.shiftKey && e.code === "KeyQ") {
+		if (!cp.show.value) {
+			const post = ctx.commnad.getCommand("post");
+			if (post && post.children) {
+				cp.open(["post", post.children[0].id]);
+				e.preventDefault();
+			}
+		}
+	}
+};
+
+onActivated(() => {
+	window.addEventListener("keydown", handleKeyDown);
+});
+onDeactivated(() => {
+	window.removeEventListener("keydown", handleKeyDown);
+});
+
 init();
 </script>
 <template>
@@ -162,16 +200,16 @@ init();
 				<n-collapse class="file-panel" arrow-placement="right" :default-expanded-names="['posts']">
 					<n-collapse-item v-for="item in data.all" :key="item.key" :name="item.key">
 						<template #header> {{ item.title }}（{{ (data[item.key as keyof typeof data] as []).length }}） </template>
-						<post-list :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="selectPost($event, true)" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="handlePost($event, 'refresh')"> </post-list>
+						<post-list :current="data.current" :width="configStore.layout.editorAsideWidth" :type="item.key" :list="(data[item.key as keyof typeof data] as PostModel[])" @select-post="handleSelectPost($event, true)" @delete="handlePost($event, 'deleteFile')" @publish="handlePost($event, 'publishPost')" @unpublish="handlePost($event, 'unpublishPost')" @refresh="handlePost($event, 'refresh')"> </post-list>
 					</n-collapse-item>
 				</n-collapse>
 			</n-scrollbar>
 		</div>
 		<div class="editor-container">
-			<post-editor ref="postEditorRef" @select="selectPost($event, false)"></post-editor>
+			<post-editor ref="postEditorRef" @select="handleSelectPost($event, false)"></post-editor>
 		</div>
 	</main>
-	<add-post v-model:show="showModal" @create="createPost"></add-post>
+	<add-post v-model:show="showModal" @create="handleCreatePost"></add-post>
 </template>
 <style lang="less" scoped>
 main {

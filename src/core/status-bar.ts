@@ -1,33 +1,4 @@
-export type MenuItem =
-	| {
-			id: string;
-			title: string;
-			type: "normal";
-			subTitle?: string;
-			disabled?: boolean;
-			hidden?: boolean | ComputedRef<boolean> | Ref<boolean>;
-			checked?: boolean | ComputedRef<boolean> | Ref<boolean>;
-			onClick?: (item: MenuItem, menu: Menu) => void;
-	  }
-	| {
-			type: "separator";
-			hidden?: boolean;
-	  };
-
-export interface Menu {
-	id: string;
-	title?: string | Component | Ref<string>;
-	tips?: string; // not available for vue component title
-	icon?: Component; // not available for vue component title
-	hidden?: boolean | ComputedRef<boolean> | Ref<boolean>;
-	position: "left" | "right" | "center";
-	order?: number;
-	list?: MenuItem[];
-	onClick?: (menu: Menu) => void;
-	onMousedown?: (menu: Menu) => void;
-}
-
-export type Menus = { [id: string]: Menu };
+export type Menus = { [id: string]: StatusMenu };
 export type MenuTapper = (menus: Menus) => void;
 
 const tappers: MenuTapper[] = [];
@@ -45,7 +16,7 @@ export const tapMenus = (tapper: MenuTapper) => {
  * @param position
  * @returns
  */
-export const getMenus = (position: Menu["position"]): Menu[] => {
+export const getMenus = (position: StatusMenu["position"]): StatusMenu[] => {
 	const menus: Menus = {};
 	tappers.forEach((tap) => tap(menus));
 	return Object.values(menus)

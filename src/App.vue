@@ -12,10 +12,10 @@ const light: GlobalThemeOverrides = {
 
 const dark: GlobalThemeOverrides = {
 	common: {
-		primaryColor: "#C84FEDFF",
-		primaryColorHover: "#9E5EE8FF",
-		primaryColorPressed: "#9D2AE4FF",
-		primaryColorSuppl: "#B658F9FF",
+		primaryColor: "#8F63E2FF",
+		primaryColorHover: "#A77FE7FF",
+		primaryColorPressed: "#9C5ACEFF",
+		primaryColorSuppl: "rgba(83, 42, 148, 1)",
 	},
 };
 </script>
