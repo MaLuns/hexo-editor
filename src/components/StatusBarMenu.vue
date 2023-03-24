@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { configStore, themeColors } from "@/store";
-import * as statusBar from "@/core/status-bar";
-import type { Menu, MenuItem } from "@/core/status-bar";
 import { CheckmarkDoneSharp } from "@vicons/ionicons5";
+import * as statusBar from "@/core/status-bar";
 
 const props = defineProps({
 	position: {
@@ -12,7 +11,7 @@ const props = defineProps({
 });
 
 const size = 16;
-const _list = shallowRef(statusBar.getMenus(props.position as statusBar.Menu["position"]));
+const _list = shallowRef(statusBar.getMenus(props.position as StatusMenu["position"]));
 const list = computed(() => {
 	return _list.value.map((menu) => {
 		let titleType = 0;
@@ -29,7 +28,7 @@ const list = computed(() => {
 	});
 });
 
-const handleItemClick = (item: MenuItem & { type: "normal" }, menu: Menu) => {
+const handleItemClick = (item: StatusMenuItem & { type: "normal" }, menu: StatusMenu) => {
 	if (item.disabled) return;
 	item.onClick && item.onClick(item, menu);
 };
