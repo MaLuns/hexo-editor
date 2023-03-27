@@ -265,7 +265,7 @@ class LocalFileSystem extends AbstractFileSystem {
 				}
 			}
 		}
-		posts.sort((a, b) => b.date.getTime() - a.date.getTime());
+		posts.sort((a, b) => (b.date || new Date()).getTime() - (a.date || new Date()).getTime());
 		return posts;
 	}
 

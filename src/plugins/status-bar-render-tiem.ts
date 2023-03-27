@@ -15,7 +15,6 @@ export default <Plugin>{
 			});
 			registerHook("MARKDOWN_RENDER_AFTER", () => {
 				const nowDate = new Date();
-				console.log();
 				title.value = `${nowDate.getTime() - tiem.getTime()}ms`;
 			});
 			menus["status-bar-render-tiem"] = {

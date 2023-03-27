@@ -51,7 +51,7 @@ const def_config: Monaco.editor.IStandaloneEditorConstructionOptions = {
 	hideCursorInOverviewRuler: true,
 	smoothScrolling: true,
 	scrollbar: {
-		verticalScrollbarSize: 0,
+		verticalScrollbarSize: configStore.editorOption.minimap.enabled ? 0 : 10,
 	},
 	model: null,
 	...configStore.editorOption,

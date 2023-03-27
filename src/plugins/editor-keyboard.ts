@@ -40,14 +40,6 @@ export default <Plugin>{
 			},
 		];
 
-		/* ctx.hook.registerHook("MONACO_MARKDOWN_READY", function (e) {
-			keyboardList.forEach((item) => {
-				ctx.editor.registerSingleCommand(e.editor, {
-					keybinding: ctx.editor.getKeysbinding(item.keybinding)[0],
-					handler: item.onClick,
-				});
-			});
-		}); */
 		keyboardList.forEach((item) => {
 			const command: CommandPalette = {
 				id: item.id,
@@ -58,6 +50,7 @@ export default <Plugin>{
 			};
 			ctx.commnad.registerCommand(command);
 		});
+
 		ctx.statusBar.tapMenus((menus) => {
 			menus["status-bar-view"]?.list?.unshift(
 				...keyboardList.map((item) => {

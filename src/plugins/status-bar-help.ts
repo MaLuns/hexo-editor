@@ -1,8 +1,8 @@
 import type { Plugin } from "@/core/plugin";
-import { NButton, NDivider } from "naive-ui";
 import { InfoSquare } from "@vicons/tabler";
-import { author, version, homepage } from "../../package.json";
-import logo from "@/assets/logo.svg";
+import markdowns from "@/assets/markdown.json";
+import HelpInfo from "@/components/HelpInfo.vue";
+import AboutInfo from "@/components/AboutInfo.vue";
 
 export default <Plugin>{
 	name: "status-bar-help",
@@ -18,7 +18,33 @@ export default <Plugin>{
 						id: "show-premium",
 						title: "语法参考",
 						type: "normal",
-						onClick: () => {},
+						onClick: () => {
+							const keys = ctx.commnad
+								.getCommands()
+								.filter((item) => item.keybinding)
+								.map((item) => {
+									return {
+										title: item.title,
+										keybindLabel: item.keybindLabel!,
+									};
+								});
+
+							ctx.discrete.dialog.create({
+								showIcon: false,
+								closable: false,
+								autoFocus: false,
+								transformOrigin: "center",
+								style: {
+									position: "fixed",
+									width: "860px",
+									top: "100px",
+									left: "50vw",
+									transform: "translateX(-50%)",
+									padding: "0 20px 20px",
+								},
+								content: () => h(HelpInfo, { keybinds: keys, mds: markdowns }),
+							});
+						},
 					},
 					{
 						id: "show-premium",
@@ -31,57 +57,12 @@ export default <Plugin>{
 								autoFocus: false,
 								style: {
 									textAlign: "center",
+									position: "fixed",
+									top: "100px",
+									left: "50vw",
+									transform: "translateX(-50%)",
 								},
-								content: () =>
-									h("div", { clas: "about" }, [
-										h("img", {
-											src: logo,
-											class: "logo",
-											alt: "logo",
-											width: "80",
-										}),
-										h("div", { class: "text" }, [
-											h("h3", null, "一款在线的 Hexo 编辑器"),
-											h("p", null, [
-												h(
-													NButton,
-													{
-														text: true,
-														tag: "a",
-														href: homepage,
-														target: "_blank",
-													},
-													"Gitee"
-												),
-												h(NDivider, { vertical: true }),
-												h(
-													NButton,
-													{
-														text: true,
-														tag: "a",
-														href: homepage,
-														target: "_blank",
-													},
-													"Github"
-												),
-												h(NDivider, { vertical: true }),
-												version,
-											]),
-											h("p", null, [
-												"CopyRight © 2018 - 2023  ",
-												h(
-													NButton,
-													{
-														text: true,
-														tag: "a",
-														href: author.url,
-														target: "_blank",
-													},
-													author.name
-												),
-											]),
-										]),
-									]),
+								content: () => h(AboutInfo),
 							});
 						},
 					},
