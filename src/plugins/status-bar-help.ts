@@ -28,6 +28,16 @@ export default <Plugin>{
 										keybindLabel: item.keybindLabel!,
 									};
 								});
+							keys.unshift(
+								{
+									title: "命令面板",
+									keybindLabel: [ctx.editor.getKeysLabel([ctx.editor.KCM.code.F1])],
+								},
+								{
+									title: "命令面板-文章搜索",
+									keybindLabel: [ctx.editor.getKeysLabel([ctx.editor.KCM.mod.Shift]), ctx.editor.getKeysLabel([ctx.editor.KCM.code.KeyQ])],
+								}
+							);
 
 							ctx.discrete.dialog.create({
 								showIcon: false,
