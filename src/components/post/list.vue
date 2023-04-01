@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import i18n from "@/i18n";
 import { themeColors } from "@/store";
 import { Bug, ArrowUndoCircle, Send, RefreshSharp } from "@vicons/ionicons5";
 import { ChartArcs } from "@vicons/tabler";
@@ -35,45 +36,38 @@ const renderIcon = (icon: Component) => {
 
 const menuOptions = [
 	{
-		label: "刷新列表",
+		label: computed(() => i18n.global.t("post.list_menus.refresh")),
 		key: "refresh",
 		icon: renderIcon(markRaw(RefreshSharp)),
-		menu_kesy: true,
+		menu_keys: true,
 	},
 	{
-		label: "发布文章",
+		label: computed(() => i18n.global.t("post.list_menus.publish")),
 		key: "publish",
 		icon: renderIcon(markRaw(Send)),
-		menu_kesy: ["drafts"],
+		menu_keys: ["drafts"],
 	},
 	{
-		label: "取消发布",
+		label: computed(() => i18n.global.t("post.list_menus.unpublish")),
 		key: "unpublish",
 		icon: renderIcon(markRaw(ArrowUndoCircle)),
-		menu_kesy: ["posts"],
+		menu_keys: ["posts"],
 	},
 	{
-		label: "删除文件",
+		label: computed(() => i18n.global.t("post.list_menus.delete")),
 		key: "delete",
 		icon: renderIcon(markRaw(Bug)),
-		menu_kesy: true,
+		menu_keys: true,
 	},
 ].filter((item) => {
-	return Array.isArray(item.menu_kesy) ? item.menu_kesy.includes(props.type || "-1") : item.menu_kesy;
+	return Array.isArray(item.menu_keys) ? item.menu_keys.includes(props.type || "-1") : item.menu_keys;
 });
 
 const showDropdownRef = ref(false);
 const xRef = ref(0);
 const yRef = ref(0);
 const data = reactive({
-	options: [] as Array<{
-		key: string;
-		label?: string;
-		type?: string;
-		menu_kesy?: boolean | string[];
-		disabled?: boolean;
-		render?: any;
-	}>,
+	options: [] as any[],
 });
 
 let currentPost: PostModel | null = null;

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import i18n from "@/i18n";
 import { fileStore } from "@/store";
 import { CloseSharp } from "@vicons/ionicons5";
 import { useThemeVars, type GlobalThemeOverrides } from "naive-ui";
@@ -26,11 +27,11 @@ const init = async () => {
 
 const handleRemove = () => {
 	dialog.warning({
-		title: "提示",
+		title: i18n.global.t("base.tip"),
 		transformOrigin: "center",
-		content: "确实删除勾选文件？",
-		positiveText: "确定",
-		negativeText: "取消",
+		content: i18n.global.t("assets_page.tips"),
+		positiveText: i18n.global.t("base.confirm"),
+		negativeText: i18n.global.t("base.cancel"),
 		maskClosable: false,
 		style: {
 			width: "400px",
@@ -83,11 +84,11 @@ init();
 					<template #icon>
 						<n-icon><CloseSharp /></n-icon>
 					</template>
-					删除（{{ data.selects.length }}）
+					{{ $t("base.delete") }} （{{ data.selects.length }}）
 				</n-button>
 			</template>
 			<div>
-				<n-button style="float: right; margin-bottom: 4px" size="small" @click="handleCancel('all')"> 清空勾选 </n-button>
+				<n-button style="float: right; margin-bottom: 4px" size="small" @click="handleCancel('all')"> {{ $t("assets_page.clear_check") }} </n-button>
 				<n-scrollbar style="max-height: 400px">
 					<div v-for="item in data.selects" :key="item" class="checklist-item">
 						<span>{{ item }}</span>

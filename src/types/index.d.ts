@@ -138,7 +138,7 @@ declare interface GlobalConfig {
 	/**
 	 * 语言
 	 */
-	language: "zh_cn" | "en";
+	language: "zh-CN" | "en";
 	/**
 	 * 预览样式
 	 */
@@ -345,7 +345,7 @@ declare interface CommandPalette {
 	/**
 	 * 命令标题
 	 */
-	title: string;
+	title: string | Ref<string>;
 	/**
 	 * 图标
 	 */
@@ -384,7 +384,7 @@ declare type Flat<T extends Record<string, any>, P extends string = ""> = {
  * config 表单配置
  */
 declare interface FromConfig {
-	title: string;
+	title: string | Ref<string>;
 	key: keyof Flat<GlobalConfig>;
 	type: "input" | "select" | "slider" | "switch";
 	isCommand?: boolean;

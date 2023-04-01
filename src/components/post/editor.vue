@@ -3,6 +3,7 @@ import type { Uri } from "monaco-editor";
 import EditorMarkdown from "@/components/editor/markdown.vue";
 import { fileStore, configStore } from "@/store";
 import { registerHook } from "@/core/hook";
+import i18n from "@/i18n";
 
 type models = {
 	[k: string]: {
@@ -51,11 +52,11 @@ const handleClose = async (type: string, val: string) => {
 			};
 			if (noSave) {
 				dialog.warning({
-					title: "提示",
+					title: i18n.global.t("base.tip"),
 					transformOrigin: "center",
-					content: "当前文章未保存，确定关闭吗？",
-					positiveText: "确定",
-					negativeText: "取消",
+					content: i18n.global.t("post.editor.tips"),
+					positiveText: i18n.global.t("base.confirm"),
+					negativeText: i18n.global.t("base.cancel"),
 					maskClosable: false,
 					style: {
 						width: "400px",
@@ -116,7 +117,7 @@ const handleSave = async () => {
 		if (res) {
 			post.post.md = post.raw = post.text;
 		} else {
-			window.$message.warning("文章保存失败");
+			window.$message.warning(i18n.global.t("post.editor.post_save_error"));
 		}
 	}
 };
@@ -152,8 +153,8 @@ const update = (posts: PostModel[]) => {
 				} else {
 					// 原文发生改动
 					notification.warning({
-						title: "提示",
-						meta: `文件 ${item.name} 已发生变更。`,
+						title: i18n.global.t("base.tip"),
+						meta: i18n.global.t("post.editor.file_change", [item.name]),
 					});
 				}
 			}

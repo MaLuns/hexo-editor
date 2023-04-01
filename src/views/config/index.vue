@@ -5,12 +5,12 @@ import HexoConfig from "./hexo-config.vue";
 <template>
 	<div class="config-page">
 		<n-tabs type="segment" :bar-width="28">
-			<n-tab-pane class="tab-pane" name="chap1" tab="编辑器配置" display-directive="show:lazy">
+			<n-tab-pane class="tab-pane" name="chap1" :tab="$t('config_page.editor_tab.label')" display-directive="show:lazy">
 				<n-scrollbar>
 					<def-config></def-config>
 				</n-scrollbar>
 			</n-tab-pane>
-			<n-tab-pane class="tab-pane" name="chap2" tab="Hexo 应用配置" display-directive="show:lazy">
+			<n-tab-pane class="tab-pane" name="chap2" :tab="$t('config_page.hexo_tab.label')" display-directive="show:lazy">
 				<hexo-config></hexo-config>
 			</n-tab-pane>
 		</n-tabs>

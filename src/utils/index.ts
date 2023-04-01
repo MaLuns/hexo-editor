@@ -170,20 +170,19 @@ export const formatDataSize = (size: number, decimalPlaces: number = 2): string 
 	}
 };
 
-/* const formatDataSize = (size, decimalPlaces = 2) => {
-	const units = ["B", "KB", "MB", "GB", "TB", "PB"];
-	const index = units.findIndex((item, index) => {
-		console.log(index, Math.pow(1024, index + 1), Math.pow(1024, index + 2));
-
-		return size > Math.pow(1024, index + 1) && size < Math.pow(1024, index + 2);
-	});
-	if (index > -1) {
-		const convertedSize = size / Math.pow(1024, index + 1);
-		console.log(convertedSize, index);
-
-		return convertedSize.toFixed(decimalPlaces) + units[index + 1];
-	} else {
-		return size + "B";
-	}
-};
+/**
+ *
+ * @param obj
+ * @param path
+ * @returns
  */
+export const getDataPath = (obj: any, path: string) => {
+	path.split(".").forEach((item) => {
+		if (obj !== undefined && obj[item] !== undefined) {
+			obj = obj[item];
+		} else {
+			obj = undefined;
+		}
+	});
+	return obj;
+};

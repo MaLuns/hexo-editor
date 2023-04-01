@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useAutoScroll } from "@/composables";
+import i18n from "@/i18n";
 import { themeColors } from "@/store";
 import { Close } from "@vicons/ionicons5";
 import { NIcon } from "naive-ui";
@@ -10,19 +11,19 @@ const postTabsRef = ref<HTMLElement>();
 
 const options: DropdownMixedOption[] = [
 	{
-		label: "关闭",
+		label: () => i18n.global.t("post.tabs_menus.close"),
 		key: "close",
 	},
 	{
-		label: "关闭其他",
+		label: () => i18n.global.t("post.tabs_menus.other"),
 		key: "other",
 	},
 	{
-		label: "关闭已保存",
+		label: () => i18n.global.t("post.tabs_menus.save"),
 		key: "save",
 	},
 	{
-		label: "全部关闭",
+		label: () => i18n.global.t("post.tabs_menus.all"),
 		key: "all",
 	},
 ];

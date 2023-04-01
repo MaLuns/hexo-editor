@@ -1,4 +1,5 @@
 import type { Plugin } from "@/core/plugin";
+import { tRef } from "@/i18n";
 
 export default <Plugin>{
 	name: "editor-keyboard",
@@ -9,7 +10,7 @@ export default <Plugin>{
 		const keyboardList = [
 			{
 				id: "status-bar-view.mouse-wheel-zoom",
-				title: "滚轮缩放",
+				title: tRef("command.mouse_wheel_zoom"),
 				keybinding: [monaco.KeyMod.CtrlCmd, monaco.KeyMod.Alt, monaco.KeyCode.KeyZ],
 				checked: computed(() => configStore.editorOption.mouseWheelZoom),
 				onClick: () => {
@@ -19,7 +20,7 @@ export default <Plugin>{
 			},
 			{
 				id: "status-bar-view.linenumbers",
-				title: "显示行号",
+				title: tRef("command.linenumbers"),
 				keybinding: [monaco.KeyMod.Alt, monaco.KeyCode.KeyJ],
 				checked: computed(() => configStore.editorOption.lineNumbers === "on"),
 				onClick: () => {
@@ -29,7 +30,7 @@ export default <Plugin>{
 			},
 			{
 				id: "status-bar-view.wordwrap",
-				title: "文本换行",
+				title: tRef("command.linenumbers"),
 				type: "normal",
 				keybinding: [monaco.KeyMod.Alt, monaco.KeyCode.KeyZ],
 				checked: computed(() => configStore.editorOption.wordWrap === "on"),

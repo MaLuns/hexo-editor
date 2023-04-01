@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import i18n from "@/i18n";
 import { HexoFileType } from "@/enums";
 import { fileStore, configStore, themeColors } from "@/store";
 import { DocumentTextOutline } from "@vicons/ionicons5";
@@ -20,9 +21,9 @@ const data = reactive({
 	current: "",
 	openPosts: [] as Array<PostModel>,
 	all: [
-		{ title: "草稿", key: "drafts" },
-		{ title: "已发布", key: "posts" },
-		{ title: "页面", key: "pages" },
+		{ title: computed(() => i18n.global.t("draft")), key: "drafts" },
+		{ title: computed(() => i18n.global.t("publish")), key: "posts" },
+		{ title: computed(() => i18n.global.t("page")), key: "pages" },
 	],
 });
 
@@ -34,7 +35,7 @@ const init = async () => {
 	ctx.commnad.registerCommand(
 		{
 			id: "post",
-			title: "文章列表",
+			title: computed(() => i18n.global.t("command.post_list")),
 			desc: `${data.pages.length + data.drafts.length + data.posts.length} 篇`,
 			children: [...data.drafts, ...data.posts, ...data.pages].map((item) => {
 				return {
@@ -97,10 +98,10 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 		}
 	};
 
-	const messages = {
+	const callbacks = {
 		deleteFile: {
-			success: "删除成功！",
-			error: "删除失败！",
+			success: "base.delete_success",
+			error: "base.delete_error",
 			fun: (post: PostModel) => {
 				const key = getType(post.path);
 				filterData(key, post.path);
@@ -108,8 +109,8 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 			},
 		},
 		publishPost: {
-			success: "发布成功！",
-			error: "发布失败！",
+			success: "base.publish_success",
+			error: "base.publish_error",
 			fun(post: PostModel, newPath: string) {
 				filterData("drafts", post.path);
 				post.path = newPath;
@@ -117,8 +118,8 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 			},
 		},
 		unpublishPost: {
-			success: "取消发布成功！",
-			error: "取消发布失败！",
+			success: "base.unpublish_success",
+			error: "base.unpublish_error",
 			fun(post: PostModel, newPath: string) {
 				filterData("posts", post.path);
 				post.path = newPath;
@@ -131,10 +132,10 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 		case "deleteFile":
 			fileStore.fs?.deleteFile(post.path).then((res) => {
 				if (res) {
-					message.info(messages[key].success);
-					messages[key].fun(post);
+					message.info(i18n.global.t(callbacks[key].success));
+					callbacks[key].fun(post);
 				} else {
-					message.error(messages[key].error);
+					message.error(i18n.global.t(callbacks[key].error));
 				}
 			});
 			break;
@@ -142,16 +143,17 @@ const handlePost = (post: PostModel, key: "deleteFile" | "publishPost" | "unpubl
 		case "unpublishPost":
 			fileStore.fs![key](post.path).then((res) => {
 				if (res.state) {
-					message.info(messages[key].success);
-					messages[key].fun(post, res.data!);
+					message.info(i18n.global.t(callbacks[key].success));
+					callbacks[key].fun(post, res.data!);
 				} else {
-					message.error(messages[key].error);
+					message.error(i18n.global.t(callbacks[key].error));
 				}
 			});
 			break;
 		case "refresh":
 			init().then(() => {
 				postEditorRef.value.update([...data.drafts, ...data.posts, ...data.pages]);
+				message.info(i18n.global.t("base.refresh_success"));
 			});
 			break;
 	}
@@ -193,7 +195,7 @@ init();
 							<document-text-outline />
 						</n-icon>
 					</template>
-					新增文章
+					{{ $t("add_post.title") }}
 				</n-button>
 			</div>
 			<n-scrollbar class="file-panel__scroll">

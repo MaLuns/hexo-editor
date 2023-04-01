@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { unref } from "vue";
 import { useThemeVars, type InputInst, type ScrollbarInst } from "naive-ui";
 import { getCommands } from "@/core/command";
 import { ReturnUpBack } from "@vicons/ionicons5";
@@ -39,7 +40,7 @@ const getCurrentLabel = computed(() => {
 	let list = commandList;
 	checkIds.value.forEach((id) => {
 		const command = list.find((item) => item.id === id);
-		if (command) str.push(command.title);
+		if (command) str.push(unref(command.title));
 		if (command?.children) list = command.children;
 	});
 	return str.length > 1 ? str.join(" / ") : "Type a command or search...";
@@ -49,7 +50,7 @@ const getCurrentLabel = computed(() => {
 const currentFilterList = computed(() => {
 	const searchStr = searchVal.value?.trim();
 	const list = getCurrentList();
-	return searchStr ? list.filter((item) => item.title.includes(searchStr)) : list;
+	return searchStr ? list.filter((item) => unref(item.title).includes(searchStr)) : list;
 });
 
 const open = (ids?: string[]) => {
@@ -176,7 +177,7 @@ provide("command-palette-bar", {
 									<n-list-item v-for="item in currentFilterList" :key="item.id" :class="{ active: item.id === checkIds[checkIds.length - 1] }" @click="handleSelectCommand(item)">
 										<n-thing>
 											<template #header>
-												<span>{{ item.title }}</span>
+												<span>{{ unref(item.title) }}</span>
 												<span v-if="item.desc" class="title-desc">{{ item.desc }}</span>
 											</template>
 											<template v-if="item.keybindLabel" #header-extra>

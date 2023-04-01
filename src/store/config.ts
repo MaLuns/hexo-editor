@@ -9,7 +9,7 @@ export default <GlobalConfig>{
 		isShowMarkdownPrew: true,
 	},
 	theme: "light",
-	language: "zh_cn",
+	language: "zh-CN",
 	preStyle: "",
 	preTag: "",
 	preClass: "",

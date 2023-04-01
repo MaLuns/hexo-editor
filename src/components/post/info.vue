@@ -23,19 +23,19 @@ const datetime = computed({
 		</template>
 		<div v-if="fileStore.post">
 			<n-form label-placement="left" label-width="auto" :show-feedback="false">
-				<n-form-item label="文章标题">
+				<n-form-item :label="$t('post.info.title')">
 					<n-input v-model:value="fileStore.post.title"></n-input>
 				</n-form-item>
-				<n-form-item label="创建日期">
+				<n-form-item :label="$t('post.info.date')">
 					<n-date-picker v-model:value="datetime" type="datetime" style="width: 100%"></n-date-picker>
 				</n-form-item>
-				<n-form-item label="描述">
+				<n-form-item :label="$t('post.info.desc')">
 					<n-input v-model:value="fileStore.post.frontmatter.description"></n-input>
 				</n-form-item>
-				<n-form-item label="分类">
+				<n-form-item :label="$t('post.info.categories')">
 					<n-dynamic-tags v-model:value="fileStore.post.frontmatter.categories" />
 				</n-form-item>
-				<n-form-item label="标签">
+				<n-form-item :label="$t('post.info.tags')">
 					<n-dynamic-tags v-model:value="fileStore.post.frontmatter.tags" :color="{}" />
 				</n-form-item>
 				<div style="display: flex; justify-content: center">
@@ -45,12 +45,14 @@ const datetime = computed({
 								<DeviceFloppy />
 							</n-icon>
 						</template>
-						保存
+						{{ $t("base.save") }}
 					</n-button>
 				</div>
 			</n-form>
 		</div>
-		<div v-else>未找到文件信息</div>
+		<div v-else>
+			{{ $t("post.info.empty") }}
+		</div>
 	</n-popover>
 </template>
 <style lang="less" scoped>

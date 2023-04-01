@@ -6,6 +6,7 @@ import "@/assets/index.less";
 import plugins from "@/plugins";
 import ctx from "@/core/context";
 import { init } from "@/core/plugin";
+import i18n from "./i18n";
 
 init(plugins, ctx);
 
@@ -13,4 +14,5 @@ init(plugins, ctx);
 const app = createApp(App);
 app.config.compilerOptions.isCustomElement = (tag) => ["editor-preview"].includes(tag);
 app.use(router);
+app.use(i18n);
 app.mount("#app");

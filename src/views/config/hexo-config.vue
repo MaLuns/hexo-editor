@@ -2,6 +2,7 @@
 import type * as monaco from "monaco-editor";
 import EditorMonaco from "@/components/editor/monaco.vue";
 import ctx from "@/core/context";
+import i18n from "@/i18n";
 import { fileStore } from "@/store";
 
 const message = useMessage();
@@ -59,7 +60,7 @@ const handleSave = () => {
 	fileStore.fs?.updateFile(config.path, config.val).then((res) => {
 		if (res) {
 			config.raw = config.val;
-			message.info("保存成功");
+			message.info(i18n.global.t("base.save_success"));
 		}
 	});
 };
@@ -72,16 +73,12 @@ const handleReady = async () => {
 	<div class="config-editor">
 		<n-radio-group v-model:value="tabs" name="radiogroup" :on-update:value="switchModel" style="margin-bottom: 10px">
 			<n-radio value="hexo">
-				<div class="w-120">
-					Hexo 配置文件
-					<state-tag v-if="data.hexo.raw !== data.hexo.val" state="warning"></state-tag>
-				</div>
+				{{ $t("config_page.hexo_tab.hexo_title") }}
+				<state-tag v-if="data.hexo.raw !== data.hexo.val" state="warning"></state-tag>
 			</n-radio>
-			<n-radio value="theme">
-				<div class="w-120">
-					主题配置文件
-					<state-tag v-if="data.theme.raw !== data.theme.val" state="warning"></state-tag>
-				</div>
+			<n-radio value="theme" style="margin-left: 10px">
+				{{ $t("config_page.hexo_tab.theme_title") }}
+				<state-tag v-if="data.theme.raw !== data.theme.val" state="warning"></state-tag>
 			</n-radio>
 		</n-radio-group>
 		<editor-monaco ref="editorMonacoRef" class="editor" language="yaml" @save="handleSave" @change="handleChange" @ready="handleReady"></editor-monaco>

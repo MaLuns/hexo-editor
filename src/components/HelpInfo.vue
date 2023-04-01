@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { t } from "@/i18n";
+import { unref } from "vue";
 import { useThemeVars } from "naive-ui";
 interface Props {
 	keybinds: {
@@ -16,10 +18,12 @@ const containerRef = ref();
 </script>
 <template>
 	<n-scrollbar ref="containerRef" class="custom-scorll" style="max-height: 450px">
-		<h3 class="center">Keybinds 快捷键</h3>
+		<h3 class="center">
+			{{ t("help.keybind") }}
+		</h3>
 		<ul class="help-info">
 			<li v-for="(item, index) in $props.keybinds" :key="index">
-				<div>{{ item.title }}</div>
+				<div>{{ unref(item.title) }}</div>
 				<div class="keybind-label">
 					<kbd v-for="key in item.keybindLabel" :key="key" class="command-palette-commands-key">
 						{{ key }}
@@ -27,10 +31,12 @@ const containerRef = ref();
 				</div>
 			</li>
 		</ul>
-		<h3 class="center">Markdown 语法参考</h3>
+		<h3 class="center">
+			{{ t("help.markdown") }}
+		</h3>
 		<ul class="help-info">
 			<li v-for="(item, index) in $props.mds" :key="index">
-				<div>{{ item.label }}</div>
+				<div>{{ unref(item.label) }}</div>
 				<div class="md-value">{{ item.value.replace(/(^\n)|\n$/, "") }}</div>
 			</li>
 		</ul>

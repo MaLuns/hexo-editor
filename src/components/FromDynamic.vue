@@ -1,5 +1,11 @@
+<script lang="ts" setup>
+import { unref } from "vue";
+defineProps<{
+	config: FromConfig[];
+}>();
+</script>
 <template>
-	<n-form-item v-for="item in $props.config" :key="item.key" :label="item.title">
+	<n-form-item v-for="item in $props.config" :key="item.key" :label="unref(item.title)">
 		<template v-if="item.type === 'select'">
 			<n-select v-bind="item.attr" />
 		</template>
@@ -17,8 +23,3 @@
 		</template>
 	</n-form-item>
 </template>
-<script lang="ts" setup>
-defineProps<{
-	config: FromConfig[];
-}>();
-</script>

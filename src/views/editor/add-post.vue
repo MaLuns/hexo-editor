@@ -1,8 +1,9 @@
 <script lang="ts" setup>
+import type { FormInst, FormItemRule, FormRules } from "naive-ui";
 import type { HexoFileType } from "@/enums";
+import i18n from "@/i18n";
 import { fileStore } from "@/store";
 import { regexRules } from "@/utils";
-import type { FormInst, FormItemRule, FormRules } from "naive-ui";
 
 const emit = defineEmits(["update:show", "create"]);
 const formRef = ref<FormInst | null>(null);
@@ -22,7 +23,7 @@ const rules: FormRules = {
 	title: {
 		required: true,
 		trigger: ["blur"],
-		message: "请输入标题",
+		message: i18n.global.t("add_post.post_title_empty"),
 	},
 	name: {
 		trigger: "blur",
@@ -32,19 +33,19 @@ const rules: FormRules = {
 				const path = await fileStore.fs!.getFullPathByAdd(value, model.type);
 				const isExist = await fileStore.fs!.isPathExist(path);
 				if (isExist) {
-					callback(new Error(`文件已存在 ${path} `));
+					callback(new Error(i18n.global.t("add_post.file_name_exist", [path])));
 				} else {
 					return true;
 				}
 			} else {
-				callback(new Error("文件名仅能为字母、数组、常规符合"));
+				callback(new Error(i18n.global.t("add_post.file_name_error")));
 			}
 		},
 	} as FormItemRule,
 	date: {
 		required: true,
 		trigger: ["change"],
-		message: "请选择日期",
+		message: i18n.global.t("add_post.post_date_empty"),
 	},
 };
 
@@ -70,7 +71,7 @@ const handleValidateClick = () => {
 				if (post) {
 					emit("create", { type, post });
 					emit("update:show", false);
-					message.success(`创建成功！`);
+					message.success(i18n.global.t("base.create_success"));
 				}
 			});
 		}
@@ -79,24 +80,24 @@ const handleValidateClick = () => {
 </script>
 <template>
 	<n-modal :show="props.show" transform-origin="center" @update:show="$emit('update:show', $event)">
-		<n-card title="新增文章" :style="modalStyle">
+		<n-card :title="$t('add_post.title')" :style="modalStyle">
 			<n-form ref="formRef" :rules="rules" :model="model" label-width="auto" label-placement="left" require-mark-placement="right-hanging">
-				<n-form-item label="标题" path="title">
-					<n-input v-model:value="model.title" placeholder="文章" />
+				<n-form-item :label="$t('add_post.post_title')" path="title">
+					<n-input v-model:value="model.title" :placeholder="$t('add_post.post_title')" />
 				</n-form-item>
-				<n-form-item label="文件名" path="name">
-					<n-input v-model:value="model.name" placeholder="文件名" />
+				<n-form-item :label="$t('add_post.file_name')" path="name">
+					<n-input v-model:value="model.name" :placeholder="$t('add_post.file_name')" />
 				</n-form-item>
-				<n-form-item label="日期" path="date">
+				<n-form-item :label="$t('add_post.post_date')" path="date">
 					<n-date-picker v-model:formatted-value="model.date" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%" />
 				</n-form-item>
-				<n-form-item label="类型" path="type">
-					<n-select v-model:value="model.type" filterable placeholder="选择类型" :options="options"> </n-select>
+				<n-form-item :label="$t('add_post.post_type')" path="type">
+					<n-select v-model:value="model.type" filterable :placeholder="$t('add_post.post_type')" :options="options"> </n-select>
 				</n-form-item>
 			</n-form>
 			<n-space justify="end">
-				<n-button type="primary" @click="handleValidateClick">确定</n-button>
-				<n-button @click="$emit('update:show', false)">取消</n-button>
+				<n-button type="primary" @click="handleValidateClick">{{ $t("base.confirm") }}</n-button>
+				<n-button @click="$emit('update:show', false)">{{ $t("base.cancel") }}</n-button>
 			</n-space>
 		</n-card>
 	</n-modal>

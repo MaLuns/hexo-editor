@@ -1,9 +1,10 @@
 import { loadEditorTheme, themes } from "@/plugins/editor-themes";
 import { configStore } from "@/store";
+import i18n, { tRef } from "@/i18n";
 
 export const styleConfig: FromConfig[] = [
 	{
-		title: "主题",
+		title: tRef("config_page.editor_tab.from.theme"),
 		key: "theme",
 		isCommand: true,
 		type: "select",
@@ -19,22 +20,26 @@ export const styleConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "语言",
+		title: tRef("config_page.editor_tab.from.language"),
 		key: "language",
 		isCommand: true,
 		type: "select",
 		attr: {
 			class: "w-100",
 			options: [
-				{ label: "中文", value: "zh_cn" },
+				{ label: "中文", value: "zh-CN" },
 				{ label: "English", value: "en" },
 			],
 			value: computed(() => configStore.language),
-			"on-update:value": (e: GlobalConfig["language"]) => (configStore.language = e),
+			"on-update:value": (e: GlobalConfig["language"]) => {
+				configStore.language = e;
+				/* setLocale(e); */
+				i18n.global.locale = e;
+			},
 		},
 	},
 	{
-		title: "编辑器主题(亮)",
+		title: tRef("config_page.editor_tab.from.editorLightTheme"),
 		key: "editorLightTheme",
 		type: "select",
 		isCommand: true,
@@ -49,7 +54,7 @@ export const styleConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "编辑器主题(暗)",
+		title: tRef("config_page.editor_tab.from.editorDartTheme"),
 		key: "editorDartTheme",
 		type: "select",
 		isCommand: true,
@@ -64,7 +69,7 @@ export const styleConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "预览样式",
+		title: tRef("config_page.editor_tab.from.preStyle"),
 		key: "preStyle",
 		type: "input",
 		attr: {
@@ -75,7 +80,7 @@ export const styleConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "预览标签",
+		title: tRef("config_page.editor_tab.from.preTag"),
 		key: "preTag",
 		type: "input",
 		attr: {
@@ -85,7 +90,7 @@ export const styleConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "预览标签类",
+		title: tRef("config_page.editor_tab.from.preClass"),
 		key: "preClass",
 		type: "input",
 		attr: {
@@ -98,7 +103,7 @@ export const styleConfig: FromConfig[] = [
 
 export const editorConfig: FromConfig[] = [
 	{
-		title: "行号",
+		title: tRef("config_page.editor_tab.from.lineNumbers"),
 		key: "editorOption.lineNumbers",
 		type: "select",
 		attr: {
@@ -114,7 +119,7 @@ export const editorConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "自动保存",
+		title: tRef("config_page.editor_tab.from.autoSave"),
 		key: "autoSave",
 		type: "select",
 		attr: {
@@ -133,7 +138,7 @@ export const editorConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "自动渲染",
+		title: tRef("config_page.editor_tab.from.autoRender"),
 		key: "autoRender",
 		type: "select",
 		attr: {
@@ -152,7 +157,7 @@ export const editorConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "显示小地图",
+		title: tRef("config_page.editor_tab.from.minimapEnabled"),
 		key: "editorOption.minimap.enabled",
 		type: "switch",
 		attr: {
@@ -161,7 +166,7 @@ export const editorConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "小地图样式",
+		title: tRef("config_page.editor_tab.from.minimapRenderCharacters"),
 		key: "editorOption.minimap.renderCharacters",
 		type: "switch",
 		attr: {
@@ -172,7 +177,7 @@ export const editorConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "换行显示",
+		title: tRef("config_page.editor_tab.from.wordWrap"),
 		key: "editorOption.wordWrap",
 		type: "select",
 		attr: {
@@ -188,7 +193,7 @@ export const editorConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "鼠标滚轮缩放",
+		title: tRef("config_page.editor_tab.from.mouseWheelZoom"),
 		key: "editorOption.mouseWheelZoom",
 		type: "switch",
 		attr: {
@@ -197,7 +202,7 @@ export const editorConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "字体大小",
+		title: tRef("config_page.editor_tab.from.fontSize"),
 		key: "editorOption.fontSize",
 		type: "slider",
 		attr: {
@@ -207,7 +212,7 @@ export const editorConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "字体",
+		title: tRef("config_page.editor_tab.from.fontFamily"),
 		key: "editorOption.fontFamily",
 		type: "input",
 		attr: {
@@ -220,7 +225,7 @@ export const editorConfig: FromConfig[] = [
 
 export const otherConfig: FromConfig[] = [
 	{
-		title: "Front-Matter",
+		title: tRef("config_page.editor_tab.from.hideFrontMatter"),
 		key: "hideFrontMatter",
 		type: "switch",
 		attr: {
@@ -231,7 +236,7 @@ export const otherConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "图片存储方式",
+		title: tRef("config_page.editor_tab.from.imgStorageType"),
 		key: "imgStorageType",
 		type: "select",
 		attr: {
@@ -242,7 +247,7 @@ export const otherConfig: FromConfig[] = [
 		},
 	},
 	{
-		title: "图片存放目录",
+		title: tRef("config_page.editor_tab.from.imgStorageDir"),
 		key: "imgStorageDir",
 		type: "input",
 		attr: {

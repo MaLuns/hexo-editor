@@ -24,6 +24,7 @@
     "monaco-editor": "^0.35.0",
     "naive-ui": "^2.34.3",
     "vue": "^3.2.45",
+    "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {

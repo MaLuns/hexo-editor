@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { unref } from "vue";
 import { configStore, themeColors } from "@/store";
 import { CheckmarkDoneSharp } from "@vicons/ionicons5";
 import * as statusBar from "@/core/status-bar";
@@ -33,8 +34,7 @@ const handleItemClick = (item: StatusMenuItem & { type: "normal" }, menu: Status
 	item.onClick && item.onClick(item, menu);
 };
 
-const geVal = (val: any): boolean => (isRef(val) ? val.value : val);
-const isHide = (val: any): boolean => !(geVal(val) === true);
+const isHide = (val: any): boolean => !(unref(val) === true);
 </script>
 <template>
 	<template v-for="item in list">
@@ -57,12 +57,12 @@ const isHide = (val: any): boolean => !(geVal(val) === true);
 					<template v-for="(menuItem, index) in item.list" :key="index">
 						<li v-if="menuItem.type === 'separator'" class="separator"></li>
 						<li v-else class="list-item" @click="handleItemClick(menuItem, item)">
-							<n-icon v-if="geVal(menuItem.checked)" class="checked-icon" size="14">
+							<n-icon v-if="unref(menuItem.checked)" class="checked-icon" size="14">
 								<CheckmarkDoneSharp />
 							</n-icon>
-							<div class="list-item__title">{{ menuItem.title }}</div>
+							<div class="list-item__title">{{ unref(menuItem.title) }}</div>
 							<div v-if="menuItem.subTitle" class="list-item__sub-title">
-								{{ menuItem.subTitle }}
+								{{ unref(menuItem.subTitle) }}
 							</div>
 						</li>
 					</template>
